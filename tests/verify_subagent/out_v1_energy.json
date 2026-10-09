@@ -1,0 +1,84 @@
+{
+  "selftest_interior_stencil": {
+    "max_err": [
+      0.0009074366894488151,
+      5.70484021800155e-05,
+      3.5711790324910453e-06,
+      2.23281666933417e-07
+    ],
+    "orders": [
+      3.9915386068849297,
+      3.9977141129628246,
+      3.9994637565256133
+    ]
+  },
+  "selftest_boundary_stencil_order": [
+    2.774353900786223,
+    2.946811157162883,
+    2.986884498435357
+  ],
+  "A_spectral_RK4": {
+    "sample=0.005": {
+      "E0": 7.4408718035677,
+      "E(T=10)": 0.1358534787644825,
+      "monotone_nonincreasing": true,
+      "strict_decrease": true,
+      "min_relative_drop_at_first_sample": 2.0475095512066886e-05,
+      "max_rel_resid_dEdt_vs_-cD": 0.000914692310889189,
+      "max_rel_resid_integral_form": 1.1565399434130315e-05
+    },
+    "sample=0.001": {
+      "E0": 7.4408718035677,
+      "E(T=10)": 0.1358534787644825,
+      "monotone_nonincreasing": true,
+      "strict_decrease": true,
+      "min_relative_drop_at_first_sample": 3.5171767038283112e-06,
+      "max_rel_resid_dEdt_vs_-cD": 3.707261545304529e-05,
+      "max_rel_resid_integral_form": 4.6299332332506274e-07
+    },
+    "sample=0.00025": {
+      "E0": 7.4408718035677,
+      "E(T=10)": 0.1358534787644825,
+      "monotone_nonincreasing": true,
+      "strict_decrease": true,
+      "min_relative_drop_at_first_sample": 6.989818690244049e-07,
+      "max_rel_resid_dEdt_vs_-cD": 1.484843545830191e-06,
+      "max_rel_resid_integral_form": 1.851960387097055e-08
+    }
+  },
+  "B_FEM1_refine": {
+    "J=40": {
+      "dt": 0.004091307327579798,
+      "E0": 7.40545161739185,
+      "E(T=6)": 0.6749529319890519,
+      "monotone_nonincreasing_Ec": false,
+      "strict_decrease": true,
+      "max_rel_resid_discrete_M_identity": 0.002413694706138313,
+      "max_rel_resid_continuous_simpson": 0.16466852746646657
+    },
+    "J=80": {
+      "dt": 0.00204211342957323,
+      "E0": 7.4319938797317615,
+      "E(T=6)": 0.673914868550034,
+      "monotone_nonincreasing_Ec": true,
+      "strict_decrease": true,
+      "max_rel_resid_discrete_M_identity": 0.0036860461161567757,
+      "max_rel_resid_continuous_simpson": 0.040545824753584266
+    },
+    "J=160": {
+      "dt": 0.001020614132835738,
+      "E0": 7.438650889679007,
+      "E(T=6)": 0.673815232140273,
+      "monotone_nonincreasing_Ec": true,
+      "strict_decrease": true,
+      "max_rel_resid_discrete_M_identity": 0.0036794167606624567,
+      "max_rel_resid_continuous_simpson": 0.010097755526863535
+    }
+  },
+  "C_conservation_c0_spectral": {
+    "rel_drift": 4.893958150205593e-15
+  },
+  "C_conservation_c0_FEM": {
+    "rel_drift": 3.042173015727138e-11
+  }
+}

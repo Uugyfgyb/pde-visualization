@@ -1,0 +1,92 @@
+[
+  {
+    "check": "c=0 能量守恒（模态解，t=6）",
+    "pass": true,
+    "detail": "相对漂移 7.34e-14"
+  },
+  {
+    "check": "c=0 离散能量守恒（leapfrog, J=200）",
+    "pass": true,
+    "detail": "相对漂移 1.69e-14，单调=true"
+  },
+  {
+    "check": "能量恒等式 E(0) - c∫∫u_t²dxds = E(t)",
+    "pass": true,
+    "detail": "相对残差 5.34e-9"
+  },
+  {
+    "check": "E(t) 单调不增，且 t>0 时严格下降",
+    "pass": true,
+    "detail": "最小降幅/E(0) = 1.077e-5"
+  },
+  {
+    "check": "瞬时恒等式 dE/dt = -c∫u_t²dx（数值微分）",
+    "pass": true,
+    "detail": "最大相对偏差 4.07e-7（含 O(h) 数值微分误差）"
+  },
+  {
+    "check": "非平凡初值下 E(t) 严格小于 E(0)",
+    "pass": true,
+    "detail": "t=2 时降幅 3.115e+0"
+  },
+  {
+    "check": "Poincaré: ||u||² ≤ (l²/π²)||u_x||²",
+    "pass": true,
+    "detail": "最大比值 0.851772 (<1 表示严格成立)"
+  },
+  {
+    "check": "有限差分 vs 模态精确解（光滑初值）",
+    "pass": true,
+    "detail": "J=50:4.72e-3 J=100:1.14e-3 J=200:2.83e-4 J=400:7.06e-5 | 观测阶 2.05, 2.01, 2.00"
+  },
+  {
+    "check": "含阻尼+源项：两格式一致（二阶）",
+    "pass": true,
+    "detail": "J=60:2.28e-4 J=120:5.73e-5 J=240:1.43e-5 J=480:3.58e-6 | 观测阶 1.99, 2.00, 2.00"
+  },
+  {
+    "check": "初值扰动: E_w(t) ≤ E_w(0)",
+    "pass": true,
+    "detail": "max E_w/E_w(0) = 0.999980150"
+  },
+  {
+    "check": "初值扰动: ||w||² ≤ 2l²E_w(0)/(π²a²)",
+    "pass": true,
+    "detail": "max 比值 = 0.049107"
+  },
+  {
+    "check": "初值扰动: ||w_t||² ≤ 2E_w(0)",
+    "pass": true,
+    "detail": "max 比值 = 0.705430"
+  },
+  {
+    "check": "f 扰动: E_w ≤ (1/2c)∫||F||²ds",
+    "pass": true,
+    "detail": "max 比值 = 0.0578"
+  },
+  {
+    "check": "f 扰动: ||w||² ≤ l²‖F‖²_{L²L²}/(π²a²c)",
+    "pass": true,
+    "detail": "max 比值 = 0.0061"
+  },
+  {
+    "check": "含源能量恒等式 E = E(0) - c∫∫u_t² + ∫∫f u_t",
+    "pass": true,
+    "detail": "相对残差 1.06e-5"
+  },
+  {
+    "check": "Lyapunov 界 E(t) ≤ ((1+γ)/(1-γ))E(0)e^{-κt}",
+    "pass": true,
+    "detail": "γ=0.0637, κ=0.3521, max 比值 = 0.9166"
+  },
+  {
+    "check": "观测到的能量衰减率 ≈ c",
+    "pass": true,
+    "detail": "log(E0/E(t))/t = 0:0.0008, 3:0.4004, 6:0.4005, 9:0.4006"
+  },
+  {
+    "check": "唯一性（数值）：加密网格下解收敛到同一极限",
+    "pass": true,
+    "detail": "|u100-u200|=4.89e-3, |u200-u400|=3.01e-3, |u400-u800|=1.81e-3"
+  }
+]

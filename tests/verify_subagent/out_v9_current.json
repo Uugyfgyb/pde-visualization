@@ -1,0 +1,20 @@
+{
+  "asrc_check_current_version": {
+    "Asrc_current_make_figures": 0.012694515693422606,
+    "Asrc_true": 0.006347257846713241,
+    "ratio": 1.9999999999993892,
+    "current_gamma_in_script": null
+  },
+  "sharp_lyapunov_mine": {
+    "gamma": 0.06366197723675814,
+    "kappa": 0.3521186402453585,
+    "E0": 1.9959471864268525,
+    "max_ratio_page_bound": 0.9166332281679671,
+    "check_js_reported": 0.9166,
+    "max|G|/E": 0.25563899788220484,
+    "sharp_constant_l/(pi a)": 0.3183098861837907,
+    "max|H-E|/E": 0.051127799576441015,
+    "gamma_bound_1+gamma": 1.0636619772367581,
+    "max_rel_resid_H'_eq": 9.368898119922342e-07
+  }
+}

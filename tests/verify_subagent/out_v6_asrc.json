@@ -1,0 +1,18 @@
+{
+  "make_figures_Asrc_check": {
+    "Asrc_make_figures": 0.012694515693422606,
+    "Asrc_true_(l/2)Sum": 0.006347257846713241,
+    "ratio": 1.9999999999993892,
+    "E_w(10)": 1.5304793187841653e-06,
+    "bound_with_their_Asrc": 0.015868144616778258,
+    "bound_correct": 0.00793407230839155
+  },
+  "my_solver_same_F": {
+    "max_ratio_correct_bound_fine_sampling": 0.05782584019883836,
+    "max_ratio_with_missing_l/2_fine_sampling": 0.02891292009941918,
+    "max_ratio_correct_bound_0.1s_sampling": 0.05557679683222896,
+    "max_ratio_with_missing_l/2_0.1s_sampling": 0.02778839841611448
+  },
+  "evidence_json_source_stability": 0.027788398416119874,
+  "check_js_reported": 0.0578
+}
