@@ -1,0 +1,54 @@
+{
+  "checks": 12,
+  "passed": 12,
+  "results": [
+    {
+      "name": "Kernel positive and normalized at rho=0, 0.55, 0.95",
+      "status": "passed"
+    },
+    {
+      "name": "Center value equals ordinary boundary average",
+      "status": "passed"
+    },
+    {
+      "name": "First and second Fourier modes have rho^n attenuation",
+      "status": "passed"
+    },
+    {
+      "name": "Second cosine boundary mode",
+      "status": "passed"
+    },
+    {
+      "name": "Poisson boundary data recovered near boundary",
+      "status": "passed"
+    },
+    {
+      "name": "Harmonic circle mean at translated center",
+      "status": "passed"
+    },
+    {
+      "name": "Harmonic disk mean at translated center",
+      "status": "passed"
+    },
+    {
+      "name": "Nonharmonic circle and disk mean differences",
+      "status": "passed"
+    },
+    {
+      "name": "Constant circle and disk means",
+      "status": "passed"
+    },
+    {
+      "name": "Harmonic outward derivatives cancel in line integral",
+      "status": "passed"
+    },
+    {
+      "name": "Nonharmonic boundary and interior integrals agree",
+      "status": "passed"
+    },
+    {
+      "name": "Gradient-square integration gives energy parabola",
+      "status": "passed"
+    }
+  ]
+}

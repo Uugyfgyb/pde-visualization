@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "formulas": 6,
+  "chapterSymbolTables": 7,
+  "figureGuides": 5,
+  "inlineAnnotationButtons": 76,
+  "viewports": [
+    1365,
+    390,
+    320
+  ],
+  "checks": [
+    "popup and Escape",
+    "live numeric explanations",
+    "independent mean readouts",
+    "normal-derivative integral",
+    "energy symmetry",
+    "all proofs open at 320px",
+    "constant color legend",
+    "circle inside disk",
+    "catalog count and search",
+    "topic and return links"
+  ],
+  "errors": []
+}
