@@ -1,0 +1,54 @@
+<nav class="toc">
+  <div class="brand">Maxwell 与 Euler 方程组
+    <small>Strauss §13.1 · §13.2 — 可视化讲解</small>
+  </div>
+  <ol>
+    <li><a href="#s-overview">导览：两节讲的是同一件事</a></li>
+    <li class="grp">13.1 电磁学</li>
+    <li><a href="#s-m-eqs">四个方程与它们的含义</a></li>
+    <li><a href="#s-m-disp">位移电流：麦克斯韦的关键修正</a></li>
+    <li><a href="#s-m-derive">波动方程的推导</a></li>
+    <li><a href="#s-m-wave">平面电磁波的结构</a></li>
+    <li><a href="#s-m-energy">能量、坡印廷矢量与动量</a></li>
+    <li><a href="#s-m-matter">介质、边界条件与折射</a></li>
+    <li><a href="#s-m-fdtd">数值实验：1-D FDTD</a></li>
+    <li><a href="#s-m-spec">电磁波谱</a></li>
+    <li class="grp">13.2 流体与声学</li>
+    <li><a href="#s-e-cons">守恒律框架</a></li>
+    <li><a href="#s-e-mass">质量守恒（连续性方程）</a></li>
+    <li><a href="#s-e-mom">动量方程与对流项</a></li>
+    <li><a href="#s-e-energy">能量与状态方程</a></li>
+    <li><a href="#s-e-vort">涡量：Euler 方程的额外守恒量</a></li>
+    <li><a href="#s-e-acoustic">声学线性化</a></li>
+    <li><a href="#s-e-speed">声速</a></li>
+    <li><a href="#s-e-tube">管中的声波与边界条件</a></li>
+    <li><a href="#s-e-shock">非线性陡化与激波</a></li>
+    <li><a href="#s-e-sod">数值实验：Sod 激波管</a></li>
+    <li><a href="#s-e-incomp">不可压极限与马赫锥</a></li>
+    <li class="grp">总结</li>
+    <li><a href="#s-synth">两套方程的对照</a></li>
+    <li><a href="#s-verify">数值验证报告</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<div class="hero">
+  <h1>麦克斯韦方程组 与 欧拉方程组 <span class="thin">—— 波动方程从哪里来</span></h1>
+  <p class="sub">Strauss《偏微分方程》<b>§13.1 电磁学</b> 与 <b>§13.2 流体与声学</b> 的可视化讲解。
+  这一章回答的是全书最根本的问题：<em>偏微分方程是从哪里来的？</em>
+  两节给出的答案是同一套方法——写下守恒律（一阶方程组），线性化，得到二阶波动方程，然后读出波速。</p>
+  <div class="meta">
+    <span>17 个可交互数值实验</span><span>·</span>
+    <span>47 项自动数值检验</span><span>·</span>
+    <span>常数取 CODATA-2018</span><span>·</span>
+    <span>物理内核 physics.js 与 Node 测试共用同一份代码</span>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="h">怎么读这一页</span>
+  <p class="small">每个小节都是同一节奏：<b>① 方程与它的物理含义 → ② 一个可以动手拖动的实验 → ③ 从实验读数里能得出的结论</b>。
+  页面上所有数字（波速、反射率、声速、激波速度……）都是浏览器<b>当场算出来</b>的，不是写死的字符串；
+  页面末尾的<a href="#s-verify">验证报告</a>会把每一项与解析解或标准参考值逐条比对，并给出相对误差。</p>
+</div>

@@ -1,0 +1,85 @@
+<h2 id="s-m-wave"><span class="num">§13.1.4</span>平面电磁波的结构：三个互相垂直的矢量</h2>
+
+<p class="lead">波动方程只告诉我们"以速度 $c$ 传播"。把解代回原来的四个方程，还能榨出更多结构——麦克斯韦方程组对波的形状有很强的约束。</p>
+
+<p>取平面波解 $\vv{E}=\vv{E}_0 f(\hat{k}\!\cdot\!\vv{r}-ct)$，$\vv{B}=\vv{B}_0 f(\hat{k}\!\cdot\!\vv{r}-ct)$（$f$ 任意光滑，$\hat{k}$ 是传播方向单位矢量），代回真空中的 (M1)、(M2)、(M3)：</p>
+
+<table class="data">
+  <tr><th style="width:20%">用哪个方程</th><th style="width:34%">代入后得到</th><th>结论</th></tr>
+  <tr><td>(M1) $\nabla\!\cdot\!\vv{E}=0$</td><td>$\hat{k}\!\cdot\!\vv{E}_0\,f'=0$</td><td>$\vv{E}\perp\hat{k}$：电场<b>横波</b>，没有纵向分量</td></tr>
+  <tr><td>(M2) $\nabla\!\cdot\!\vv{B}=0$</td><td>$\hat{k}\!\cdot\!\vv{B}_0\,f'=0$</td><td>$\vv{B}\perp\hat{k}$：磁场也是横波</td></tr>
+  <tr><td>(M3) $\nabla\!\times\!\vv{E}=-\partial_t\vv{B}$</td><td>$\hat{k}\!\times\!\vv{E}_0\,f'=\ c\,\vv{B}_0 f'$</td><td>$\vv{B}\perp\vv{E}$，且 $|\vv{B}|=|\vv{E}|/c$</td></tr>
+  <tr><td>(M4)（无电流）</td><td>自动满足</td><td>不提供新信息——与上面的结论一致，是自洽性检查</td></tr>
+</table>
+
+<div class="eq key">
+$$\boxed{\ \vv{E}\perp\vv{B}\perp\hat{k},\qquad |\vv{B}|=\frac{|\vv{E}|}{c},\qquad \vv{S}=\frac{\vv{E}\times\vv{B}}{\mu_0}\ \parallel\ \hat{k}\ }$$
+</div>
+
+<p>也就是说：$\vv{E}$、$\vv{B}$、$\hat{k}$ 构成一组<b>右手正交三矢量</b>。场在传播方向上没有分量；电场与磁场大小之比恒为 $c$（在介质中为 $v=c/n$）。</p>
+
+<div class="callout">
+  <span class="h">为什么没有纵波</span>
+  <p class="small">纵波意味着 $\vv{E}\parallel\hat{k}$。但真空里 $\rho=0\Rightarrow\nabla\!\cdot\!\vv{E}=0$，代入平面波立刻要求 $\hat{k}\!\cdot\!\vv{E}_0=0$。
+  所以"真空中的电磁波一定是横波"是高斯定律的直接后果。<b>但在波导里</b>（金属管内），边界条件允许 TM/TE 模式存在纵向分量——
+  这就是为什么微波工程里要区分 TEM、TE、TM 模式。介质界面附近的倏逝波也有纵向分量。</p>
+</div>
+
+<figure class="widget" data-widget="wave">
+  <div class="whead"><span class="t">实验 5 · 平面电磁波的三维结构</span><span class="s">$\vv{E}$（琥珀）与 $\vv{B}$（青）垂直、同相、$E=cB$</span><span class="idx">W5</span></div>
+  <div class="cvwrap h420"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">左侧小图是固定位置 $z$ 处 $(\vv{E}_x,\vv{E}_y)$ 的轨迹（李萨如图形）——它把偏振状态一眼画出来：线段＝线偏振，圆＝圆偏振，椭圆＝椭圆偏振。
+  读数里的 $\hat{E}\!\cdot\!\hat{B}$ 恒为 0，$\hat{k}\!\cdot\!(\vv{E}\times\vv{B})/(|E||B|)$ 恒为 +1：右手定则不是画法问题，而是可验证的数值事实。</div>
+</figure>
+
+<h2 id="s-m-energy"><span class="num">§13.1.5</span>能量、坡印廷矢量与动量</h2>
+
+<p>电磁场携带能量，也携带动量。把 (M3)、(M4) 做点积组合，可以得到一个<b>严格的守恒律</b>（下面的推导只用矢量恒等式，不做任何近似）：</p>
+
+<div class="eq">
+$$\frac{\partial u}{\partial t}+\nabla\!\cdot\!\vv{S}=0,\qquad
+\underbrace{u=\frac{\eps_0}{2}|\vv{E}|^2+\frac{1}{2\mu_0}|\vv{B}|^2}_{\text{能量密度}\ \mathrm{J/m^3}},\qquad
+\underbrace{\vv{S}=\frac{\vv{E}\times\vv{B}}{\mu_0}=\vv{E}\times\vv{H}}_{\text{坡印廷矢量}\ \mathrm{W/m^2}}$$
+<span class="tag">(13.4)</span>
+</div>
+
+<p>它的形式与流体力学里的连续性方程<b>完全一样</b>（§13.2 会再见到）：$u$ 是"存了多少"，$\vv{S}$ 是"流了多少"。
+对平面波代入 $|\vv{B}|=|\vv{E}|/c$，会出现两个漂亮的结果：</p>
+
+<div class="eq plain">
+$$\underbrace{u_E=\frac{\eps_0E^2}{2}=\frac{B^2}{2\mu_0}=u_B}_{\text{逐点相等，不只是平均}},\qquad
+|\vv{S}|=\frac{EB}{\mu_0}=\frac{E^2}{\mu_0c}=c\,u$$
+</div>
+
+<p>因此对平面波，能量以速度 $c$ 整体搬运。实用的时间平均强度（正弦波 $E=E_0\cos$）是：</p>
+
+<div class="eq plain">
+$$I=\langle|\vv{S}|\rangle=\frac{E_0^2}{2\mu_0c}=\frac{\eps_0cE_0^2}{2}\qquad[\mathrm{W/m^2}]$$
+</div>
+
+<figure class="widget" data-widget="energy">
+  <div class="whead"><span class="t">实验 6 · 能量密度的两半与能流</span><span class="s">$u_E$ 与 $u_B$ 逐点重合；$|\vv{S}|/c$ 与 $u$ 逐点重合</span><span class="idx">W6</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">上面一条曲线是电场能量密度 $u_E$（琥珀）和磁场能量密度 $u_B$（青）——它们处处相等，所以后画的青色只留一圈描边。
+  下面把总能流 $|\vv{S}|$ 除以 $c$（绿色虚线）叠在总能量密度 $u$（白）上：两条曲线重合，说明 $|\vv{S}|=cu$ 不是平均值关系而恒等式。
+  读数中的"守恒残差"是把 $-\mathrm{d}U/\mathrm{d}t$ 与穿过盒子两个端面的净能流 $\Delta S$ 相减的结果。</div>
+</figure>
+
+<h3>动量与辐射压</h3>
+
+<p>由 $u$ 与 $\vv{S}$ 可以定义动量密度 $\vv{g}=\vv{S}/c^2$。光照到物体上会施加压强：</p>
+
+<div class="eq plain">
+$$P_{\text{吸收}}=\frac{I}{c},\qquad P_{\text{全反射}}=\frac{2I}{c}$$
+</div>
+
+<div class="callout">
+  <span class="h">数量级感受一下</span>
+  <p class="small">太阳在地球轨道处的辐照度（太阳常数）$I\approx1361\ \mathrm{W/m^2}$，对应 $E_0\approx1013\ \mathrm{V/m}$、$B_0\approx3.4\ \mu\mathrm{T}$、辐射压 $\approx4.5\ \mu\mathrm{Pa}$。
+  这个压强小得可怜（约 $10^{-10}$ 大气压），但它是<b>连续</b>的：一片 $1\ \mathrm{km^2}$ 的完全反射光帆受到约 $9\ \mathrm{N}$ 的力。日照 1 天传递的动量约 $780\ \mathrm{kg\cdot m/s}$——
+  对 1 吨的载荷可以加速到 $0.78\ \mathrm{m/s}$。这就是太阳帆航天器的物理基础。</p>
+</div>

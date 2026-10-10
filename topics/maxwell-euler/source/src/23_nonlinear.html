@@ -1,0 +1,110 @@
+<h2 id="s-e-shock"><span class="num">§13.2.8</span>非线性陡化与激波：线性化失效之后</h2>
+
+<p class="lead">声学近似丢掉了 $(\vv{u}\!\cdot\!\nabla)\vv{u}$。把这一项放回来，波形会在<b>有限时间</b>内把梯度推到无穷——这就是激波。</p>
+
+<p>对一维等熵（正压）流动，方程组是 $2\times2$ 的：$\rho_t+(\rho u)_x=0$、$u_t+uu_x=-p_x/\rho$，其中 $p=K\rho^\gamma$。
+它的两个特征速度与两条<b>黎曼不变量</b>是：</p>
+
+<div class="eq key">
+$$\lambda_\pm=u\pm c,\qquad
+J_\pm=u\pm\frac{2c}{\gamma-1}=\text{const}\quad\text{沿}\quad \frac{\mathrm{d}x}{\mathrm{d}t}=u\pm c$$
+</div>
+
+<p>只保留向右传播的波（"简单波"）：$J_-$ 处处相同，于是 $c=c_0+\frac{\gamma-1}{2}u$，特征速度变成</p>
+
+<div class="eq">
+$$\lambda_+=u+c=c_0+\frac{\gamma+1}{2}u_0(\xi)\qquad\Longrightarrow\qquad
+x=\xi+\Big[c_0+\frac{\gamma+1}{2}u_0(\xi)\Big]t$$
+<span class="tag">(13.11)</span>
+</div>
+
+<p>这是直线特征：<b>每一点以自己不变的速度前进</b>。既然 $u_0$ 大的地方跑得快，波峰必然追上前面的波谷。
+两条相邻特征相遇的时间是 $\Delta x/\Delta\lambda$，取极限即得<b>破波时间</b>：</p>
+
+<div class="eq key">
+$$t_b=\frac{-1}{\min_x\dfrac{\mathrm{d}\lambda_+}{\mathrm{d}x}}=\frac{2}{(\gamma+1)\max_x\big(-\mathrm{d}u_0/\mathrm{d}x\big)}
+\qquad\xrightarrow[\ u_0=A\sin kx\ ]{}\qquad t_b=\frac{2}{(\gamma+1)Ak}$$
+</div>
+
+<p>$t>t_b$ 之后，$x(\xi,t)$ 不再单调，隐式解变成<b>多值</b>——这已经不是一个函数，而是"特征线交叉"。
+物理上，真实气体在此处形成厚度约等于分子平均自由程的<b>激波</b>。要挑出唯一物理解，需要：</p>
+
+<ol>
+  <li><b>弱解</b>：回到积分（守恒）形式，允许解有跳跃；</li>
+  <li><b>Rankine–Hugoniot 条件</b>：跨越激波的质量、动量、能量通量必须连续，由此定出激波速度 $s$；</li>
+  <li><b>熵条件</b>：只保留使熵增加的那个跳跃解（否则会出现"膨胀激波"这种非物理的、违反热力学第二定律的解）。</li>
+</ol>
+
+<p class="small">（下面的记号 $\big[\,\cdot\,\big]$ 表示"跨越激波前后的跳跃"，即右侧状态减去左侧状态。）</p>
+
+<div class="eq plain">
+$$\text{质量：}\ \big[\rho(u-s)\big]=0,\qquad
+\text{动量：}\ \big[\rho u(u-s)+p\big]=0,\qquad
+\text{能量：}\ \big[(E+p)(u-s)\big]=0$$
+</div>
+
+<figure class="widget" data-widget="characteristics">
+  <div class="whead"><span class="t">实验 15 · 特征线、破波时间与等面积法则</span><span class="s">$x$–$t$ 平面上的特征线与波形陡化</span><span class="idx">W15</span></div>
+  <div class="cvwrap h420"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">上方是特征线 $x=\xi+[c_0+\frac{\gamma+1}{2}u_0(\xi)]t$：斜率大的（波峰）追上斜率小的（波谷），交点就是激波诞生时刻。
+  下方是该时刻的波形（由隐式解参数化画出）。超过 $t_b$ 后曲线出现<b>多值</b>（灰色虚线段注），程序用<b>等面积法则</b>
+  （Rankine–Hugoniot 在简单波下的等价形式）在中心位置划出一条垂直激波，读数给出等面积残差以表明这个位置是数值找出来的。</div>
+</figure>
+
+<h2 id="s-e-sod"><span class="num">§13.2.9</span>数值实验：Sod 激波管</h2>
+
+<p class="lead">最著名的黎曼问题：一根管子里，左侧高压气体、右侧低压气体，中间隔膜瞬间破裂。解里同时出现三种波。</p>
+
+<p>初值（$\gamma=1.4$）：$(\rho,u,p)=(1,0,1)$（$x<0.5$）与 $(0.125,0,0.1)$（$x>0.5$）。
+精确解由三个区域组成，从左到右：<b>稀疏波</b>（光滑膨胀扇）→ 中间平台 → <b>接触间断</b>（只有密度跳跃）→ 平台 → <b>激波</b>（密度、压强、速度全跳）。</p>
+
+<figure class="widget" data-widget="sod">
+  <div class="whead"><span class="t">实验 16 · Sod 激波管（HLL 有限体积法）</span><span class="s">数值解 vs Toro 教科书参考值</span><span class="idx">W16</span></div>
+  <div class="cvwrap h400"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">数值格式是有限体积 + HLL 近似黎曼通量（二阶精度的重构被有意省略，以保证单调性与正性）。
+  读数把数值平台值与 Toro《Riemann Solvers》表 4.1 的参考值逐项比较：$p^*=0.30313$、$u^*=0.92745$、$\rho^*_L=0.42632$、$\rho^*_R=0.26557$、激波速度 $1.7522$。
+  注意接触间断被数值粘性抹得最宽——因为 HLL 通量<b>看不见接触波</b>（它只有两个波速），这是格式的已知局限，也是 HLLC 格式存在的理由。</div>
+</figure>
+
+<h2 id="s-e-incomp"><span class="num">§13.2.10</span>不可压极限与马赫锥</h2>
+
+<p>把欧拉方程组无量纲化（速度以 $U$ 为单位、长度以 $L$ 为单位），会自然出现<b>马赫数</b> $M=U/c$，
+而压强梯度项前面会出现 $1/M^2$。令 $M\to0$：</p>
+
+<div class="eq plain">
+$$\nabla\!\cdot\!\vv{u}=\mathcal{O}(M^2)\ \to\ 0,\qquad
+\nabla p=-\rho\frac{\mathcal{D}\vv{u}}{\mathcal{D}t}\quad\text{（压强不再是热力学量，而是拉格朗日乘子）}$$
+</div>
+
+<p>取散度消去速度，得到压强的<b>泊松方程</b>：</p>
+
+<div class="eq key">
+$$\nabla^2p=-\rho\,\partial_i u_j\,\partial_j u_i$$
+</div>
+
+<p>这是一件很值得停下来看的事：<b>椭圆型方程从双曲型系统里"涌现"出来</b>。
+泊松方程的解在每一时刻都依赖全空间的数据（压强是"瞬时"传递的），这与双曲型方程的有限传播速度正好相反。
+数学上并不矛盾：$M\to0$ 意味着声速相对流动速度趋于无穷，特征速度 $\to\infty$，有限传播时间 $\to0$。
+数值上这就是"不可压流求解器每一步都要解一个全局椭圆方程"的原因。</p>
+
+<figure class="widget" data-widget="mach">
+  <div class="whead"><span class="t">实验 17 · 马赫锥与多普勒效应</span><span class="s">$M<1$ 与 $M>1$ 的波前图案</span><span class="idx">W17</span></div>
+  <div class="cvwrap h380"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">点源以 $v=Mc$ 向右运动，每隔固定时间发出一个圆形波前。
+  $M<1$ 时波前互相嵌套，前方被压缩（蓝移）、后方被拉开（红移）；$M>1$ 时所有波前被包在一个锥面内，
+  半顶角满足 $\sin\theta=1/M$。读数中的"几何测得角"是从图上各波前的切点独立算出的 $\arcsin(r_i/d_i)$，
+  与理论值比较，偏差反映绘图的数值误差。</div>
+</figure>
+
+<div class="callout">
+  <span class="h">顺便：激波不是"墙"，而是一个极薄的过渡层</span>
+  <p class="small">把欧拉方程的解当成数学间断是理想化；真实激波厚度是几个分子平均自由程（空气中约 $10^{-7}\ \mathrm{m}$），
+  内部由粘性与热传导（也就是被欧拉方程丢掉的那些项）完成熵增。所以：<b>欧拉方程负责告诉你激波在哪、跳多少；纳维–斯托克斯方程负责告诉你激波有多厚。</b>
+  两者不矛盾，只是描述尺度不同。</p>
+</div>

@@ -1,0 +1,144 @@
+<h2 id="s-e-cons"><span class="num">§13.2</span>欧拉方程组：守恒律的教科书范例</h2>
+
+<p class="lead">欧拉方程组（Euler, 1755）描述<b>无粘、无热传导</b>的流体。它不是"简化版的 Navier–Stokes"，
+而是理想流体的精确模型——也是所有守恒律数值方法的原型。它由三个物理定律组成：质量守恒、动量守恒、能量守恒。</p>
+
+<p class="small dim">注意：这里的"欧拉方程"指流体力学方程组，与刚体转动方程（也叫欧拉方程）是两个不同的东西。</p>
+
+<h3>先写下通用框架</h3>
+
+<p>守恒律的普适形式来自一句大白话：<b>一个区域里某物质的增加量 = 净流入 + 内部生成</b>。对任意固定体积 $V$：</p>
+
+<div class="eq">
+$$\frac{\mathrm{d}}{\mathrm{d}t}\int_V q\,\mathrm{d}V=-\oint_{\partial V}\vv{F}\!\cdot\!\hat{n}\,\mathrm{d}A+\int_V s\,\mathrm{d}V
+\qquad\Longleftrightarrow\qquad
+\frac{\partial q}{\partial t}+\nabla\!\cdot\!\vv{F}=s$$
+<span class="tag">(13.6)</span>
+</div>
+
+<p>对流体，守恒量是密度、动量、能量三个"列向量"，通量也是三个：</p>
+
+<div class="eq key">
+$$\vv{q}=\begin{pmatrix}\rho\\ \rho\vv{u}\\ E\end{pmatrix},\qquad
+\vv{F}=\begin{pmatrix}\rho\vv{u}\\ \rho\vv{u}\vv{u}+p\,\mathbf{I}\\ (E+p)\vv{u}\end{pmatrix},\qquad
+E=\rho\Big(e+\tfrac12|\vv{u}|^2\Big)$$
+</div>
+
+<p>三行分别对应：<b>质量</b>、<b>动量</b>（$\rho\vv{u}\vv{u}$ 是并矢，即动量通量；$p\mathbf{I}$ 是压强做的"各向同性通量"）、<b>能量</b>（$(E+p)\vv{u}$ 说明压强也在做功）。</p>
+
+<div class="callout">
+  <span class="h">为什么写成守恒形式</span>
+  <p class="small">上面这种写法有两个好处：① 只要数值格式也写成通量差分（有限体积法），质量和能量就能<b>精确守恒到机器精度</b>；
+  ② 激波两侧解不连续、导数不存在，微分形式的"非守恒写法"失去意义，但守恒形式对<b>弱解</b>仍然成立——这正是能定义激波跳跃条件的原因。
+  本篇后面的 Sod 激波管实验就是用这个形式算的，质量守恒误差 $\sim10^{-15}$。</p>
+</div>
+
+<h2 id="s-e-mass"><span class="num">§13.2.1</span>质量守恒：连续性方程</h2>
+
+<p>取 $q=\rho$，$\vv{F}=\rho\vv{u}$（无源），得到<b>连续性方程</b>：</p>
+
+<div class="eq">
+$$\frac{\partial\rho}{\partial t}+\nabla\!\cdot\!(\rho\vv{u})=0
+\qquad\Longleftrightarrow\qquad
+\underbrace{\frac{\mathcal{D}\rho}{\mathcal{D}t}+\rho\,\nabla\!\cdot\!\vv{u}=0}_{\text{随流体元看}}$$
+<span class="tag">(13.7)</span>
+</div>
+
+<p>右式中的 $\mathcal{D}/\mathcal{D}t=\partial_t+\vv{u}\!\cdot\!\nabla$ 是<b>物质导数</b>：跟着一个流体元走时看到的変化率。
+它的物理读法很直观：<em>一个流体元的密度变化，完全由它体积的膨胀/压缩决定</em>——$\nabla\!\cdot\!\vv{u}>0$（膨胀）则密度下降。</p>
+
+<figure class="widget" data-widget="continuity">
+  <div class="whead"><span class="t">实验 10 · 连续性方程的两项</span><span class="s">$\partial_t\rho=-u\,\partial_x\rho-\rho\,\partial_xu$：平流 + 压缩</span><span class="idx">W10</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">探针处的读数把 $\partial_t\rho$ 拆成两部分：<b>$-\,u\,\partial_x\rho$</b>（密度波被速度场搬运，即使速度处处相同也存在）与
+  <b>$-\,\rho\,\partial_xu$</b>（速度场有散度导致的压缩/膨胀）。两者之和与直接对通量 $\rho u$ 做数值微分的结果完全一致——
+  这不是近似，而是恒等式。</div>
+</figure>
+
+<h2 id="s-e-mom"><span class="num">§13.2.2</span>动量方程与对流项</h2>
+
+<p>对流体元用牛顿第二定律（$m\vv{a}=$ 合力），合力只来自压强（无粘、无体积力）：</p>
+
+<div class="eq">
+$$\underbrace{\rho\Big(\frac{\partial\vv{u}}{\partial t}+(\vv{u}\!\cdot\!\nabla)\vv{u}\Big)}_{\text{质量}\times\text{加速度}}
+=\underbrace{-\nabla p}_{\text{压强梯度力}}
+\qquad\Longleftrightarrow\qquad
+\frac{\partial(\rho\vv{u})}{\partial t}+\nabla\!\cdot\!(\rho\vv{u}\vv{u}+p\mathbf{I})=0$$
+<span class="tag">(13.8)</span>
+</div>
+
+<p>左式的第二项 $(\vv{u}\!\cdot\!\nabla)\vv{u}$ 叫<b>对流项</b>，它是流体力学所有麻烦的来源：它让方程变成<b>拟线性</b>（非线性但只对最高阶导数线性），
+从而产生激波、湍流、以及"解在有限时间内失去光滑性"这些现象。一维形式下可以看得最清楚：</p>
+
+<div class="eq plain">
+$$u_t+u\,u_x=-\frac{p_x}{\rho}
+\qquad\xrightarrow[\ p=\text{const}\ ]{}\qquad
+u_t+u\,u_x=0\quad\text{（无粘伯格斯方程）}$$
+</div>
+
+<p>最后这个方程有一个漂亮的隐式解 $u=u_0(\xi)$，$x=\xi+u_0(\xi)t$：速度在特征线上不变，但<b>快的地方追上前面的慢地方</b>，波形前缘越来越陡，
+在有限时间 $t_b=1/\max(-u_0')$ 处梯度发散（"梯度灾难"）。这就是激波形成的机制，§13.2.5 会定量重做一遍。</p>
+
+<figure class="widget" data-widget="advection">
+  <div class="whead"><span class="t">实验 11 · 定常流动中的加速度</span><span class="s">$\partial_t\vv{u}=0$ 但 $a=(\vv{u}\!\cdot\!\nabla)\vv{u}\neq0$</span><span class="idx">W11</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">这是最容易被忽略的一点：<b>定常 ≠ 无加速度</b>。流体质点从左向右穿过一个速度递增的流场（截面收缩的喷管），
+  每个质点自身的速度都在增加；但流场本身不随时间变化。读数把 $\partial_t\vv{u}$（恒为 0）与 $(\vv{u}\!\cdot\!\nabla)\vv{u}$（非零）分列出来，
+  并由动量方程反推出维持这个流动所需的压强梯度 $\mathrm{d}p/\mathrm{d}x=-\rho\,u\,\mathrm{d}u/\mathrm{d}x$（伯努利关系的微分形式）。</div>
+</figure>
+
+<h2 id="s-e-energy"><span class="num">§13.2.3</span>能量与状态方程</h2>
+
+<p>能量守恒给出第三个方程（无热传导、无外场做功）：</p>
+
+<div class="eq">
+$$\frac{\partial E}{\partial t}+\nabla\!\cdot\!\big[(E+p)\vv{u}\big]=0,\qquad
+E=\rho e+\tfrac12\rho|\vv{u}|^2$$
+<span class="tag">(13.9)</span>
+</div>
+
+<p>但数一数未知量：$\rho$（1 个）、$\vv{u}$（3 个）、$p$（1 个）、$e$（1 个）共 6 个，方程只有 5 个。所以必须补一个<b>状态方程</b>（本构关系）才能封闭：</p>
+
+<div class="eq plain">
+$$p=p(\rho,e)\qquad\text{或}\qquad p=p(\rho,s)\quad(s=\text{比熵})$$
+</div>
+
+<p>对<b>理想气体</b>（多方气体）：</p>
+
+<div class="eq key">
+$$p=\rho RT,\qquad e=c_vT=\frac{p}{(\gamma-1)\rho},\qquad
+\boxed{\ p=(\gamma-1)\rho e\ },\qquad \gamma=\frac{c_p}{c_v}$$
+</div>
+
+<p>如果进一步假设流动是<b>等熵</b>的（光滑流动中欧拉方程自动给出 $\mathcal{D}s/\mathcal{D}t=0$），就得到<b>正压流</b> $p=p(\rho)$，系统只剩 2 个未知量：</p>
+
+<div class="eq plain">
+$$p=K\rho^{\gamma}\qquad\Longrightarrow\qquad
+c^2\equiv\frac{\mathrm{d}p}{\mathrm{d}\rho}=\frac{\gamma p}{\rho}=\gamma RT$$
+</div>
+
+<p>这个 $c$ 就是<b>声速</b>——它不是外加参数，而是状态方程的斜率。§13.2.4 会用它把方程组线性化成波动方程。</p>
+
+<h3>欧拉 vs 纳维–斯托克斯</h3>
+
+<table class="data">
+  <tr><th style="width:22%"></th><th>欧拉方程组（§13.2）</th><th>纳维–斯托克斯方程组</th></tr>
+  <tr><td>动量通量</td><td>$\rho\vv{u}\vv{u}+p\mathbf{I}$</td><td>$+\ \mu(\nabla\vv{u}+\nabla\vv{u}^T)+\lambda(\nabla\!\cdot\!\vv{u})\mathbf{I}$</td></tr>
+  <tr><td>能量通量</td><td>$(E+p)\vv{u}$</td><td>$+\ \kappa\nabla T+\vv{u}\!\cdot\!\tau$</td></tr>
+  <tr><td>方程类型</td><td>一阶<b>双曲型</b>（实特征值、有限传播速度）</td><td>抛物型（热传导/粘性无穷快扩散，但物理上仍有限）</td></tr>
+  <tr><td>解的奇异性</td><td>光滑解在有限时间<b>必然</b>破缺 → 激波</td><td>激波被粘性抹平，宽度 $\sim$ 平均自由程</td></tr>
+  <tr><td>涡量</td><td>无粘时涡量冻结（Kelvin 定理）</td><td>涡量被粘性扩散</td></tr>
+  <tr><td>能量</td><td>机械能 $\leftrightarrow$ 内能可逆转换（等熵）</td><td>粘性耗散：机械能单向变热（熵增）</td></tr>
+  <tr><td>典型困难</td><td>激波、稀疏波、真空形成</td><td>湍流、边界层、千禧年问题</td></tr>
+</table>
+
+<div class="callout warn">
+  <span class="h">欧拉方程组的"代价"</span>
+  <p class="small">无粘意味着没有任何耗散机制：光滑解一定会在有限时间内破缺成激波（这是可以证明的定理，不是数值假象）。
+  而一旦出现激波，微分形式的方程在该处失去意义，必须回到积分形式并附加<b>熵条件</b>才能挑出唯一物理解。
+  所以欧拉方程组是一个"必须用弱解语言才能讲清楚"的方程——这也是它出现在 Strauss 第 13 章而不是第 2 章的原因。</p>
+</div>

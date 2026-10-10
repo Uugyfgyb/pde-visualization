@@ -7,10 +7,11 @@
 | 分类 | 专题 | 方程与内容 | 入口 |
 | --- | --- | --- | --- |
 | 双曲型 · 波动与振动 | 受摩擦阻尼的弦 | `u_tt = a²u_xx − cu_t + f`；弦振动、能量递减、唯一性与稳定性 | [打开交互页](topics/damped-wave/index.html) · [说明](topics/damped-wave/README.md) |
+| 双曲型 · 波动与振动 | Maxwell 与 Euler 方程组 | 电磁波、声波与非线性守恒律；FDTD 介质板、HLL 激波管及 17 个交互实验 | [打开交互页](topics/maxwell-euler/index.html) · [说明](topics/maxwell-euler/README.md) |
 | 椭圆型 · 势场与平衡 | 调和函数：从边界到内部 | `Δu=0`；Poisson 公式、平均值性质、强最大值原理、Green 恒等式与能量 | [打开交互页](topics/harmonic-functions/index.html) · [说明](topics/harmonic-functions/README.md) |
 | 椭圆型 · 势场与平衡 | Hopf 最大值原理 | `Δu ≥ 0`；边界点引理、障碍函数与外法向导数 | [打开交互页](topics/hopf-maximum-principle/index.html) · [说明](topics/hopf-maximum-principle/README.md) |
 
-目前收录 3 个专题。后续可按**双曲型（波动与振动）**、**抛物型（热传导与扩散）**、**椭圆型（势场与平衡）**、**非线性与耦合方程**继续扩展；分类表示专题的主要教学主题，必要时可在说明中标出跨类性质。
+目前收录 4 个专题。后续可按**双曲型（波动与振动）**、**抛物型（热传导与扩散）**、**椭圆型（势场与平衡）**、**非线性与耦合方程**继续扩展；分类表示专题的主要教学主题，必要时可在说明中标出跨类性质。
 
 ## 仓库结构
 
@@ -29,11 +30,16 @@ pde-visualization/
     │   ├── preview.png
     │   ├── README.md
     │   └── source/                    # 网页源码、构建与数学／浏览器验证
-    └── hopf-maximum-principle/
-        ├── index.html                 # 内嵌脚本与字体的离线单文件页
-        ├── preview.png                # 专题示意预览图
-        ├── README.md                  # 定理、交互参数与适用范围
-        └── source/                    # 可编辑网页、构建脚本与依赖许可证
+    ├── hopf-maximum-principle/
+    │   ├── index.html                 # 内嵌脚本与字体的离线单文件页
+    │   ├── preview.png                # 专题示意预览图
+    │   ├── README.md                  # 定理、交互参数与适用范围
+    │   └── source/                    # 可编辑网页、构建脚本与依赖许可证
+    └── maxwell-euler/
+        ├── index.html                 # 内嵌 MathJax 的离线单文件页
+        ├── preview.png                # 专题预览图
+        ├── README.md                  # 方程、条件、数值方法与适用范围
+        └── source/                    # 可编辑项目、图像与验证脚本
 ```
 
 ## 今后新增专题
@@ -46,3 +52,4 @@ pde-visualization/
 
 阻尼波动方程专题已通过 18 项数值检查。重跑与重建命令见其 [源码说明](topics/damped-wave/source/README.md)。
 调和函数专题已通过 12 项独立数学检查与离线浏览器检查，见其 [源码说明](topics/harmonic-functions/source/README.md)。
+Maxwell 与 Euler 专题已通过 47 项数值检查、重建及单文件结构检查，见其 [源码说明](topics/maxwell-euler/source/README.md)。

@@ -1,0 +1,50 @@
+<h2 id="s-e-vort"><span class="num">§13.2.4</span>涡量：欧拉方程组的额外守恒量</h2>
+
+<p class="lead">对无粘流体取速度场的旋度，对流项会奇迹般地消失一部分——剩下的是一个"输运方程"，
+它解释了为什么烟圈能飘那么远、为什么木星大红斑能存在几百年。</p>
+
+<p>定义<b>涡量</b> $\vv{\omega}=\nabla\times\vv{u}$，对动量方程 (13.8) 取旋度，用矢量恒等式整理后得到<b>涡量方程</b>：</p>
+
+<div class="eq">
+$$\frac{\mathcal{D}\vv{\omega}}{\mathcal{D}t}
+=\underbrace{(\vv{\omega}\!\cdot\!\nabla)\vv{u}}_{\text{涡管拉伸}}
+-\underbrace{\vv{\omega}(\nabla\!\cdot\!\vv{u})}_{\text{膨胀稀释}}
++\underbrace{\frac{\nabla\rho\times\nabla p}{\rho^2}}_{\text{斜压项}}$$
+<span class="tag">(13.10)</span>
+</div>
+
+<p>三种特例，每一种都对应一类熟悉的流动：</p>
+
+<table class="data">
+  <tr><th>情形</th><th>涡量方程化为</th><th>后果</th></tr>
+  <tr><td>不可压（$\nabla\!\cdot\!\vv{u}=0$）+ 正压（$\nabla\rho\parallel\nabla p$）</td><td>$\dfrac{\mathcal{D}\vv{\omega}}{\mathcal{D}t}=(\vv{\omega}\!\cdot\!\nabla)\vv{u}$</td><td>涡量像"物质线元"一样被拉长、扭曲；拉长则变细、涡量增强（角动量守恒）</td></tr>
+  <tr><td>再加<b>二维</b></td><td>$\dfrac{\mathcal{D}\omega}{\mathcal{D}t}=0$</td><td>涡量<b>完全冻结</b>在流体中：随流体元平移、不变形、不衰减</td></tr>
+  <tr><td>斜压（如海陆风、锋面）</td><td>$\dfrac{\mathcal{D}\vv{\omega}}{\mathcal{D}t}=\dfrac{\nabla\rho\times\nabla p}{\rho^2}$</td><td>密度与压强梯度不平行时<b>产生</b>新涡量（斜压涡量生成）</td></tr>
+</table>
+
+<div class="eq key">
+$$\text{开尔文环量定理（无粘、正压、有势体力）：}\qquad
+\Gamma=\oint_{\mathcal{C}}\vv{u}\!\cdot\!\mathrm{d}\vv{l}=\iint\nabla\times\vv{u}\!\cdot\!\mathrm{d}\vv{A}=\text{const}$$
+</div>
+
+<p>也就是说：<b>无粘流体中涡量既不能产生也不能消灭</b>，只能被搬运和拉伸。这就是为什么湍流在无粘模型下永不衰减——
+也是为什么真实流动中耗散必须来自粘性或激波（激波不可逆，会显著增熵）。</p>
+
+<figure class="widget" data-widget="vortices">
+  <div class="whead"><span class="t">实验 12 · 点涡：二维欧拉方程的精确解</span><span class="s">$\mathcal{D}\omega/\mathcal{D}t=0$ 的可视化</span><span class="idx">W12</span></div>
+  <div class="cvwrap h380"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">每一个涡旋都是 $\omega$ 的一个 $\delta$ 函数（位置精确、涡量集中）；它们被<b>彼此诱导</b>的速度场搬运，
+  速度由毕奥–萨伐尔型公式 $\vv{u}_i=\sum_{j\neq i}\frac{\Gamma_j}{2\pi}\frac{(\vv{r}_i-\vv{r}_j)^\perp}{|\vv{r}_i-\vv{r}_j|^2}$ 给出，时间推进用四阶龙格–库塔。
+  读数里的哈密顿量 $H=-\frac1{2\pi}\sum_{i<j}\Gamma_i\Gamma_j\ln r_{ij}$ 是这个系统的<b>精确守恒量</b>，
+  它的漂移量直接反映积分精度（RK4 下约 $10^{-9}$）。<b>试一下：</b>两个反向涡旋匀速平移；两个同向涡旋互相绕转；三个等强度涡旋会走出著名的"三涡混沌"轨道。</div>
+</figure>
+
+<div class="callout">
+  <span class="h">与 §13.1 的对照</span>
+  <p class="small">麦克斯韦方程组里也有"涡旋"（$\nabla\times\vv{E}$、$\nabla\times\vv{B}$），但那里的旋度描述的是<b>场本身的性质</b>；
+  流体里的涡量 $\nabla\times\vv{u}$ 是一个被流体<b>携带</b>的物质属性。数学形式相似，物理内容的差别在于：流体的方程是非线性的，
+  涡量会被流动自身拉伸（$(\vv{\omega}\!\cdot\!\nabla)\vv{u}$），而电磁场在真空中不与自己相互作用（线性叠加原理成立）。
+  这一条差别，决定了流体力学比真空电动力学难得多。</p>
+</div>

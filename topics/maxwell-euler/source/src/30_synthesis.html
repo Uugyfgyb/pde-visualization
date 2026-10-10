@@ -1,0 +1,94 @@
+<h2 id="s-synth"><span class="num">§4</span>两套方程的对照</h2>
+
+<p class="lead">把 §13.1 与 §13.2 并排放在一起，会发现 Strauss 选这两个例子的用意：<b>同一个数学方法，两种物理内容</b>。</p>
+
+<table class="data">
+  <tr><th style="width:20%"></th><th>麦克斯韦方程组（§13.1）</th><th>欧拉方程组（§13.2）</th></tr>
+  <tr><td><b>方程个数</b></td><td>4 个一阶方程（$\vv{E}$ 3 个分量 + $\vv{B}$ 3 个分量 = 6 个未知函数）</td><td>5 个一阶方程（$\rho$、$\rho\vv{u}$、$E$ = 5 个未知函数）</td></tr>
+  <tr><td><b>线性性</b></td><td>真空/线性介质中<b>严格线性</b>（源项之外）</td><td><b>拟线性</b>：通量 $\vv{F}(\vv{q})$ 非线性</td></tr>
+  <tr><td><b>类型</b></td><td>一阶双曲型（对称双曲组）</td><td>一阶双曲型守恒律（非线性）</td></tr>
+  <tr><td><b>特征速度</b></td><td>$\pm c$（各向同性，与方向无关）</td><td>$u$、$u\pm c$（依赖解本身）</td></tr>
+  <tr><td><b>线性化后</b></td><td>已经是线性的，直接消元</td><td>小扰动展开 $\Rightarrow$ 声学方程组</td></tr>
+  <tr><td><b>波动方程</b></td><td>$\vv{E}_{tt}=c^2\nabla^2\vv{E}$，$c=1/\sqrt{\eps_0\mu_0}$</td><td>$p_{tt}=c^2\nabla^2p$，$c=\sqrt{\mathrm{d}p/\mathrm{d}\rho}$</td></tr>
+  <tr><td><b>叠加原理</b></td><td><b>成立</b>：两束光交叉后互不影响</td><td><b>不成立</b>：两列声波相遇会互相"整流"、产生和频与差频</td></tr>
+  <tr><td><b>色散</b></td><td>真空无色散；介质中 $n(\omega)$ 有色散</td><td>理想气体无色散；有粘/有弛豫时色散</td></tr>
+  <tr><td><b>非线性后果</b></td><td>需要强场（$E\gtrsim10^{18}\ \mathrm{V/m}$ 才有真空非线性）</td><td>日常就出现：激波、声爆、破碎波、湍流</td></tr>
+  <tr><td><b>耗散机制</b></td><td>介质吸收（焦耳热）</td><td>粘性、热传导、<b>激波本身的不可逆性</b></td></tr>
+  <tr><td><b>数学困难</b></td><td>边界值问题、散射、本征值</td><td>弱解的存在唯一性、熵条件、真空形成</td></tr>
+  <tr><td><b>典型数值方法</b></td><td>FDTD（Yee）、有限元、矩量法</td><td>有限体积（Godunov/HLL/HLLC/WENO）</td></tr>
+  <tr><td><b>本篇验证</b></td><td>通量求积、脉冲速度、菲涅耳系数</td><td>HLL 激波管 vs Toro 参考值、守恒量、网格收敛</td></tr>
+</table>
+
+<h3>同一个骨架</h3>
+
+<div class="eq plain">
+$$\underbrace{\partial_t\vv{q}+\nabla\!\cdot\!\vv{F}(\vv{q})=0}_{\text{守恒律}}
+\ \xrightarrow{\ \text{线性化}\ }\
+\underbrace{\partial_t\vv{q}_1+A\nabla\!\cdot\!\vv{q}_1=0}_{\text{常系数线性}}
+\ \xrightarrow{\ \text{消元}\ }\
+\underbrace{q_{tt}=c^2\nabla^2q}_{\text{波动方程}}$$
+</div>
+
+<p>两节的差别只发生在<b>第一步到第二步</b>：麦克斯韦方程组本来就是线性的，所以第二步是恒等变换；
+欧拉方程组必须靠 $\epsilon\ll1$ 才能走到第二步，而丢掉的项决定了理论的有效边界（马赫数）。</p>
+
+<h3>再往前一步：Strauss 第 13 章剩下的部分</h3>
+
+<table class="data small">
+  <tr><th>小节</th><th>主题</th><th>用到的工具</th><th>与本篇的关系</th></tr>
+  <tr><td>13.3</td><td>散射</td><td>波动方程 + 辐射条件 + 分离变量</td><td>§13.1 的边界条件再进一步：波打到障碍物上</td></tr>
+  <tr><td>13.4</td><td>连续谱</td><td>傅里叶变换、分布</td><td>本征值不再离散 ⇒ 需要用变换而不是级数</td></tr>
+  <tr><td>13.5</td><td>基本粒子方程</td><td>Klein–Gordon、Dirac</td><td>波动方程的"相对论修正"：$\Box\phi+m^2\phi=0$——把色散重新引进来</td></tr>
+</table>
+
+<p>特别值得一提：Klein–Gordon 方程 $\phi_{tt}=c^2\nabla^2\phi-m^2\phi$ 与波动方程只差一个零阶项，但它的平面波解给出<c>有质量 ⇒ 有色散</c>的色散关系
+$\omega^2=c^2k^2+m^2$。这正好说明：<b>真空电磁波的无色散性来自"零质量"</b>——这是 §13.1 里 $c=1/\sqrt{\eps_0\mu_0}$ 之外另一个深刻的结论。</p>
+
+<h2 id="s-verify"><span class="num">§5</span>数值验证报告</h2>
+
+<p class="lead">这一页上的每一个结论都可以被独立检验。为此，全部数值内核集中在一个文件 <code>physics.js</code> 里，
+浏览器与 Node 测试脚本<b>运行同一份代码</b>。</p>
+
+<table class="data small">
+  <tr><th style="width:26%">组件</th><th>方法</th><th>精度/稳定性</th><th>验证方式</th></tr>
+  <tr><td>高斯通量积分</td><td>超椭球面元中点求积（48×96）</td><td>$\mathcal{O}(h^2)$，误差 $\sim3\times10^{-4}$</td><td>与解析值 $Q/\eps_0$ 比较；球面、立方体面、两种半径</td></tr>
+  <tr><td>磁偶极子通量</td><td>球面/超椭球面元求积</td><td>$\sim10^{-16}$（归一化后）</td><td>与 $\nabla\!\cdot\!\vv{B}=0$ 的预言 0 比较</td></tr>
+  <tr><td>一维 FDTD（Yee）</td><td>交错网格 + Mur 一阶吸收边界</td><td>空间二阶；$S\le1$ 稳定</td><td>脉冲速度 vs $c$；$R,T$ vs 菲涅耳；细化网格误差降 4 倍</td></tr>
+  <tr><td>HLL 有限体积</td><td>HLL 近似黎曼通量 + 一阶迎风</td><td>一阶；正性保持</td><td>Sod 平台值 vs Toro 参考值；质量/能量守恒到 $10^{-15}$；网格收敛</td></tr>
+  <tr><td>点涡动力学</td><td>四阶龙格–库塔</td><td>$\mathcal{O}(\Delta t^4)$</td><td>哈密顿量漂移 $<10^{-8}$；涡对平移速度 vs 解析值</td></tr>
+  <tr><td>特征线/破波时间</td><td>相邻特征线首次相交扫描</td><td>—</td><td>与解析式 $2/[(\gamma+1)Ak]$ 比较（相对误差 $10^{-6}$）</td></tr>
+</table>
+
+<div class="callout">
+  <span class="h">现场运行</span>
+  <p class="small">下面是浏览器<b>刚刚</b>在你这台机器上跑出来的结果（不是预先写好的表格）。点按钮可以重跑。</p>
+</div>
+
+<div id="verify-table"></div>
+
+<p><button class="btn primary" id="rerun">重新运行全部数值检验</button></p>
+
+<h3>如何独立复现</h3>
+
+<table class="data small">
+  <tr><th>命令</th><th>作用</th></tr>
+  <tr><td><code>node tests/check.js</code></td><td>在 Node 里运行 47 项数值检验，写出 <code>tests/report.json</code>，任何一项失败则以非零码退出</td></tr>
+  <tr><td><code>node build.mjs</code></td><td>把 <code>src/</code> 组装成 <code>index.html</code> 与自包含的 <code>standalone.html</code>，并校验公式定界符、挂件实现、页内链接</td></tr>
+  <tr><td><code>node tests/page_check.js</code></td><td>用无头浏览器加载页面，检查 MathJax 是否报错、17 个挂件是否都画出了内容、页面脚本有无异常</td></tr>
+</table>
+
+<div class="callout warn">
+  <span class="h">已知的、刻意保留的局限</span>
+  <p class="small">① FDTD 有数值色散（$S=0.5$ 时脉冲速度比 $c$ 慢约 $0.05\%$），页面读数如实显示而不是抹掉；
+  ② HLL 看不见接触间断，Sod 的密度台阶被抹宽，误差随网格加密按一阶收敛；
+  ③ 声学线性化忽略 $\mathcal{O}(M^2)$ 项，$M\gtrsim0.3$ 时不再可靠；
+  ④ 非线性陡化实验用的是简单波（单向传播）的精确解，双向相互作用需数值求解。</p>
+</div>
+
+<footer>
+  <p><b>Maxwell 方程组与 Euler 方程组 · 可视化讲解</b> — 对应 Strauss《Partial Differential Equations: An Introduction》§13.1 电磁学、§13.2 流体与声学。</p>
+  <p class="small">数值内核 <code>physics.js</code> 与页面共享；全部常数取 CODATA-2018；Sod 参考值取自 E. F. Toro, <i>Riemann Solvers and Numerical Methods for Fluid Dynamics</i>。
+  本页为教学材料，公式与物理结论均按标准约定（SI 单位制、$\mathrm{e}^{-i\omega t}$ 之外不涉及符号约定）给出。</p>
+</footer>
+
+<pre id="diag" style="display:none"></pre>

@@ -1,0 +1,108 @@
+<h2 id="s-m-matter"><span class="num">§13.1.6</span>介质、边界条件与折射</h2>
+
+<p class="lead">真空中的波速由 $\eps_0\mu_0$ 决定。在物质里，外场会极化分子、磁化原子，响应被两个无量纲数概括：相对介电常数 $\eps_r$ 与相对磁导率 $\mu_r$。</p>
+
+<div class="eq">
+$$\nabla\!\cdot\!\vv{D}=\rho_f,\qquad \nabla\!\cdot\!\vv{B}=0,\qquad
+\nabla\!\times\!\vv{E}=-\frac{\partial\vv{B}}{\partial t},\qquad
+\nabla\!\times\!\vv{H}=\vv{J}_f+\frac{\partial\vv{D}}{\partial t}$$
+<span class="tag">(13.5)</span>
+</div>
+
+<p>其中 $\vv{D}=\eps\vv{E}=\eps_r\eps_0\vv{E}$，$\vv{B}=\mu\vv{H}=\mu_r\mu_0\vv{H}$（线性、各向同性、无损耗介质），下标 $f$ 表示"自由"电荷/电流。
+把同样的消元过程重做一遍，得到介质中的波速与折射率：</p>
+
+<div class="eq key">
+$$v=\frac{1}{\sqrt{\eps\mu}}=\frac{c}{n},\qquad n=\sqrt{\eps_r\mu_r}\qquad(\text{非磁性介质}\ \mu_r\approx1:\ n\approx\sqrt{\eps_r})$$
+</div>
+
+<p>注意频率<em>没有</em>变：$f$ 由源决定，于是 $\lambda_n=\lambda_0/n$。这就是"光进入玻璃后波长变短、频率不变、速度变慢"的定量版本。</p>
+
+<h3>边界条件：四个方程的"界面版本"</h3>
+
+<p>把积分形式的方程组用到跨越界面的扁平小盒子/小回路上，令厚度趋于零，就得到四个边界条件（$\hat{n}$ 从介质 1 指向介质 2）：</p>
+
+<table class="data">
+  <tr><th>条件</th><th>数学形式</th><th>物理含义</th></tr>
+  <tr><td>法向 $\vv{D}$</td><td>$\hat{n}\!\cdot\!(\vv{D}_2-\vv{D}_1)=\sigma_f$</td><td>有自由面电荷时法向 $\vv{D}$ 跳跃</td></tr>
+  <tr><td>法向 $\vv{B}$</td><td>$\hat{n}\!\cdot\!(\vv{B}_2-\vv{B}_1)=0$</td><td>法向 $\vv{B}$ <b>永远连续</b>（没有磁荷）</td></tr>
+  <tr><td>切向 $\vv{E}$</td><td>$\hat{n}\!\times\!(\vv{E}_2-\vv{E}_1)=0$</td><td>切向 $\vv{E}$ <b>永远连续</b>（否则回路磁通变化率发散）</td></tr>
+  <tr><td>切向 $\vv{H}$</td><td>$\hat{n}\!\times\!(\vv{H}_2-\vv{H}_1)=\vv{K}_f$</td><td>有自由面电流时切向 $\vv{H}$ 跳跃</td></tr>
+</table>
+
+<p>切向 $\vv{E}$ 连续 + 波在两侧的相位必须以相同速度沿界面推进 $\Rightarrow$ <b>斯涅尔定律</b>：</p>
+
+<div class="eq plain">
+$$n_1\sin\theta_i=n_2\sin\theta_t,\qquad \theta_c=\arcsin\!\frac{n_2}{n_1}\ (n_1>n_2),\qquad \theta_B=\arctan\!\frac{n_2}{n_1}$$
+</div>
+
+<p>正入射时的振幅系数与能量系数（$r$ 为电场振幅比）：</p>
+
+<div class="eq plain">
+$$r=\frac{n_1-n_2}{n_1+n_2},\qquad t=\frac{2n_1}{n_1+n_2},\qquad
+\underbrace{R=r^2}_{\text{反射率}},\qquad \underbrace{T=1-R=\frac{4n_1n_2}{(n_1+n_2)^2}}_{\text{透射率}}$$
+</div>
+
+<figure class="widget" data-widget="matter">
+  <div class="whead"><span class="t">实验 7 · 折射、菲涅耳系数与布儒斯特角</span><span class="s">改变两侧折射率与入射角，实时算 $R_s,R_p$</span><span class="idx">W7</span></div>
+  <div class="cvwrap h380"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">曲线是完整的菲涅耳公式（含斜入射），不是近似。$R_p$ 在布儒斯特角处下探到 0——这就是偏光太阳镜和"水面反光被偏振片消掉"的原理。
+  当光从密介质射向疏介质且 $\theta_i>\theta_c$ 时，曲线平台变成 $R=1$（全反射），此时没有透射波进入第二种介质，但界面附近存在<b>倏逝波</b>（第十三章之后会再遇到）。</div>
+</figure>
+
+<h2 id="s-m-fdtd"><span class="num">§13.1.7</span>数值实验：一维时域有限差分（FDTD）</h2>
+
+<p class="lead">前面所有结论都可以不靠解析解、直接用数值方法重做一遍。1966 年 Yee 提出的交错网格格式至今仍是电磁仿真的工业标准。</p>
+
+<p>把 $\partial_t\vv{E}$、$\partial_t\vv{B}$ 写成中心差分，但把 $\vv{E}$ 与 $\vv{H}$ <b>错开半个网格</b>存放（$\vv{E}$ 在整数节点，$\vv{H}$ 在半整数节点），于是两个方程的空间导数都恰好落在场量已知的位置，误差都是 $\mathcal{O}(\Delta x^2)$：</p>
+
+<div class="eq plain">
+$$\vv{H}_z\Big|^{n+1/2}_{i}=\vv{H}_z\Big|^{n-1/2}_{i}+\frac{\Delta t}{\mu\Delta x}\Big(\vv{E}_y\big|^{n}_{i}-\vv{E}_y\big|^{n}_{i+1}\Big),\qquad
+\vv{E}_y\Big|^{n+1}_{i}=\vv{E}_y\Big|^{n}_{i}+\frac{\Delta t}{\eps\Delta x}\Big(\vv{H}_z\big|^{n+1/2}_{i-1}-\vv{H}_z\big|^{n+1/2}_{i}\Big)$$
+</div>
+
+<p>把两个方程联立消元可以看出，这个格式的稳定性条件是<b>库朗（CFL）条件</b>：</p>
+
+<div class="eq plain">
+$$S\equiv\frac{c\,\Delta t}{\Delta x}\le1\qquad(\text{一维；三维时}\ S\le 1/\sqrt3)$$
+</div>
+
+<p>$S>1$ 时数值解会以指数速度爆炸——这不是数值方法的缺陷，而是对波动方程<b>依赖域</b>的正确反映：
+$S>1$ 意味着一个时间步内信息跨越了超过一个网格，格式"看不见"它本该依赖的数据（对比 Strauss 第 9 章的有限传播速度）。</p>
+
+<figure class="widget" data-widget="fdtd">
+  <div class="whead"><span class="t">实验 8 · 一维 FDTD：脉冲打到介质板上</span><span class="s">数值反射率/透射率 vs 菲涅耳公式；把 $S$ 调到 1 以上试试</span><span class="idx">W8</span></div>
+  <div class="cvwrap h380"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">读数里的 $R,T$ 不是画出来的，而是把"有介质板"与"全真空"两次模拟的波形相减、分离出入射/反射/透射脉冲的<b>振幅</b>后算出来的
+  ——与解析菲涅耳系数逐位比较，误差通常在千分之几。<b>实验建议：</b>①把 $\eps_r$ 从 4 调到 2 或 9，看 $R$ 按 $((n_1-n_2)/(n_1+n_2))^2$ 变化；
+  ②把 $S$ 调到 1.05，几步之内数值解就发散（CFL 条件的可视化）；③介质板越厚，脉冲在板内的"多次反射"回波分得越开，这正是法布里–珀罗干涉仪的原理。</div>
+</figure>
+
+<h2 id="s-m-spec"><span class="num">§13.1.8</span>电磁波谱：同一个方程，二十个数量级</h2>
+
+<p>真空中的波动方程对所有频率一视同仁——这正是"没有色散"的数学表述。所以"无线电波"和"γ 射线"的区别不在于方程，只在于<b>波长</b>。
+由 $c=\lambda f$ 与光子能量 $E=hf$：</p>
+
+<div class="eq plain">
+$$\lambda=\frac{c}{f},\qquad E_{\text{photon}}=hf=\frac{hc}{\lambda}
+=1.239\,841\,93\ \mathrm{eV}\cdot\mu\mathrm{m}\Big/\lambda$$
+</div>
+
+<figure class="widget" data-widget="spectrum">
+  <div class="whead"><span class="t">实验 9 · 电磁波谱：拖动游标</span><span class="s">波长、频率、光子能量三者由 $c=\lambda f$、$E=hf$ 唯一确定</span><span class="idx">W9</span></div>
+  <div class="cvwrap h300"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">横轴是<b>对数</b>频率轴，跨越约 19 个数量级。可见光只占其中的一个极小窗口（$380\text{–}750\ \mathrm{nm}$）——
+  人眼进化出的窗口恰好落在太阳辐射最强、且水与大气吸收较弱的波段，这不是巧合。</div>
+</figure>
+
+<div class="callout">
+  <span class="h">顺便回答一个常见困惑</span>
+  <p class="small">为什么 $E=hf$ 里出现频率 $f$ 而不是波长 $\lambda$？因为能量是<b>量子化</b>的，而量子化来自时间上的周期性（$E=i\hbar\partial_t$），
+  不是空间上的周期性。所以同一个 $\lambda$ 在不同介质中对应不同的 $f$、不同的光子能量——光在介质中波长变短，但每个光子的能量不变（否则跨越界面时能量不守恒）。</p>
+</div>

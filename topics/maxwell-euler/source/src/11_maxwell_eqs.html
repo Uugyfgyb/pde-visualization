@@ -1,0 +1,86 @@
+<h2 id="s-m-eqs"><span class="num">§13.1</span>麦克斯韦方程组：四个方程，四种物理</h2>
+
+<p class="lead">麦克斯韦方程组不是一个方程，而是四个。每一个都独立地回答一个几何问题：
+穿过一个<em>闭合曲面</em>的净通量是多少（两个散度方程），沿一条<em>闭合曲线</em>的环量是多少（两个旋度方程）。
+"曲面/曲线"的选择是任意的——这正是把它们写成散度和旋度的原因。</p>
+
+<p class="small dim">下面用 (M1)–(M4) 编号，便于本篇引用；教材中的编号体系各不相同，请以原书为准。</p>
+
+<div class="eq gauss">
+$$\text{(M1) 高斯定律：}\quad \oint_{\partial V}\vv{E}\cdot\mathrm{d}\vv{A}=\frac{Q_{\text{enc}}}{\eps_0}
+\qquad\Longleftrightarrow\qquad \nabla\!\cdot\!\vv{E}=\frac{\rho}{\eps_0}$$
+</div>
+
+<p><b>物理含义：</b>电场线起于正电荷、终于负电荷。穿过任意闭合曲面的电通量只由<b>面内净电荷</b>决定，与面的大小、形状、以及电荷在面内的位置都无关。
+这解释了为什么库仑定律必然是 $1/r^2$：只有平方反比，通量才与半径无关。</p>
+
+<figure class="widget" data-widget="gauss">
+  <div class="whead"><span class="t">实验 1 · 高斯定律：通量与形状无关</span><span class="s">数值求积 $\oint\vv{E}\cdot\mathrm{d}\vv{A}$ 与 $Q/\eps_0$ 逐点比较</span><span class="idx">W1</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">这个实验不做任何解析代入：程序把高斯面切成约 4600 个小四边形面元，在每个面元中心算出库仑场 $\vv{E}=Q\hat{r}/4\pi\eps_0r^2$，
+  与面元法向做内积再求和——就是黎曼和意义下的面积分。<b>试着改变半径和形状</b>：球面、立方体面、拉长、压扁，读数始终是 $Q/\eps_0$。</div>
+</figure>
+
+<div class="eq nomon">
+$$\text{(M2) 磁场无源：}\quad \oint_{\partial V}\vv{B}\cdot\mathrm{d}\vv{A}=0
+\qquad\Longleftrightarrow\qquad \nabla\!\cdot\!\vv{B}=0$$
+</div>
+
+<p><b>物理含义：</b>不存在磁单极子。磁感线没有起点也没有终点，只能首尾相接形成闭合曲线（或伸向无穷远）。
+在数学上，(M2) 说明 $\vv{B}$ 可以写成某个矢量势的旋度：$\vv{B}=\nabla\times\vv{A}$——这是后面推导波动方程时反复使用的结构。</p>
+
+<figure class="widget" data-widget="divb">
+  <div class="whead"><span class="t">实验 2 · 磁感线是闭合的</span><span class="s">磁偶极子场 + 随机高斯面，通量恒为 0</span><span class="idx">W2</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">场线不是画出来的示意曲线，而是从种子点出发、用四阶龙格–库塔法<b>积分</b> $\mathrm{d}\vv{r}/\mathrm{d}s=\hat{B}(\vv{r})$ 得到的真实轨道；
+  它们回到起点，误差在千分之一以内。<b>打开"磁单极子"开关</b>（反事实）：场线立刻有了端点，通量不再为零。</div>
+</figure>
+
+<div class="eq faraday">
+$$\text{(M3) 法拉第定律：}\quad \oint_{\partial\Sigma}\vv{E}\cdot\mathrm{d}\vv{l}=-\frac{\mathrm{d}}{\mathrm{d}t}\int_\Sigma\vv{B}\cdot\mathrm{d}\vv{A}
+\qquad\Longleftrightarrow\qquad \nabla\!\times\!\vv{E}=-\frac{\partial\vv{B}}{\partial t}$$
+</div>
+
+<p><b>物理含义：</b>变化的磁场会产生电场——而且是一种<b>涡旋场</b>：它的场线闭合，不能写成某个标量势的梯度。
+负号是楞次定律：感应效应总是<b>反抗</b>产生它的变化。注意 (M3) 没有电荷什么事，它纯粹是"变化"的定律。</p>
+
+<figure class="widget" data-widget="faraday">
+  <div class="whead"><span class="t">实验 3 · 法拉第定律与楞次定律</span><span class="s">正弦变化的磁场穿过圆形回路，实时计算 $\mathrm{EMF}=-\mathrm{d}\Phi/\mathrm{d}t$</span><span class="idx">W3</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">程序不直接使用公式，而是<b>数值微分</b>磁通量 $\Phi(t)$ 得到 EMF，再与解析式 $-\pi a^2\omega B_0\cos\omega t$ 比较——两者应当重合到差分精度。
+  观察：$\Phi$ 最大时 EMF 为零，$\Phi$ 过零时 EMF 最大，这正是"导数"关系；感应电流方向每半周期翻转一次。</div>
+</figure>
+
+<div class="eq ampere">
+$$\text{(M4) 安培–麦克斯韦定律：}\quad \oint_{\partial\Sigma}\vv{B}\cdot\mathrm{d}\vv{l}=\mu_0 I_{\text{enc}}+\mu_0\eps_0\frac{\mathrm{d}}{\mathrm{d}t}\int_\Sigma\vv{E}\cdot\mathrm{d}\vv{A}
+\qquad\Longleftrightarrow\qquad \nabla\!\times\!\vv{B}=\mu_0\vv{J}+\mu_0\eps_0\frac{\partial\vv{E}}{\partial t}$$
+</div>
+
+<p><b>物理含义：</b>电流和变化的电场都能产生磁场。第二项 $\mu_0\eps_0\partial_t\vv{E}$ 是麦克斯韦 1861 年补上的"<b>位移电流</b>"，
+它没有对应的电荷运动，纯粹来自电场的变化。正是这一项让方程组自洽、并让真空中的波成为可能——
+下一小节专门讲为什么它非有不可。</p>
+
+<figure class="widget" data-widget="ampere">
+  <div class="whead"><span class="t">实验 4 · 位移电流：同一回路的两个曲面</span><span class="s">电容器充电时，安培环路定理对哪个曲面都成立</span><span class="idx">W4</span></div>
+  <div class="cvwrap h340"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">取同一个安培回路 $\partial\Sigma$，绷上两个不同的曲面：平坦的 $S_1$ 被导线穿过，鼓起的 $S_2$ 从电容器两板之间穿过。
+  $S_1$ 的电流全部是传导电流，$S_2$ 的传导电流为零——但两块板之间正在增长的电场提供了<b>位移电流</b>，
+  两边的 $I_{\text{enc}}$ <b>完全相等</b>。这就是安培环路定理必须包含位移电流的原因：$\oint\vv{B}\cdot\mathrm{d}\vv{l}$ 只依赖回路，不能依赖你选了哪个曲面去绷它。</div>
+</figure>
+
+<div class="callout key">
+  <span class="h">方程组的内在自洽性（很值得看一眼）</span>
+  <p class="small">对 (M3) 两边取散度：$\nabla\!\cdot\!(\nabla\times\vv{E})=0$ 恒成立，所以 $\partial_t(\nabla\!\cdot\!\vv{B})=0$——
+  只要 (M2) 在某一时刻成立，它就<b>永远</b>成立。(M2) 因此是一个"约束"，而不是一个演化方程，它自动被保持。</p>
+  <p class="small">对 (M4) 两边取散度：左边恒为 0，于是 $0=\mu_0\nabla\!\cdot\!\vv{J}+\mu_0\eps_0\,\partial_t(\nabla\!\cdot\!\vv{E})$。
+  把 (M1) 代进去，得到 $\partial_t\rho+\nabla\!\cdot\!\vv{J}=0$——<b>电荷守恒</b>。也就是说：电荷守恒不是额外假设，而是 (M1)+(M4) 的必然推论。
+  反过来说，如果 (M4) 里没有位移电流项，"取散度"会直接给出 $\nabla\!\cdot\!\vv{J}=0$，与电荷守恒矛盾。</p>
+</div>

@@ -1,0 +1,122 @@
+<h2 id="s-e-acoustic"><span class="num">§13.2.5</span>声学线性化：小扰动如何变成波动方程</h2>
+
+<p class="lead">欧拉方程组是非线性的，但它的线性化版本——声学方程组——恰好是波动方程。这一步是本节的核心，也是 Strauss 全书"线性化"方法最干净的一次示范。</p>
+
+<p>设流体静止且均匀（$\rho_0,p_0$ 常数，$\vv{u}_0=0$），叠加一个<b>小</b>扰动，用 $\epsilon\ll1$ 标记量级：</p>
+
+<div class="eq plain">
+$$\rho=\rho_0+\epsilon\rho_1,\qquad \vv{u}=\epsilon\vv{u}_1,\qquad p=p_0+\epsilon p_1$$
+</div>
+
+<p>代入连续性方程与动量方程，按 $\epsilon$ 的幂次整理：</p>
+
+<table class="data">
+  <tr><th style="width:24%">方程</th><th>代入后</th><th>$\mathcal{O}(\epsilon)$ 阶（线性化）</th><th>$\mathcal{O}(\epsilon^2)$ 阶（被丢掉）</th></tr>
+  <tr><td>连续性 (13.7)</td><td>$\epsilon\partial_t\rho_1+\epsilon\rho_0\nabla\!\cdot\!\vv{u}_1+\epsilon^2\nabla\!\cdot\!(\rho_1\vv{u}_1)=0$</td>
+      <td>$\partial_t\rho_1=-\rho_0\nabla\!\cdot\!\vv{u}_1$</td><td>$\nabla\!\cdot\!(\rho_1\vv{u}_1)$</td></tr>
+  <tr><td>动量 (13.8)</td><td>$(\rho_0+\epsilon\rho_1)\big[\epsilon\partial_t\vv{u}_1+\epsilon^2(\vv{u}_1\!\cdot\!\nabla)\vv{u}_1\big]=-\epsilon\nabla p_1$</td>
+      <td>$\rho_0\partial_t\vv{u}_1=-\nabla p_1$</td><td>$(\vv{u}_1\!\cdot\!\nabla)\vv{u}_1$、$\rho_1\partial_t\vv{u}_1$</td></tr>
+  <tr><td>状态方程</td><td>$p_1=\dfrac{\mathrm{d}p}{\mathrm{d}\rho}\Big|_s\rho_1+\mathcal{O}(\rho_1^2)$</td>
+      <td>$p_1=c^2\rho_1,\quad c^2=\Big(\dfrac{\partial p}{\partial\rho}\Big)_s$</td><td>二阶项</td></tr>
+</table>
+
+<p>关键观察：<b>被丢掉的正是唯一的非线性项</b> $(\vv{u}\!\cdot\!\nabla)\vv{u}$，以及密度扰动的乘积项。剩下的是常系数线性系统。消元：</p>
+
+<div class="eq key">
+$$\partial_t(\text{连续性})\ \Longrightarrow\ \partial_t^2\rho_1=-\rho_0\,\nabla\!\cdot\!\partial_t\vv{u}_1
+=\nabla^2p_1
+\ \Longrightarrow\ \boxed{\ \frac{\partial^2p_1}{\partial t^2}=c^2\nabla^2p_1\ }$$
+</div>
+
+<p>$\rho_1$ 与 $\vv{u}_1$ 满足同一个方程。另外，由 $\rho_0\partial_t\vv{u}_1=-\nabla p_1$ 可知：<b>线性声场是无旋的</b>
+（$\partial_t(\nabla\times\vv{u}_1)=0$，初值无旋则永远无旋），于是可以引入<b>速度势</b> $\vv{u}_1=\nabla\phi$：</p>
+
+<div class="eq plain">
+$$\frac{\partial^2\phi}{\partial t^2}=c^2\nabla^2\phi,\qquad
+\vv{u}_1=\nabla\phi,\qquad p_1=-\rho_0\frac{\partial\phi}{\partial t},\qquad \rho_1=-\frac{\rho_0}{c^2}\frac{\partial\phi}{\partial t}$$
+</div>
+
+<div class="callout key">
+  <span class="h">线性化的代价与边界</span>
+  <p class="small">声学近似的适用条件是 $|\vv{u}_1|\ll c$，即<b>马赫数</b> $M=|\vv{u}|/c\ll1$（家用声波 $M\sim10^{-7}$，喷气发动机 $M\sim1$，爆炸波 $M>1$）。
+  另一个隐含条件是波长 $\gg$ 分子平均自由程（连续介质假设）。
+  一旦 $M$ 不小，被丢掉的 $(\vv{u}\!\cdot\!\nabla)\vv{u}$ 就会在有限时间内把波形陡化成激波——这正是下一小节的内容。</p>
+</div>
+
+<h3>与传输线、光学的同构</h3>
+
+<p>把一维声学方程组写成 $\partial_tp=-\rho_0c^2\partial_xu$、$\partial_tu=-(1/\rho_0)\partial_xp$，
+再把均匀传输线的电报方程写成 $\partial_tV=-(1/C)\partial_xI$、$\partial_tI=-(1/L)\partial_xV$，
+会发现两套方程<b>逐项对应</b>：$p\leftrightarrow V$，$u\leftrightarrow I$，$\rho_0\leftrightarrow L$，$1/(\rho_0c^2)\leftrightarrow C$。
+于是所有"阻抗/反射/透射"的结论可以整体搬过来：</p>
+
+<div class="eq plain">
+$$Z=\rho_0c\ \ (\text{声阻抗}),\qquad
+r_p=\frac{Z_2-Z_1}{Z_2+Z_1},\qquad
+R=r_p^2,\qquad T=1-R
+$$
+</div>
+
+<p>这与 §13.1.6 里电磁波的 $r=(n_1-n_2)/(n_1+n_2)$ 在形式上是同一个公式（因为电磁波的波阻抗也是 $Z=\sqrt{\mu/\eps}=\eta_0/n$）。
+医学超声、声呐、音乐厅声学全都在用这套公式。</p>
+
+<h2 id="s-e-speed"><span class="num">§13.2.6</span>声速：一个由热力学决定的常数</h2>
+
+<div class="eq key">
+$$c^2=\Big(\frac{\partial p}{\partial\rho}\Big)_s=\frac{\gamma p_0}{\rho_0}=\frac{\gamma RT}{M}\qquad\Longrightarrow\qquad
+c=\sqrt{\frac{\gamma RT}{M}}$$
+</div>
+
+<p>注意声速的依赖关系：<b>只与温度 $T$ 和气体种类（$\gamma$、摩尔质量 $M$）有关，与压强无关</b>。
+（直觉：加压使密度和压强同比例增加，$p/\rho$ 不变。）所以高山上气压低但声速几乎不变，只有降温才让声速变小。</p>
+
+<figure class="widget" data-widget="soundspeed">
+  <div class="whead"><span class="t">实验 13 · 声速：绝热 vs 等温 vs 经验公式</span><span class="s">改变气体与温度，比较三种算法</span><span class="idx">W13</span></div>
+  <div class="cvwrap h300"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">读数把三个数值并列：<b>绝热</b> $c=\sqrt{\gamma RT/M}$（正确）、<b>等温</b> $c=\sqrt{RT/M}$（牛顿 1687 年的假设）、
+  以及干燥空气的<b>经验拟合</b> $c\approx331.3\sqrt{1+T/273.15}$。绝热与经验值吻合到千分之一以内——这是热力学在 19 世纪最漂亮的一次胜利。</div>
+</figure>
+
+<div class="callout hist">
+  <span class="h">牛顿差的那 15%</span>
+  <p class="small">牛顿用等温假设算出空气中声速 $\sqrt{p/\rho}\approx290\ \mathrm{m/s}$，比实测的 343 m/s 低约 15%，他只好用"固体粒子"之类的说法打圆场。
+  拉普拉斯（1816）指出：声波的压缩–膨胀发生得太快，热量来不及在半个周期内扩散，所以过程是<b>绝热</b>的，应该用 $\gamma p/\rho$。
+  空气的 $\gamma=1.4$，$\sqrt{1.4}=1.183$，恰好补上那 15%。这是"热力学第二定律之前的物理学"最著名的悬案之一，
+  也说明：<b>一个常数算错，往往意味着漏掉了一个物理效应</b>。</p>
+</div>
+
+<h2 id="s-e-tube"><span class="num">§13.2.7</span>管中的声波：边界条件与分离变量</h2>
+
+<p>一维情形下 $p_{tt}=c^2p_{xx}$——这正是 Strauss 第 4、5 章反复求解的方程。管子的两端给出两类边界条件：</p>
+
+<table class="data">
+  <tr><th>端点</th><th>物理条件</th><th>数学条件</th><th>对 $p$ 的含义</th></tr>
+  <tr><td>刚性闭端</td><td>流体不能穿过壁面</td><td>$u=0$</td><td>$\partial_xp=0$（<b>Neumann</b>，压强腹点）</td></tr>
+  <tr><td>开口端（接大气）</td><td>压强被大气锁定</td><td>$p=p_0$（即 $p_1=0$）</td><td>$p=0$（<b>Dirichlet</b>，压强节点）</td></tr>
+</table>
+
+<p>分离变量给出驻波解（$L$ 为管长）：</p>
+
+<div class="eq plain">
+$$\text{两端刚性/两端开口：}\quad f_n=\frac{nc}{2L}\ (n=1,2,3,\dots)\qquad\text{（全谐音列）}$$
+$$\text{一端刚性一端开口：}\quad f_n=\frac{(2n-1)c}{4L}\ (n=1,2,3,\dots)\qquad\text{（只有奇次谐音）}$$
+</div>
+
+<figure class="widget" data-widget="tube">
+  <div class="whead"><span class="t">实验 14 · 管中的驻波与谐音列</span><span class="s">三种端点组合下的 $p(x,t)$ 与 $u(x,t)$</span><span class="idx">W14</span></div>
+  <div class="cvwrap h360"><canvas></canvas></div>
+  <div class="ctrls"></div>
+  <div class="readout"></div>
+  <div class="wfoot">紫色是压强扰动 $p_1$，青色是速度 $u_1$。注意两者<b>相位差 90°</b>：压强节点处速度最大，反之亦然
+  （由 $\rho_0\partial_tu=-\partial_xp$ 可知，$p\propto\cos kx$ 时 $u\propto\sin kx$）。
+  这正是管乐器与声学谐振腔的工作原理：<b>闭端必是速度节点、压强腹点</b>，而开口端相反。</div>
+</figure>
+
+<div class="callout">
+  <span class="h">接到 Strauss 后面几章</span>
+  <p class="small">到这里，§13.2 已经把一个物理问题完整地交给了第 4–5 章的工具：波动方程 + 齐次边界条件 + 分离变量 + 傅里叶级数。
+  一般初值 $p(x,0)$、$p_t(x,0)$ 的解就是把各阶模态按傅里叶系数叠加起来——边界条件的类型（Dirichlet/Neumann/混合）决定了本征函数的家族
+  （$\sin$、$\cos$、$\sin$ 半整数），而<b>本征值</b>决定频率。第 11 章会把这套结构推广到任意区域与任意自伴算子。</p>
+</div>

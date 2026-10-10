@@ -1,0 +1,349 @@
+{
+ "file": "index.html",
+ "bytes": 2430070,
+ "mjx": 473,
+ "merror": 0,
+ "widgets": 17,
+ "errEls": 0,
+ "diag": {
+  "errors": [],
+  "widgets": [
+   "gauss",
+   "divb",
+   "faraday",
+   "ampere",
+   "wave",
+   "energy",
+   "matter",
+   "fdtd",
+   "spectrum",
+   "continuity",
+   "advection",
+   "vortices",
+   "soundspeed",
+   "tube",
+   "characteristics",
+   "sod",
+   "mach"
+  ],
+  "canvases": {
+   "#0": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.0886
+   },
+   "#1": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.1575
+   },
+   "#2": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.2774
+   },
+   "#3": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.0316
+   },
+   "#4": {
+    "w": 1152,
+    "h": 419,
+    "inkFrac": 0.0667
+   },
+   "#5": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.7105
+   },
+   "#6": {
+    "w": 1152,
+    "h": 379,
+    "inkFrac": 0.8631
+   },
+   "#7": {
+    "w": 1152,
+    "h": 379,
+    "inkFrac": 0.167
+   },
+   "#8": {
+    "w": 1152,
+    "h": 299,
+    "inkFrac": 0.1116
+   },
+   "#9": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.0417
+   },
+   "#10": {
+    "w": 1152,
+    "h": 339,
+    "inkFrac": 0.4399
+   },
+   "#11": {
+    "w": 1152,
+    "h": 379,
+    "inkFrac": 0.3352
+   },
+   "#12": {
+    "w": 1152,
+    "h": 299,
+    "inkFrac": 0.7043
+   },
+   "#13": {
+    "w": 1152,
+    "h": 359,
+    "inkFrac": 0.0535
+   },
+   "#14": {
+    "w": 1152,
+    "h": 419,
+    "inkFrac": 0.7549
+   },
+   "#15": {
+    "w": 1152,
+    "h": 399,
+    "inkFrac": 0.7306
+   },
+   "#16": {
+    "w": 1152,
+    "h": 379,
+    "inkFrac": 0.0092
+   }
+  },
+  "merror": 0,
+  "mjx": 473,
+  "ready": true,
+  "notes": [],
+  "typeset2": "labels are rendered locally (see plain())",
+  "suite": {
+   "nPass": 47,
+   "nTotal": 47,
+   "ms": 0,
+   "failed": []
+  },
+  "merrorText": [],
+  "redUndef": 0,
+  "redText": [],
+  "equations": 46,
+  "sections": 22,
+  "verifyRows": 48,
+  "verifyFailed": 0,
+  "proseBig": 696,
+  "pageHeight": 31771,
+  "layout": [
+   {
+    "name": "gauss",
+    "top": 2667,
+    "h": 549,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "divb",
+    "top": 3401,
+    "h": 553,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "faraday",
+    "top": 4138,
+    "h": 554,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "ampere",
+    "top": 4877,
+    "h": 555,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "wave",
+    "top": 8288,
+    "h": 670,
+    "cw": 1152,
+    "ch": 419
+   },
+   {
+    "name": "energy",
+    "top": 9548,
+    "h": 584,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "matter",
+    "top": 11520,
+    "h": 593,
+    "cw": 1152,
+    "ch": 379
+   },
+   {
+    "name": "fdtd",
+    "top": 12645,
+    "h": 649,
+    "cw": 1152,
+    "ch": 379
+   },
+   {
+    "name": "spectrum",
+    "top": 13586,
+    "h": 485,
+    "cw": 1152,
+    "ch": 299
+   },
+   {
+    "name": "continuity",
+    "top": 15301,
+    "h": 548,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "advection",
+    "top": 16368,
+    "h": 549,
+    "cw": 1152,
+    "ch": 339
+   },
+   {
+    "name": "vortices",
+    "top": 18865,
+    "h": 598,
+    "cw": 1152,
+    "ch": 379
+   },
+   {
+    "name": "soundspeed",
+    "top": 21117,
+    "h": 541,
+    "cw": 1152,
+    "ch": 299
+   },
+   {
+    "name": "tube",
+    "top": 22287,
+    "h": 574,
+    "cw": 1152,
+    "ch": 359
+   },
+   {
+    "name": "characteristics",
+    "top": 23855,
+    "h": 634,
+    "cw": 1152,
+    "ch": 419
+   },
+   {
+    "name": "sod",
+    "top": 24733,
+    "h": 665,
+    "cw": 1152,
+    "ch": 399
+   },
+   {
+    "name": "mach",
+    "top": 25876,
+    "h": 595,
+    "cw": 1152,
+    "ch": 379
+   }
+  ],
+  "sectionTops": [
+   {
+    "id": "s-overview",
+    "top": 387
+   },
+   {
+    "id": "s-m-eqs",
+    "top": 2323
+   },
+   {
+    "id": "s-m-disp",
+    "top": 5648
+   },
+   {
+    "id": "s-m-derive",
+    "top": 6606
+   },
+   {
+    "id": "s-m-wave",
+    "top": 7649
+   },
+   {
+    "id": "s-m-energy",
+    "top": 9016
+   },
+   {
+    "id": "s-m-matter",
+    "top": 10503
+   },
+   {
+    "id": "s-m-fdtd",
+    "top": 12171
+   },
+   {
+    "id": "s-m-spec",
+    "top": 13352
+   },
+   {
+    "id": "s-e-cons",
+    "top": 14257
+   },
+   {
+    "id": "s-e-mass",
+    "top": 14996
+   },
+   {
+    "id": "s-e-mom",
+    "top": 15906
+   },
+   {
+    "id": "s-e-energy",
+    "top": 16975
+   },
+   {
+    "id": "s-e-vort",
+    "top": 18157
+   },
+   {
+    "id": "s-e-acoustic",
+    "top": 19650
+   },
+   {
+    "id": "s-e-speed",
+    "top": 20871
+   },
+   {
+    "id": "s-e-tube",
+    "top": 21868
+   },
+   {
+    "id": "s-e-shock",
+    "top": 23048
+   },
+   {
+    "id": "s-e-sod",
+    "top": 24547
+   },
+   {
+    "id": "s-e-incomp",
+    "top": 25456
+   },
+   {
+    "id": "s-synth",
+    "top": 26656
+   },
+   {
+    "id": "s-verify",
+    "top": 27935
+   }
+  ]
+ },
+ "problems": []
+}

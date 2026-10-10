@@ -1,0 +1,88 @@
+<h2 id="s-m-disp"><span class="num">§13.1.2</span>位移电流：麦克斯韦的关键修正</h2>
+
+<p class="lead">如果没有 (M4) 的第二项，方程组会<b>自相矛盾</b>。这不是审美问题，而是一个可以三行推导出来的逻辑冲突。</p>
+
+<h3>反证：删掉位移电流会怎样</h3>
+
+<p>假设 (M4) 只有传导电流：$\nabla\times\vv{B}=\mu_0\vv{J}$。对两边取散度，左边恒为零（旋度的散度必为零），于是</p>
+
+<div class="eq plain">
+$$0=\mu_0\nabla\!\cdot\!\vv{J}\qquad\Longrightarrow\qquad \nabla\!\cdot\!\vv{J}=0$$
+</div>
+
+<p>但电流密度与电荷密度由电荷守恒联系：$\partial_t\rho+\nabla\!\cdot\!\vv{J}=0$。两者合起来要求 $\partial_t\rho\equiv0$——
+即<b>任何地方的电荷密度都不能随时间变化</b>。这在静电学里成立，但电容器充电、闪电、神经脉冲全都违反它。</p>
+
+<p>麦克斯韦的修补是在右边补一项 $\mu_0\eps_0\partial_t\vv{E}$。再取散度：</p>
+
+<div class="eq plain">
+$$0=\mu_0\nabla\!\cdot\!\vv{J}+\mu_0\eps_0\,\partial_t(\nabla\!\cdot\!\vv{E})
+ =\mu_0\Big[\nabla\!\cdot\!\vv{J}+\partial_t\rho\Big]$$
+</div>
+
+<p>用 (M1) 把 $\nabla\!\cdot\!\vv{E}$ 换成 $\rho/\eps_0$ 后，恰好得到电荷守恒——<b>恒等式，而不是矛盾</b>。
+位移电流那一项的唯一"任务"，就是让安培定律与电荷守恒相容。</p>
+
+<h3>电容器里到底发生了什么</h3>
+
+<p>取一个正在充电的平行板电容器，极板面积 $A$、电荷 $Q$、板间电场 $E=\sigma/\eps_0=Q/(\eps_0A)$：</p>
+
+<div class="eq plain">
+$$I=\frac{\mathrm{d}Q}{\mathrm{d}t}=\eps_0A\frac{\mathrm{d}E}{\mathrm{d}t}
+=\eps_0\frac{\mathrm{d}}{\mathrm{d}t}\!\int\!\vv{E}\cdot\mathrm{d}\vv{A}=\eps_0\frac{\mathrm{d}\Phi_E}{\mathrm{d}t}$$
+</div>
+
+<p>两板之间<b>没有电荷在移动</b>（真空中什么都没有），但"电通量的变化率"在数值上精确等于导线里的传导电流。
+回路里的电流因此是连续的——这正是实验 4 里两个曲面给出同一个 $\oint\vv{B}\cdot\mathrm{d}\vv{l}$ 的原因。</p>
+
+<div class="callout hist">
+  <span class="h">历史注脚</span>
+  <p class="small">麦克斯韦 1861–1862 年引入这一项时，把它称为"位移电流"，并明确说它是出于<b>数学自洽</b>的需要，而不是因为观测到了什么。
+  二十多年后赫兹（1887）才在实验室里产生并接收到电磁波。这是"数学结构领先于实验"的经典案例。</p>
+</div>
+
+<h2 id="s-m-derive"><span class="num">§13.1.3</span>波动方程的推导：七行代数</h2>
+
+<p class="lead">在远离电荷与电流的真空区域（$\rho=0$，$\vv{J}=0$），方程组里只剩下两个旋度方程。把它们组合起来，电磁场自己就"波动"起来了。</p>
+
+<div class="kvrow">
+  <div class="tag-inline">第 1 步</div><div>对 (M3) 两边取旋度：$\displaystyle \nabla\times(\nabla\times\vv{E})=-\frac{\partial}{\partial t}\big(\nabla\times\vv{B}\big)$</div>
+  <div class="tag-inline">第 2 步</div><div>左边用矢量恒等式 $\nabla\times(\nabla\times\vv{E})=\nabla(\nabla\!\cdot\!\vv{E})-\nabla^2\vv{E}$</div>
+  <div class="tag-inline">第 3 步</div><div>真空里无电荷，(M1) 给出 $\nabla\!\cdot\!\vv{E}=0$，所以左边 $=-\nabla^2\vv{E}$</div>
+  <div class="tag-inline">第 4 步</div><div>右边用 (M4) 在无电流区消去 $\nabla\times\vv{B}=\mu_0\eps_0\,\partial_t\vv{E}$，得到 $-\mu_0\eps_0\,\partial_t^2\vv{E}$</div>
+  <div class="tag-inline">第 5 步</div><div>两边相等：$\displaystyle -\nabla^2\vv{E}=-\mu_0\eps_0\frac{\partial^2\vv{E}}{\partial t^2}$</div>
+  <div class="tag-inline">第 6 步</div><div>移项，得到<b>矢量波动方程</b>（三个分量各自满足标量波动方程）</div>
+  <div class="tag-inline">第 7 步</div><div>对 (M4) 取旋度、用 (M3) 消元，$\vv{B}$ 满足<b>同一个方程、同一个速度</b></div>
+</div>
+
+<div class="eq key">
+$$\boxed{\ \frac{\partial^2\vv{E}}{\partial t^2}=c^2\nabla^2\vv{E},\qquad
+\frac{\partial^2\vv{B}}{\partial t^2}=c^2\nabla^2\vv{B},\qquad
+c^2=\frac{1}{\eps_0\mu_0}\ }$$
+</div>
+
+<p>这就是 Strauss 第 9 章研究的三维波动方程。它的解以速度 $c$ 传播、形状不变：平面波解 $\vv{E}=\vv{E}_0 f(\hat{k}\!\cdot\!\vv{r}-ct)$ 对任意（足够光滑的）$f$ 都成立。
+关键在于：$c$ 由两个<b>静电/静磁</b>常数决定。</p>
+
+<div class="eq plain">
+$$c=\frac{1}{\sqrt{\eps_0\mu_0}}=\frac{1}{\sqrt{(8.854\,187\,8128\times10^{-12})(1.256\,637\,062\,12\times10^{-6})}}
+=\ <span data-live="c-from-constants" class="mono">…</span>\ \mathrm{m/s}$$
+</div>
+
+<p>把 CODATA-2018 的数值代进去（页面加载时实时计算）：</p>
+
+<table class="data small">
+  <tr><th>组合常数</th><th>数值</th><th>意义</th></tr>
+  <tr><td>$\eps_0$（来自库仑定律）</td><td class="num">8.854 187 8128 × 10⁻¹² F/m</td><td>静电学测量</td></tr>
+  <tr><td>$\mu_0$（来自安培力定义）</td><td class="num">1.256 637 062 12 × 10⁻⁶ N/A²</td><td>静磁学测量</td></tr>
+  <tr><td>$c=1/\sqrt{\eps_0\mu_0}$</td><td class="num" data-live="c-from-constants">…</td><td><b>恰好等于光速</b></td></tr>
+  <tr><td>真空阻抗 $\eta_0=\sqrt{\mu_0/\eps_0}$</td><td class="num" data-live="eta0">…</td><td>$\Omega$，后面算能流要用</td></tr>
+</table>
+
+<div class="callout key">
+  <span class="h">这一步意味着什么</span>
+  <p class="small">两个来自<b>静态</b>实验的常数，组合出一个速度，而这个速度恰好是光速。
+  于是"光是电磁波"成为推论。1983 年起，米的定义反过来被 $c$ 固定：$c\equiv299\,792\,458\ \mathrm{m/s}$ 是<b>定义值</b>，不再有测量误差。</p>
+  <p class="small">另外注意：$c$ 与频率无关。这解释了为什么真空是<b>无色散</b>的——所有颜色的光以同一速度传播，所以我们能看见遥远的恒星。
+  （在介质中，$v=1/\sqrt{\eps\mu}=c/n$，而 $n$ 通常随频率变化，于是有棱镜色散。）</p>
+</div>

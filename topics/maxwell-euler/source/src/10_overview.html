@@ -1,0 +1,70 @@
+<h2 id="s-overview"><span class="num">§0</span>导览：两节讲的是同一件事</h2>
+
+<p class="lead">§13.1 从麦克斯韦方程组出发得到<em>电磁波</em>；§13.2 从欧拉方程组出发得到<em>声波</em>。
+表面上是两个完全不同的物理系统——一个是矢量场在真空中的传播，一个是气体的压缩与膨胀——但数学骨架完全一致。</p>
+
+<table class="data">
+  <tr><th style="width:16%"></th><th>§13.1 电磁学（Maxwell）</th><th>§13.2 流体与声学（Euler）</th></tr>
+  <tr><td><b>未知量</b></td><td>电场 $\vv{E}$、磁场 $\vv{B}$（矢量场）</td><td>密度 $\rho$、速度 $\vv{u}$、压强 $p$（标量+矢量）</td></tr>
+  <tr><td><b>方程</b></td><td>一阶线性方程组（4 个）</td><td>一阶拟线性方程组（质量+动量+状态方程）</td></tr>
+  <tr><td><b>线性化</b></td><td>本来就是线性的（真空中）</td><td>对静止均匀态做小扰动展开，丢掉 $\mathcal{O}(\epsilon^2)$</td></tr>
+  <tr><td><b>得到</b></td><td>$\vv{E}_{tt}=c^2\nabla^2\vv{E}$，$\vv{B}_{tt}=c^2\nabla^2\vv{B}$</td><td>$p_{tt}=c^2\nabla^2p$，$\rho_{tt}=c^2\nabla^2\rho$，$\vv{u}_{tt}=c^2\nabla^2\vv{u}$</td></tr>
+  <tr><td><b>波速</b></td><td>$c=1/\sqrt{\eps_0\mu_0}=2.997\,924\,58\times10^{8}\,\mathrm{m/s}$</td><td>$c=\sqrt{\mathrm{d}p/\mathrm{d}\rho}=\sqrt{\gamma p_0/\rho_0}=\sqrt{\gamma RT/M}$</td></tr>
+  <tr><td><b>波速由什么决定</b></td><td>真空的两个常数（与频率无关 $\Rightarrow$ 无色散）</td><td>气体的温度与分子质量（与频率无关 $\Rightarrow$ 无色散）</td></tr>
+</table>
+
+<h3>共同的三步骨架</h3>
+
+<p>两节都可以压缩成同一个套路，这也是全书反复使用的方法：</p>
+
+<div class="eq plain">
+$$\underbrace{\ \partial_t\,\vv{q}+\nabla\!\cdot\!\vv{F}(\vv{q})=0\ }_{\text{守恒律（一阶，通常非线性）}}
+\ \xrightarrow[\ \vv{q}=\vv{q}_0+\epsilon\vv{q}_1\ ]{\text{线性化}}\
+\underbrace{\ \partial_t\,\vv{q}_1+A\,\nabla\!\cdot\!\vv{q}_1=0\ }_{\text{常系数线性一阶系统}}
+\ \xrightarrow{\ \text{消元}\ }\
+\underbrace{\ \partial_t^2 q_1=c^2\nabla^2q_1\ }_{\text{二阶波动方程}}$$
+</div>
+
+<ol>
+  <li><b>守恒律</b>：$\vv{q}$ 是"密度"（单位体积里存了多少东西），$\vv{F}$ 是"通量"（单位时间穿过单位面积多少）。方程说的只是：一个盒子里的量变化多少，取决于进出边界多少。</li>
+  <li><b>线性化</b>：真实系统几乎都是非线性的（流体更是如此）。但对于<b>小扰动</b>，把 $\vv{F}(\vv{q})$ 在平衡态附近做泰勒展开并保留一阶项，就得到常系数线性系统。这一步的代价是：振幅必须足够小（声学的判据是马赫数 $M=|\vv{u}|/c\ll1$）。</li>
+  <li><b>消元</b>：对一阶系统再做一次时间或空间求导、代入，消去多余分量，得到单个未知量的二阶波动方程。它的解就是达朗贝尔解 $f(x-ct)+g(x+ct)$——以速度 $c$ 传播、形状不变的波。</li>
+</ol>
+
+<div class="callout key">
+  <span class="h">为什么这件事很了不起</span>
+  <p class="small">在 §13.1 里，"波速"$c=1/\sqrt{\eps_0\mu_0}$ 完全由<em>静电</em>实验（$\eps_0$，来自库仑定律）和<em>静磁</em>实验（$\mu_0$，来自安培力）测出的两个常数决定。
+  麦克斯韦 1865 年把这两个数代进去，得到 $3.1\times10^{8}\,\mathrm{m/s}$——恰好是当时已测得的光速。
+  于是"光是一种电磁波"不再是一个猜想，而是一个<em>推论</em>。这是理论物理史上最著名的一次"算出来一个已知答案"。</p>
+</div>
+
+<h3>符号与单位约定</h3>
+
+<p>本文一律使用 <b>SI 单位制</b>（常数取自 CODATA-2018）。为完整起见，也列出经典教材中常见的高斯单位制形式：</p>
+
+<table class="data small">
+  <tr><th>物理量</th><th>SI 形式</th><th>高斯单位制</th></tr>
+  <tr><td>高斯定律</td><td>$\nabla\!\cdot\!\vv{E}=\rho/\eps_0$</td><td>$\nabla\!\cdot\!\vv{E}=4\pi\rho$</td></tr>
+  <tr><td>磁场无源</td><td>$\nabla\!\cdot\!\vv{B}=0$</td><td>$\nabla\!\cdot\!\vv{B}=0$</td></tr>
+  <tr><td>法拉第定律</td><td>$\nabla\!\times\!\vv{E}=-\partial_t\vv{B}$</td><td>$\nabla\!\times\!\vv{E}=-\tfrac1c\,\partial_t\vv{B}$</td></tr>
+  <tr><td>安培–麦克斯韦定律</td><td>$\nabla\!\times\!\vv{B}=\mu_0\vv{J}+\mu_0\eps_0\,\partial_t\vv{E}$</td><td>$\nabla\!\times\!\vv{B}=\tfrac{4\pi}c\vv{J}+\tfrac1c\,\partial_t\vv{E}$</td></tr>
+  <tr><td>得到的波速</td><td>$c=1/\sqrt{\eps_0\mu_0}$</td><td>$c$ 直接出现，无需组合常数</td></tr>
+</table>
+
+<p class="small dim">两种写法描述同一个物理，区别只在于电荷/电流单位的选择：高斯制把 $4\pi$ 放进方程、把 $\eps_0,\mu_0$ 吸收掉，使 $c$ 显式出现。凡是涉及"推导出 $c$"的段落，高斯制看起来更漂亮；凡是涉及工程数值（阻抗、功率、场强）的段落，SI 更方便。本文在需要时给出两者。</p>
+
+<h3>本篇用到的符号</h3>
+
+<table class="data small">
+  <tr><th>符号</th><th>含义</th><th>单位</th></tr>
+  <tr><td>$\vv{E},\vv{B}$</td><td>电场强度、磁感应强度</td><td>V/m，T</td></tr>
+  <tr><td>$\vv{D}=\eps\vv{E},\ \vv{H}=\vv{B}/\mu$</td><td>电位移矢量、磁场强度（介质中）</td><td>C/m²，A/m</td></tr>
+  <tr><td>$\rho,\vv{J}$</td><td>电荷密度、电流密度</td><td>C/m³，A/m²</td></tr>
+  <tr><td>$\eps_0,\mu_0$</td><td>真空介电常数、真空磁导率</td><td>F/m，N/A²</td></tr>
+  <tr><td>$\vv{S}=\vv{E}\times\vv{H}$</td><td>坡印廷矢量（能流密度）</td><td>W/m²</td></tr>
+  <tr><td>$\rho,\vv{u},p$</td><td>流体密度、速度、压强</td><td>kg/m³，m/s，Pa</td></tr>
+  <tr><td>$\gamma=c_p/c_v$</td><td>绝热指数（空气 1.4）</td><td>—</td></tr>
+  <tr><td>$\vv{\omega}=\nabla\times\vv{u}$</td><td>涡量</td><td>1/s</td></tr>
+  <tr><td>$\Gamma=\oint\vv{u}\cdot\mathrm{d}\vv{l}$</td><td>环量</td><td>m²/s</td></tr>
+  <tr><td>$\mathcal{D}/\mathcal{D}t=\partial_t+\vv{u}\!\cdot\!\nabla$</td><td>物质导数（随流体元求导）</td><td>—</td></tr>
+</table>
