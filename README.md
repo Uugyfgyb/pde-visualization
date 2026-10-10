@@ -8,8 +8,9 @@
 | --- | --- | --- | --- |
 | 双曲型 · 波动与振动 | 受摩擦阻尼的弦 | `u_tt = a²u_xx − cu_t + f`；弦振动、能量递减、唯一性与稳定性 | [打开交互页](topics/damped-wave/index.html) · [说明](topics/damped-wave/README.md) |
 | 椭圆型 · 势场与平衡 | 调和函数：从边界到内部 | `Δu=0`；Poisson 公式、平均值性质、强最大值原理、Green 恒等式与能量 | [打开交互页](topics/harmonic-functions/index.html) · [说明](topics/harmonic-functions/README.md) |
+| 椭圆型 · 势场与平衡 | Hopf 最大值原理 | `Δu ≥ 0`；边界点引理、障碍函数与外法向导数 | [打开交互页](topics/hopf-maximum-principle/index.html) · [说明](topics/hopf-maximum-principle/README.md) |
 
-目前收录 2 个专题。后续可按**双曲型（波动与振动）**、**抛物型（热传导与扩散）**、**椭圆型（势场与平衡）**、**非线性与耦合方程**继续扩展；分类表示专题的主要教学主题，必要时可在说明中标出跨类性质。
+目前收录 3 个专题。后续可按**双曲型（波动与振动）**、**抛物型（热传导与扩散）**、**椭圆型（势场与平衡）**、**非线性与耦合方程**继续扩展；分类表示专题的主要教学主题，必要时可在说明中标出跨类性质。
 
 ## 仓库结构
 
@@ -23,11 +24,16 @@ pde-visualization/
     │   ├── preview.png                # 专题预览图
     │   ├── README.md                  # 专题范围与使用说明
     │   └── source/                    # 可编辑网页、数值内核、图像和验证脚本
-    └── harmonic-functions/
-        ├── index.html                 # 带符号与图形注解的离线动态教材
-        ├── preview.png
-        ├── README.md
-        └── source/                    # 网页源码、构建与数学／浏览器验证
+    ├── harmonic-functions/
+    │   ├── index.html                 # 带符号与图形注解的离线动态教材
+    │   ├── preview.png
+    │   ├── README.md
+    │   └── source/                    # 网页源码、构建与数学／浏览器验证
+    └── hopf-maximum-principle/
+        ├── index.html                 # 内嵌脚本与字体的离线单文件页
+        ├── preview.png                # 专题示意预览图
+        ├── README.md                  # 定理、交互参数与适用范围
+        └── source/                    # 可编辑网页、构建脚本与依赖许可证
 ```
 
 ## 今后新增专题

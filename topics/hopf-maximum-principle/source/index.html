@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hopf 最大值原理 · 3D 可视化讲解</title>
+<link rel="stylesheet" href="vendor/katex.min.css">
+<style>
+:root{
+  --bg:#0a0e15; --bg2:#0f141f; --card:#141b28; --card2:#1a2332;
+  --bd:rgba(255,255,255,.09); --bd2:rgba(255,255,255,.16);
+  --tx:#e8eef6; --tx2:#9dabc0; --tx3:#6b7a90;
+  --cy:#4fc3f7; --am:#f4c542; --rd:#e2554a; --gn:#5ee08a; --pu:#a78bfa;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.katex{color:var(--tx);font-size:1.02em}
+
+/* header */
+header{
+  border-bottom:1px solid var(--bd);
+  background:linear-gradient(180deg,#101725 0%,#0a0e15 100%);
+  padding:38px 0 30px;
+}
+.tag{
+  display:inline-block;font-size:12px;letter-spacing:.14em;color:var(--cy);
+  border:1px solid rgba(79,195,247,.32);border-radius:999px;
+  padding:3px 13px;margin-bottom:16px;
+}
+h1{font-size:31px;font-weight:600;letter-spacing:-.4px;line-height:1.25}
+h1 .en{color:var(--tx3);font-weight:400;font-size:19px;margin-left:10px}
+.lede{color:var(--tx2);margin-top:12px;max-width:760px;font-size:15px}
+nav{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+nav a{
+  font-size:13px;color:var(--tx2);text-decoration:none;
+  border:1px solid var(--bd);border-radius:7px;padding:5px 12px;
+  transition:.15s;background:var(--card)
+}
+nav a:hover{color:var(--cy);border-color:rgba(79,195,247,.4);background:var(--card2)}
+
+/* section */
+section{padding:52px 0;border-bottom:1px solid var(--bd)}
+h2{font-size:21px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:11px}
+h2 .num{
+  font-size:12px;color:var(--cy);border:1px solid rgba(79,195,247,.3);
+  border-radius:6px;padding:2px 8px;font-weight:500
+}
+.sub{color:var(--tx3);font-size:14px;margin-bottom:26px}
+h3{font-size:16px;font-weight:600;margin:26px 0 10px}
+p{margin-bottom:13px;color:#d3dcea}
+
+/* theorem box */
+.theorem{
+  background:var(--card);border:1px solid var(--bd2);border-left:3px solid var(--cy);
+  border-radius:10px;padding:24px 26px;margin:18px 0
+}
+.theorem .th-name{font-size:13px;color:var(--cy);letter-spacing:.06em;margin-bottom:10px}
+.theorem .cond{color:var(--tx2);font-size:14px;margin:10px 0}
+.eq{
+  background:var(--bg2);border:1px solid var(--bd);border-radius:8px;
+  padding:15px 18px;margin:14px 0;overflow-x:auto;text-align:center
+}
+
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:20px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin:20px 0}
+.card{
+  background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:18px 20px
+}
+.card h4{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.card p{font-size:13.5px;color:var(--tx2);margin-bottom:0;line-height:1.7}
+.card .hl{color:var(--tx)}
+
+/* 3D stage */
+.stage{
+  position:relative;background:var(--bg2);
+  border:1px solid var(--bd2);border-radius:12px;overflow:hidden
+}
+#canvas-wrap{position:relative;width:100%;height:430px}
+#canvas-wrap canvas{display:block;width:100%;height:100%}
+#overlay{position:absolute;inset:0;pointer-events:none}
+.lab{
+  position:absolute;left:0;top:0;white-space:nowrap;
+  font-size:12px;padding:2px 7px;border-radius:5px;
+  background:rgba(10,14,21,.82);border:1px solid var(--bd2);
+  color:var(--tx);transform:translate(-50%,-50%);line-height:1.4
+}
+.lab.r{color:#ffb4ad;border-color:rgba(226,85,74,.5)}
+.lab.g{color:#a9f0c4;border-color:rgba(94,224,138,.45)}
+.lab.b{color:#b3e3fb;border-color:rgba(79,195,247,.45)}
+.lab.a{color:#ffe0a3;border-color:rgba(244,197,66,.45)}
+.legend{
+  display:flex;flex-wrap:wrap;gap:14px;padding:12px 18px;
+  border-top:1px solid var(--bd);background:var(--card);font-size:12.5px;color:var(--tx2)
+}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.bar{height:9px;border-radius:5px;margin:4px 0 2px;
+  background:linear-gradient(90deg,#1d4e8f,#2a8fb8,#4fc3a1,#f4c542,#e2554a)}
+.bar.g{background:linear-gradient(90deg,#0d2a1c,#1d6b45,#5ee08a)}
+
+/* controls */
+.ctrl{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px 18px;border-bottom:1px solid var(--bd);background:var(--card)
+}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{
+  font-size:13px;padding:6px 14px;border-radius:7px;cursor:pointer;
+  border:1px solid var(--bd);background:transparent;color:var(--tx2);transition:.15s;
+  font-family:inherit
+}
+.tab:hover{border-color:var(--bd2);color:var(--tx)}
+.tab.on{background:rgba(79,195,247,.14);border-color:rgba(79,195,247,.5);color:var(--cy)}
+.hint{margin-left:auto;font-size:12px;color:var(--tx3)}
+input[type=range]{width:190px;accent-color:var(--cy)}
+.sl{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2)}
+.sl b{color:var(--am);font-weight:600;min-width:34px;display:inline-block}
+.ck{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2);cursor:pointer}
+.ck input{accent-color:var(--cy)}
+
+/* proof steps */
+.step{
+  background:var(--card);border:1px solid var(--bd);border-radius:10px;
+  padding:18px 22px;margin-bottom:12px;position:relative
+}
+.step .sh{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.step .sn{
+  width:24px;height:24px;flex:none;border-radius:6px;
+  background:rgba(79,195,247,.14);border:1px solid rgba(79,195,247,.4);
+  color:var(--cy);font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center
+}
+.step .st{font-size:15px;font-weight:600}
+.step ul{margin:8px 0 0 20px;color:var(--tx2);font-size:14px}
+.step li{margin-bottom:5px}
+.kbd{
+  display:inline-block;font-size:12.5px;background:var(--bg2);
+  border:1px solid var(--bd);border-radius:5px;padding:1px 7px;color:var(--am)
+}
+
+/* charts */
+.chartbox{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:18px 20px}
+.chartbox .ct{font-size:14px;font-weight:600;margin-bottom:2px}
+.chartbox .cs{font-size:12.5px;color:var(--tx3);margin-bottom:12px}
+canvas.chart{width:100%;display:block}
+.status{
+  margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13.5px;
+  border:1px solid rgba(94,224,138,.4);background:rgba(94,224,138,.09);color:#a9f0c4
+}
+.status.bad{border-color:rgba(226,85,74,.45);background:rgba(226,85,74,.09);color:#ffb4ad}
+
+/* note */
+.note{
+  border-left:2px solid var(--pu);background:rgba(167,139,250,.07);
+  border-radius:0 8px 8px 0;padding:13px 18px;margin:18px 0;
+  font-size:13.5px;color:var(--tx2)
+}
+.note b{color:var(--pu);font-weight:600}
+
+/* 符号表 */
+.symtable{border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin:20px 0}
+.srow{
+  display:grid;grid-template-columns:118px 116px 1fr;gap:14px;
+  padding:11px 18px;border-bottom:1px solid var(--bd);
+  align-items:baseline;background:var(--card)
+}
+.srow.head{background:var(--card2);font-size:12px;color:var(--tx3);letter-spacing:.05em}
+.srow:last-child{border-bottom:none}
+.sgrp{
+  background:#182031;padding:10px 18px;font-size:13px;font-weight:600;
+  color:var(--cy);border-bottom:1px solid var(--bd)
+}
+.srow:hover{background:var(--card2)}
+.ss{font-size:14.5px;color:var(--am);text-align:center;overflow-x:auto}
+.snm{font-size:13px;color:var(--tx);font-weight:500}
+.sd{font-size:13.2px;color:var(--tx2);line-height:1.68}
+
+/* 正文符号悬停提示 */
+.sym{position:relative;border-bottom:1px dashed rgba(244,197,66,.55);cursor:help}
+.sym:hover::after{
+  content:attr(data-tip);
+  position:absolute;left:50%;bottom:140%;transform:translateX(-50%);
+  background:#1c2536;border:1px solid var(--bd2);color:var(--tx);
+  padding:6px 11px;border-radius:6px;font-size:12.5px;line-height:1.55;
+  white-space:normal;width:max-content;max-width:262px;z-index:60;
+  text-align:left;font-weight:400
+}
+
+footer{padding:30px 0 46px;color:var(--tx3);font-size:13px}
+
+@media(max-width:720px){
+  h1{font-size:25px} #canvas-wrap{height:340px}
+  .hint{display:none} section{padding:38px 0}
+  .srow{grid-template-columns:1fr;gap:5px}
+  .ss{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">定理 5.4.1 · 椭圆型偏微分方程</span>
+    <h1>Hopf 最大值原理<span class="en">Hopf's Maximum Principle</span></h1>
+    <p class="lede">
+      一个次调和函数若在球的边界某点取得严格最大值，则它在该点沿<b>外法向</b>的方向导数必定<b>严格为正</b>。
+      本页用可交互的 3D 模型、参数可调的曲线图与逐步推导，完整呈现这一经典引理的几何直觉与证明骨架。
+    </p>
+    <nav>
+      <a href="#thm">定理陈述</a>
+      <a href="#sym">符号注释</a>
+      <a href="#physics">物理直觉</a>
+      <a href="#view3d">3D 可视化</a>
+      <a href="#proof">证明详解</a>
+      <a href="#aux">辅助函数</a>
+      <a href="#end">意义与推广</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- 定理陈述 -->
+<section id="thm">
+  <h2><span class="num">01</span>定理陈述</h2>
+  <p class="sub">先看清楚结论：它说的不是"最大值在边界"（那是弱极值原理），而是"在边界最值点，向外走函数值仍在陡升"。</p>
+
+  <div class="theorem">
+    <div class="th-name">定理 5.4.1（Hopf 引理 / 边界点引理）</div>
+    <p class="cond"><b>设</b> <span class="sym" data-tip="开球：以 y 为球心、R 为半径，{x : |x−y| &lt; R}，不含边界">$B_R(y)$</span>
+    $\subset$ <span class="sym" data-tip="n 维欧氏空间，本定理在 n≥3 的框架下陈述">$\mathbb{R}^n$</span> $(n\ge 3)$
+    是以 <span class="sym" data-tip="球心：径向距离与法向都相对于它定义">$y$</span> 为球心、
+    <span class="sym" data-tip="外半径：球心到边界的距离，可视化中取 R=1">$R$</span> 为半径的球，
+    <span class="sym" data-tip="被研究的函数；物理上可读作稳态温度场">$u$</span> $\in$
+    <span class="sym" data-tip="球内有连续二阶偏导，闭球上有连续一阶偏导；使 Laplacian 与边界法向导数都有定义">$C^2(B_R(y))\cap C^1(\overline{B_R(y)})$</span>
+    且在 $B_R(y)$ 内满足 <span class="sym" data-tip="Laplacian 非负，即次调和：Δu = Σ ∂²u/∂xᵢ² ≥ 0">$\Delta u\ge 0$</span>
+    （即 $u$ 为次调和函数）。</p>
+
+    <p class="cond"><b>若</b> 存在一点 <span class="sym" data-tip="边界上取到最大值的特定点，定理结论全部关于它">$x_0$</span>
+    $\in$ <span class="sym" data-tip="球面（边界）：{x : |x−y| = R}，符号 ∂ 表示边界">$\partial B_R(y)$</span>，
+    使得对球内一切点都有严格不等式</p>
+    <div class="eq">$$u(x_0) > u(x),\qquad \forall\,x\in B_R(y),$$</div>
+    <p class="cond"><b>则</b> $u$ 在 $x_0$ 处沿外法向
+    <span class="sym" data-tip="希腊字母 nu：垂直于边界、由区域内指向外的单位向量">$\nu$</span>
+    的方向导数严格为正：</p>
+    <div class="eq">$$\frac{\partial u}{\partial \nu}(x_0)\;>\;0.$$</div>
+  </div>
+
+  <div class="note">
+    <b>这条结论怎么读。</b> 球内的 $u$ 满足“Laplacian 非负”，且边界点 $x_0$ 的值严格大于每个内部点的值；
+    那么从球内朝 $x_0$ 的外法向 $\nu$ 前进，$u$ 在边界处仍以<b>严格正的斜率</b>增长。
+    这里 $x_0$、球心 $y$、半径 $R$ 固定，$x$ 遍历球内；$\partial_\nu u$ 是沿单位向量 $\nu$ 的方向导数。
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <h4><span class="dot" style="background:var(--cy)"></span>平凡的部分</h4>
+      <p>因为 $x_0$ 是最大值点，从 $x_0$ 沿内法向走进球内时 $u$ 只会下降，故差商
+      $\frac{u(x_0)-u(x_0-t\nu)}{t}\ge 0$，得到 $\partial u/\partial\nu\ \ge\ 0$ <span class="hl">毫不费力</span>。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--rd)"></span>深刻的部分</h4>
+      <p>Hopf 的贡献在于把"<b>$\ge 0$</b>"升级为"<b class="hl">$&gt; 0$</b>"——最值点处不允许出现平坦平台，
+      梯度必须真正"戳"出去。这一步无法由最大值定义直接得到。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--am)"></span>关键工具</h4>
+      <p>证明依赖一个精心设计的<b class="hl">障碍函数</b>（barrier）
+      $v(x)=e^{-\alpha|x-y|^2}-e^{-\alpha R^2}$，它把边界条件与微分不等式同时"夹"住。</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>关于维数。</b> 教材在 $n\ge 3$ 的框架下陈述本定理（该章上下文为高维位势理论 / Green 函数）。
+    事实上 Hopf 引理本身对任意 $n\ge 2$ 均成立，只要区域在 $x_0$ 处满足<b>内球条件</b>（interior ball condition）。
+    此处取球为区域，内球条件自动满足。
+  </div>
+</section>
+
+<!-- 符号注释 -->
+<section id="sym">
+  <h2><span class="num">02</span>符号注释</h2>
+  <p class="sub">定理与证明中出现的每一个数学符号，逐一解释。此外，正文中带
+  <span class="sym" data-tip="像这样：虚线下划线的符号都可悬停查看注释">虚线下划线</span>
+  的符号，鼠标悬停即可即时查看注释。</p>
+  <div class="note"><b>量纲约定。</b> 页面示意取 $R=1$、$\rho=0.5$ 并把长度归一化，因此图中坐标、$r$、$\alpha$、$v$ 与 $\Delta v$ 都以无量纲数值表示。一般带单位的模型里，$R,\rho,r$ 是长度，$\alpha$ 的单位为长度的倒数平方；$u$ 的单位由应用决定，$\partial_\nu u$ 的单位为“$u$ 的单位／长度”。</div>
+
+  <div class="symtable">
+    <div class="sgrp">A · 区域与点（几何舞台）</div>
+    <div class="srow head"><div>符号</div><div>名称</div><div>注释讲解</div></div>
+
+    <div class="srow">
+      <div class="ss">$\mathbb{R}^n$</div>
+      <div class="snm">n 维欧氏空间</div>
+      <div class="sd">所有 $n$ 元实数组 $(x_1,\dots,x_n)$ 构成的空间，配备通常距离 $|x-y|$。定理在其中讨论。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$B_R(y)$</div>
+      <div class="snm">开球</div>
+      <div class="sd">以 $y$ 为球心、$R$ 为半径的<b>开</b>球：$\{x:|x-y| &lt; R\}$。不含边界球面，是 $u$ 满足微分不等式的区域。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\overline{B_R(y)}$</div>
+      <div class="snm">闭球（闭包）</div>
+      <div class="sd">开球再并上它的边界：$\{x:|x-y|\le R\}$。定理要求 $u\in C^1$ 一直到闭包，保证边界导数有意义；球内还要求 $u\in C^2$，以便计算 Laplacian。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\partial B_R(y)$</div>
+      <div class="snm">球面（边界）</div>
+      <div class="sd">恰好距球心 $R$ 的点集：$\{x:|x-y|=R\}$。符号 $\partial$ 表示"边界"。最大值点 $x_0$ 就在其上。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$B_\rho(y)$</div>
+      <div class="snm">内球</div>
+      <div class="sd">与外球同心、半径 $\rho$（$\rho&lt;R$）的小球。证明中把它挖去，以避开球心附近辅助函数失效的地方。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$A$</div>
+      <div class="snm">环形区域</div>
+      <div class="sd">$A=B_R(y)\setminus\overline{B_\rho(y)}$，即"外球减去内球"留下的厚球壳。极值原理真正施用的区域。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\partial A$</div>
+      <div class="snm">环域边界</div>
+      <div class="sd">由两部分组成：$\partial A=\partial B_R\cup\partial B_\rho$。$w\le 0$ 必须分别在这两片边界上验证。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$y$</div>
+      <div class="snm">球心</div>
+      <div class="sd">固定的参考点。径向距离 $r$、外法向 $\nu$ 全部相对于它定义。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$x$</div>
+      <div class="snm">动点</div>
+      <div class="sd">球内任意一点。条件 "$u(x_0)&gt;u(x)$ 对一切 $x\in B_R$" 中的 $x$ 就是这个动点。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$x_0$</div>
+      <div class="snm">最大值点</div>
+      <div class="sd">边界 $\partial B_R$ 上的<b>特定</b>一点，全区域的最大值在此取得。定理的全部结论都是关于它的。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$r$</div>
+      <div class="snm">径向距离</div>
+      <div class="sd">$r=|x-y|$，动点到球心的距离。引入它可把高维问题化为一维计算（$v$ 只依赖 $r$）。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\hat r$</div>
+      <div class="snm">径向单位向量</div>
+      <div class="sd">$\hat r=(x-y)/|x-y|$，长度为 1 的指向外方向量。在球面上它与外法向 $\nu$ 重合。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\nu$</div>
+      <div class="snm">外法向（希腊字母 nu）</div>
+      <div class="sd">垂直于边界、由区域内指向区域外的单位向量。在球面上 $\nu=(x_0-y)/R$。定理结论 $\partial u/\partial\nu&gt;0$ 的对象。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$t$</div>
+      <div class="snm">步长参数</div>
+      <div class="sd">沿内法向 $-\nu$ 从 $x_0$ 向内走的距离。构造差商后用 $t\to0^+$ 取极限。</div>
+    </div>
+  </div>
+
+  <div class="symtable">
+    <div class="sgrp">B · 函数与导数</div>
+    <div class="srow head"><div>符号</div><div>名称</div><div>注释讲解</div></div>
+
+    <div class="srow">
+      <div class="ss">$u$</div>
+      <div class="snm">被研究的函数</div>
+      <div class="sd">满足 $\Delta u\ge0$ 的次调和函数。物理上可读作稳态温度场；定理要刻画它在 $x_0$ 附近的陡峭程度。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$u(x_0)$</div>
+      <div class="snm">最大值（常数）</div>
+      <div class="sd">$x_0$ 固定后 $u(x_0)$ 只是一个<b>数</b>，在证明中充当基准：把 $u-u(x_0)$ 变成"处处 $\le0$"的函数。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\nabla u$</div>
+      <div class="snm">梯度（nabla u）</div>
+      <div class="sd">$u$ 的一阶偏导组成的向量 $(\partial_{x_1}u,\dots,\partial_{x_n}u)$，指向 $u$ 增长最快的方向。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\Delta u$</div>
+      <div class="snm">Laplacian（拉普拉斯量）</div>
+      <div class="sd">$u$ 的所有二阶纯偏导之和。$\Delta u\ge0$ 称<b>次调和</b>，$\Delta u=0$ 称<b>调和</b>。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\dfrac{\partial u}{\partial\nu}$</div>
+      <div class="snm">外法向方向导数</div>
+      <div class="sd">等于 $\nabla u\cdot\nu$。因为 $u$ 只在闭球上有定义，实际按 $\lim_{t\to0^+}\frac{u(x_0)-u(x_0-t\nu)}{t}$ 理解。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$v$</div>
+      <div class="snm">辅助函数 / 障碍函数</div>
+      <div class="sd">人为构造的 $v=e^{-\alpha r^2}-e^{-\alpha R^2}$。它<b>边界为零、内部为正、Laplacian 可控为正</b>，是整个证明的机关。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$w$</div>
+      <div class="snm">比较函数</div>
+      <div class="sd">$w=u-u(x_0)+\varepsilon v$，把 $u$ 与障碍函数叠加。极值原理作用在 $w$ 上，而非直接作用在 $u$ 上。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$C^1,\ C^2$</div>
+      <div class="snm">光滑性类别</div>
+      <div class="sd">$C^1$：一阶偏导存在且连续；$C^2$：二阶偏导存在且连续。定理要求球内 $C^2$、闭球上 $C^1$。证明中计算 $\Delta u$ 用到二阶偏导，边界差商用到一阶偏导。</div>
+    </div>
+  </div>
+
+  <div class="symtable">
+    <div class="sgrp">C · 算子与公式</div>
+    <div class="srow head"><div>符号</div><div>名称</div><div>注释讲解</div></div>
+
+    <div class="srow">
+      <div class="ss">$\Delta$</div>
+      <div class="snm">Laplace 算子</div>
+      <div class="sd">$\Delta=\sum_{i=1}^{n}\dfrac{\partial^2}{\partial x_i^2}$。它衡量"函数值相对周围平均值的偏离"：$\Delta u\ge0$ 意味着 $u$ 不高估周围平均。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\nabla$</div>
+      <div class="snm">梯度算子（nabla）</div>
+      <div class="sd">把标量函数变成向量场的算子。方向导数可写成 $\partial u/\partial\nu=\nabla u\cdot\nu$（点积）。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\Delta f=f''+\frac{n-1}{r}f'$</div>
+      <div class="snm">径向函数的 Laplacian</div>
+      <div class="sd">当 $f$ 只依赖 $r=|x-y|$ 时的简化公式。$v$ 正是径向函数，用它可一行算出 $\Delta v$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\lim\limits_{t\to0^+}$</div>
+      <div class="snm">右极限</div>
+      <div class="sd">只从 $t&gt;0$ 一侧趋近。因为 $x_0+t\nu$ 在球外（$u$ 无定义），只能从内部 $x_0-t\nu$ 逼近。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\cdot$</div>
+      <div class="snm">点积（内积）</div>
+      <div class="sd">$\nabla u\cdot\nu$ 表示梯度在 $\nu$ 方向上的投影分量，即方向导数。</div>
+    </div>
+  </div>
+
+  <div class="symtable">
+    <div class="sgrp">D · 参数与常数</div>
+    <div class="srow head"><div>符号</div><div>名称</div><div>注释讲解</div></div>
+
+    <div class="srow">
+      <div class="ss">$n$</div>
+      <div class="snm">空间维数</div>
+      <div class="sd">$\mathbb{R}^n$ 的维数。教材在 $n\ge3$ 的框架下陈述；维数出现在 $\Delta v$ 公式的 $-2n\alpha$ 项里。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$R$</div>
+      <div class="snm">外半径</div>
+      <div class="sd">球 $B_R(y)$ 的半径，也是 $x_0$ 到球心的距离。本页可视化取 $R=1$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\rho$</div>
+      <div class="snm">内半径（希腊字母 rho）</div>
+      <div class="sd">被挖去的内球半径，$0&lt;\rho&lt;R$。它划定了环域的内边界，也决定了 $\alpha$ 需要多大。本页取 $\rho=0.5$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\alpha$</div>
+      <div class="snm">指数参数（希腊字母 alpha）</div>
+      <div class="sd">辅助函数中的正数，控制 $v$ 的衰减快慢。<b>必须取足够大</b>：$\alpha&gt;n/(2\rho^2)$，才能保证环域内 $\Delta v&gt;0$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\varepsilon$</div>
+      <div class="snm">叠加系数（希腊字母 epsilon）</div>
+      <div class="sd">乘在 $v$ 前的小正数。要取足够小，使 $\varepsilon v$ 不超过内边界上 $u$ 与 $u(x_0)$ 的间隙 $\delta$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\delta$</div>
+      <div class="snm">正间隙（希腊字母 delta）</div>
+      <div class="sd">在紧集 $\overline{B_\rho}$ 上，$u(x_0)-u\ge\delta&gt;0$。这个"严格正的缝"正是 $\varepsilon$ 得以存在的原因。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$r^*$</div>
+      <div class="snm">临界半径</div>
+      <div class="sd">$r^*=\sqrt{n/(2\alpha)}$。$\Delta v&gt;0$ 当且仅当 $r&gt;r^*$；条件 $r^*&lt;\rho$ 等价于 $\alpha&gt;n/(2\rho^2)$。</div>
+    </div>
+  </div>
+
+  <div class="symtable">
+    <div class="sgrp">E · 逻辑与集合记号</div>
+    <div class="srow head"><div>符号</div><div>名称</div><div>注释讲解</div></div>
+
+    <div class="srow">
+      <div class="ss">$\forall$</div>
+      <div class="snm">全称量词</div>
+      <div class="sd">"对任意 / 对一切"。条件是：<b>对任意</b>球内点 $x$，都有 $u(x_0)&gt;u(x)$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\in,\ \subset$</div>
+      <div class="snm">属于、包含于</div>
+      <div class="sd">$x\in B_R$ 表示点 $x$ 属于球；$B_R\subset\mathbb{R}^n$ 表示球是空间的子集。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\setminus$</div>
+      <div class="snm">集合差</div>
+      <div class="sd">$A\setminus B$：属于 $A$ 但不属于 $B$ 的部分。环域 $A=B_R\setminus\overline{B_\rho}$ 即"挖去内球"。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\cup$</div>
+      <div class="snm">并集</div>
+      <div class="sd">$\partial A=\partial B_R\cup\partial B_\rho$：环域边界 = 外球面 ∪ 内球面。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\ge,\ &gt;,\ \le,\ &lt;$</div>
+      <div class="snm">不等号</div>
+      <div class="sd">定理的精髓全在这两个符号的差别上：由最大值只能得到 $\partial u/\partial\nu\ \ge\ 0$，Hopf 的贡献是把它提升为 $&gt;\ 0$。</div>
+    </div>
+    <div class="srow">
+      <div class="ss">$\blacksquare$</div>
+      <div class="snm">证毕（QED）</div>
+      <div class="sd">拉丁语 quod erat demonstrandum 的标记，表示推导结束。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 物理直觉 -->
+<section id="physics">
+  <h2><span class="num">03</span>物理直觉</h2>
+  <p class="sub">把 $u$ 读成稳态温度场，结论就变得可感。</p>
+
+  <div class="grid3">
+    <div class="card">
+      <h4><span class="dot" style="background:var(--rd)"></span>最热的一点</h4>
+      <p>设想一个处于热稳态的物体，$x_0$ 是它表面上<b class="hl">最热的一点</b>，且比内部任何位置都热。
+      这是理解边界处外法向斜率的稳态类比；实际热流还取决于材料参数与热源。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--am)"></span>梯度指向外</h4>
+      <p>热流方向是 $-\nabla u$（由热到冷），因此热流从 $x_0$ <b class="hl">指向物体内部</b>，
+      于是 $\nabla u(x_0)$ 指向外部，$\partial u/\partial\nu=\nabla u\cdot\nu&gt;0$。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--gn)"></span>为什么必须"严格"</h4>
+      <p>仅从边界最大值出发，外法向斜率可能等于零；结合次调和条件与内部严格不等式，障碍函数证明排除了这种平坦切触。</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>一个具体例子。</b> 取 $u(x)=|x-y|^2+a\cdot(x-y)$（$a$ 为常向量）。
+    则 $\Delta u = 2n &gt; 0$，是次调和函数；它在球面上的最大值出现在 $x_0-y=R\,\frac{a}{|a|}$ 处，唯一。
+    直接计算得 $\frac{\partial u}{\partial\nu}(x_0)=2R+|a|&gt;0$，与定理结论完全一致。
+    这个例子也正是下面 3D 场景中球面着色的依据。
+  </div>
+</section>
+
+<!-- 3D 可视化 -->
+<section id="view3d">
+  <h2><span class="num">04</span>3D 交互可视化</h2>
+  <p class="sub">拖动旋转、滚轮缩放。切换四个场景，逐步看清证明的几何骨架。此图是稳态示意：自动旋转只改变观察视角，不代表时间演化；坐标以 $R=1$ 归一化，无物理单位。温度颜色采用固定数值范围；辅助函数颜色会随 $\alpha$ 重新归一化。</p>
+
+  <div class="stage">
+    <div class="ctrl">
+      <div class="tabs">
+        <button class="tab on" data-mode="geom">① 几何设置</button>
+        <button class="tab" data-mode="temp">② 温度分布</button>
+        <button class="tab" data-mode="aux">③ 辅助函数 v</button>
+        <button class="tab" data-mode="annu">④ 环形区域 A</button>
+      </div>
+      <label class="ck"><input type="checkbox" id="autorot" checked> 自动旋转</label>
+      <span class="hint">拖动旋转 · 滚轮缩放</span>
+    </div>
+    <div id="canvas-wrap">
+      <div id="overlay"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+</section>
+
+<!-- 证明 -->
+<section id="proof">
+  <h2><span class="num">05</span>证明详解</h2>
+  <p class="sub">七步推导。核心是构造障碍函数 $v$，把"边界最值"转化为"内部微分不等式"的矛盾。</p>
+
+  <div class="step">
+    <div class="sh"><span class="sn">1</span><span class="st">取环形子区域</span></div>
+    <p style="margin-bottom:6px">取
+    <span class="sym" data-tip="内半径 ρ：被挖去的内球半径，满足 0&lt;ρ&lt;R；本页取 ρ=0.5">$\rho\in(0,R)$</span>
+    （例如 $\rho=R/2$），挖去内球，考虑环域</p>
+    <div class="eq">$$A \;=\; B_R(y)\setminus \overline{B_\rho(y)} .$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：从外球 $B_R(y)$ 挖去半径为 $\rho$ 的闭内球，留下厚球壳 $A$；$\setminus$ 表示集合差。</p>
+    <p style="margin-bottom:0;color:var(--tx2);font-size:14px">
+      这么做的原因：$x_0$ 在外边界上，而我们需要一个"内部"区域来应用极值原理；
+      挖去内球可避开球心附近辅助函数失去正 Laplacian 的地方。</p>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">2</span><span class="st">构造障碍函数 $v$</span></div>
+    <div class="eq">$$v(x)\;=\;e^{-\alpha|x-y|^2}\;-\;e^{-\alpha R^2},\qquad \alpha&gt;0 .$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：把动点到球心距离 $|x-y|$ 的平方放进指数，再减去外边界对应的常数；$\alpha$ 是可调的正参数，使 $v$ 在 $r=R$ 时恰好为零。</p>
+    <ul>
+      <li>球内 <span class="sym" data-tip="径向距离 r = |x−y|；引入它可把高维计算化为一维">$r=|x-y|&lt;R$</span>
+      时 <span class="sym" data-tip="辅助函数（障碍函数）v：球内为正、边界严格归零">$v(x)&gt;0$</span>；
+      在外边界 $\partial B_R$ 上 $v(x)=0$。</li>
+      <li>径向函数 <span class="sym" data-tip="只依赖 r 的函数的 Laplacian 简化公式，v 正是径向函数">$\Delta f=f''+\frac{n-1}{r}f'$</span>，
+      直接算得 $\;\Delta v = e^{-\alpha r^2}\big(4\alpha^2 r^2-2n\alpha\big)$。</li>
+      <li>故 $\Delta v&gt;0 \iff r &gt;$
+      <span class="sym" data-tip="临界半径 r* = √(n/2α)：Δv 在此处变号">$r^*:=\sqrt{\dfrac{n}{2\alpha}}$</span>。</li>
+      <li><b>选 <span class="sym" data-tip="指数参数 α：控制 v 的衰减快慢，须取足够大">$\alpha &gt; \dfrac{n}{2\rho^2}$</span></b>，
+      则 $r^*&lt;\rho$，于是 $\Delta v&gt;0$ 在<b>整个环域
+      <span class="sym" data-tip="环形区域 A = B_R \ B̄_ρ（挖去内球的厚球壳）">$A$</span></b> 上成立。</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">3</span><span class="st">叠加出 $w$</span></div>
+    <div class="eq">$$w(x)\;=\;u(x)-u(x_0)+\varepsilon\,v(x),\qquad \varepsilon&gt;0\ \text{待定}.$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：原函数减去固定的边界最大值，再加上一小份障碍函数；$\varepsilon$ 是稍后由内边界间隙选定的正系数。</p>
+    <ul>
+      <li><b>外边界</b> $\partial B_R$：$v=0$ 且 $u\le u(x_0)$ ⟹ $w\le 0$。</li>
+      <li><b>内边界</b> $\partial B_\rho$：由连续性，$u$ 在紧集 $\overline{B_\rho}$ 上严格小于 $u(x_0)$，
+      存在 <span class="sym" data-tip="正间隙 δ&gt;0：内球上 u 距最大值的严格正的缝，ε 得以存在的原因">$\delta&gt;0$</span>
+      使 $u\le u(x_0)-\delta$；取
+      <span class="sym" data-tip="叠加系数 ε：乘在 v 前的小正数，须足够小">$\varepsilon$</span>
+      足够小使 $\varepsilon v\le\delta$ ⟹ $w\le 0$。</li>
+      <li><b>环域内</b>：<span class="sym" data-tip="比较函数 w = u − u(x₀) + εv，极值原理作用在它上面">$w$</span>
+      满足 $\Delta w=\Delta u+\varepsilon\,\Delta v &gt; 0$（严格次调和）。</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">4</span><span class="st">弱极值原理</span></div>
+    <p style="margin-bottom:0">因 $\Delta w&gt;0$ 于 $A$，$w$ 在
+    <span class="sym" data-tip="Ā 表示 A 的闭包（环域连同内外两个球面）">$\bar A$</span>
+    上的最大值只能在边界
+    <span class="sym" data-tip="环域边界 = ∂B_R ∪ ∂B_ρ，由内外两片球面组成">$\partial A$</span>
+    达到；而 $\partial A$ 上已有 $w\le 0$，故</p>
+    <div class="eq">$$w(x)\le 0\quad\text{于}\ \bar A,\qquad \text{且}\quad w(x_0)=0 .$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：比较函数在整个闭环域不超过零，却在外边界点 $x_0$ 恰好等于零；这为法向差商提供了符号。</p>
+    <p style="margin-bottom:0;color:var(--tx2);font-size:14px">
+      注意 $w(x_0)=0$：$x_0\in\partial B_R$ 上 $v=0$，且 $u(x_0)-u(x_0)=0$。所以 $w$ 在边界点 $x_0$ 恰好取到上界 $0$。</p>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">5</span><span class="st">边界差商估计</span></div>
+    <p style="margin-bottom:0">对充分小的
+    <span class="sym" data-tip="步长参数：沿内法向 −ν 从 x₀ 向内走的距离，最终令 t→0⁺">$t&gt;0$</span>，
+    点 $x_0-$<span class="sym" data-tip="外法向 ν：垂直于球面指向球外的单位向量">$t\nu$</span>
+    落在环域 $A$ 内，由第 4 步 $w(x_0-t\nu)\le 0=w(x_0)$，于是</p>
+    <div class="eq">$$\frac{\partial w}{\partial\nu}(x_0)\;=\;\lim_{t\to 0^+}\frac{w(x_0)-w(x_0-t\nu)}{t}\;\ge\;0 .$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：从内部沿 $-\nu$ 走距离 $t$，比较边界值与内部值，再让正步长 $t$ 趋于零；因分子非负，外法向导数至少为零。</p>
+    <p style="margin-bottom:0;color:var(--tx2);font-size:14px">
+      这一步只给出 $\ge 0$，且只用了"内部值不超过边界值"。真正的收获来自下一步的<b>严格</b>负项。</p>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">6</span><span class="st">分解导数，暴露符号</span></div>
+    <div class="eq">$$\frac{\partial w}{\partial\nu}\;=\;\frac{\partial u}{\partial\nu}\;+\;\varepsilon\,\frac{\partial v}{\partial\nu}\;\ge\;0 .$$</div>
+    <p style="margin-bottom:0">而
+    <span class="sym" data-tip="v 的梯度：各一阶偏导组成的向量，指向 v 增长最快方向">$\nabla v=-2\alpha r e^{-\alpha r^2}\,\hat r$</span>，
+    在 $r=R$ 处沿外法向 $\nu=$<span class="sym" data-tip="径向单位向量 r̂ = (x−y)/|x−y|；在球面上它等于外法向 ν">$\hat r$</span>：</p>
+    <div class="eq">$$\frac{\partial v}{\partial\nu}(x_0)\;=\;-2\alpha R\,e^{-\alpha R^2}\;<\;0\qquad\textbf{（严格为负）}.$$</div>
+  </div>
+
+  <div class="step">
+    <div class="sh"><span class="sn">7</span><span class="st">得出结论</span></div>
+    <div class="eq">$$\frac{\partial u}{\partial\nu}(x_0)\;\ge\;-\varepsilon\,\frac{\partial v}{\partial\nu}(x_0)\;=\;2\varepsilon\alpha R\,e^{-\alpha R^2}\;>\;0 .$$</div>
+    <p style="color:var(--tx2);font-size:14px">这条公式怎么读：从 $w$ 的非负外法向导数中移去 $v$ 的负贡献，得到 $u$ 的导数有一个严格正的下界；$\varepsilon,\alpha,R$ 均为正。</p>
+    <p style="margin-bottom:0">右边严格为正，故 $\dfrac{\partial u}{\partial\nu}(x_0)&gt;0$。$\blacksquare$</p>
+  </div>
+
+  <div class="note">
+    <b>证明的"机关"在哪里？</b> 全部难点浓缩在第 2 步：$v$ 被设计成<b>边界为零、内部为正、且 Laplacian 可控为正</b>。
+    边界为零保证不破坏 $w\le0$ 的边界条件；$\Delta v&gt;0$ 保证 $w$ 严格次调和从而可用极值原理；
+    而 $\partial v/\partial\nu&lt;0$（$v$ 向外递减到零）恰好贡献出一个<b>严格正</b>的下界，
+    把平凡的 $\ge0$ 推成 $>0$。三部分缺一不可。
+  </div>
+</section>
+
+<!-- 辅助函数 -->
+<section id="aux">
+  <h2><span class="num">06</span>辅助函数与参数 $\alpha$</h2>
+  <p class="sub">调节 $\alpha$，观察 $\Delta v&gt;0$ 的区域如何扩张——这正是"取 $\alpha$ 足够大"的定量含义。两图纵轴随参数自动缩放，比较不同参数时请读刻度；曲线是解析公式的绘图，3D 球面只是示意。</p>
+
+  <div class="ctrl" style="border:1px solid var(--bd);border-radius:10px 10px 0 0">
+    <div class="sl">
+      <label for="alpha">参数 $\alpha$</label>
+      <input type="range" id="alpha" min="0.5" max="20" step="0.5" value="8">
+      <b id="alphaVal">8.0</b>
+    </div>
+    <div class="sl"><span style="color:var(--tx3)">维数 $n=3$，半径 $R=1$，内半径 $\rho=0.5$</span></div>
+  </div>
+
+  <div class="grid2" style="margin-top:0">
+    <div class="chartbox" style="border-radius:0 0 0 0">
+      <div class="ct">障碍函数 $v(r)$</div>
+      <div class="cs">$v(r)=e^{-\alpha r^2}-e^{-\alpha R^2}$，内部为正，边界严格归零</div>
+      <canvas class="chart" id="chartV" height="210"></canvas>
+    </div>
+    <div class="chartbox">
+      <div class="ct">Laplacian $\Delta v(r)$</div>
+      <div class="cs">$\Delta v=2\alpha e^{-\alpha r^2}(2\alpha r^2-n)$，环域内必须为正</div>
+      <canvas class="chart" id="chartL" height="210"></canvas>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="note"><b>读图。</b> 横轴 $r$ 是归一化半径（0 到 1），淡蓝底色标出环域 $\rho\le r\le R$；左图绿色曲线是 $v$，右图青色曲线是 $\Delta v$，灰色虚线为零水平，红色虚线为临界半径 $r^*$。纵轴刻度会随 $\alpha$ 自动缩放，请读数值而不要只比曲线高度。拖动滑块会改变 $v$ 与 $\Delta v$ 的形状，并在下方状态栏更新是否满足证明所需的 $\Delta v>0$。</div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="dot" style="background:var(--gn)"></span>临界半径</h4>
+      <p>$\Delta v&gt;0$ 当且仅当 $r&gt;r^*=\sqrt{n/(2\alpha)}$。$\alpha$ 越大，$r^*$ 越小，
+      正 Laplacian 区域越向球心扩张。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--cy)"></span>选取条件</h4>
+      <p>要使 $\Delta v&gt;0$ 覆盖整个环域 $[\rho,R]$，只需 $r^*&lt;\rho$，即
+      $\alpha&gt;\dfrac{n}{2\rho^2}=\dfrac{3}{2\times0.25}=6$。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 意义 -->
+<section id="end" style="border-bottom:none">
+  <h2><span class="num">07</span>意义与推广</h2>
+  <p class="sub">Hopf 引理不是孤立结论，它是椭圆型方程理论的枢纽之一。</p>
+
+  <div class="grid3">
+    <div class="card">
+      <h4><span class="dot" style="background:var(--pu)"></span>强极值原理</h4>
+      <p>强极值原理说明：连通区域中的次调和函数若在内部达到最大值，就必须为常数。它与 Hopf 边界点引理共同描述极值的刚性。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--cy)"></span>唯一性</h4>
+      <p>Dirichlet 问题 $\Delta u=f$、$u|_{\partial\Omega}=g$ 的唯一性与比较原理可由弱极值原理证明；Hopf 引理进一步给出非平凡解在边界最值点的严格法向信息。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:var(--am)"></span>更一般的形式</h4>
+      <p>对一般线性一致椭圆算子，在适当的系数、零阶项和不等式符号条件下，若边界点满足内球条件，也有相应的边界点引理。</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>几何本质。</b> Hopf 引理把"函数在边界的表现"与"它在内部的微分不等式"连接起来：
+    微分不等式 $\Delta u\ge0$ 是一种<b>刚性</b>约束，不允许函数在边界最值点"抹平"。
+    这也是所有椭圆型方程正则性理论的共同主题——解不能随意地平坦。
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    定理由 E. Hopf (1927) 提出 · 可视化基于 Three.js 与 KaTeX · 参数 $n=3,\ R=1,\ \rho=0.5$
+  </div>
+</footer>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/katex.min.js"></script>
+<script src="vendor/auto-render.min.js"></script>
+<script>
+/* ================= 工具 ================= */
+var clamp = function(v,a,b){return Math.max(a,Math.min(b,v));};
+var R = 1, RHO = 0.5, N = 3;
+var A_DIR = null, A_MAG = 0.55;   // 例子 u = |x|^2 + a·x 中的 a 方向
+var alpha = 8.0;
+
+/* ================= 3D 场景 ================= */
+var scene, camera, renderer, group, overlay;
+var rotY = 0.6, rotX = 0.28, dist = 4.0;
+var dragging = false, lastX = 0, lastY = 0, autoRot = true;
+var mode = 'geom';
+var labels = [];
+var HAS3D = (typeof THREE !== 'undefined');
+
+function init3D(){
+  var wrap = document.getElementById('canvas-wrap');
+  overlay = document.getElementById('overlay');
+  if(!HAS3D){
+    wrap.insertAdjacentHTML('afterbegin',
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7a90;font-size:14px">'+
+      '3D 库未能加载（离线状态），下方文字与曲线图仍可正常阅读</div>');
+    return;
+  }
+  scene = new THREE.Scene();
+  var w = wrap.clientWidth, h = wrap.clientHeight;
+  camera = new THREE.PerspectiveCamera(45, w/h, 0.1, 100);
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.setSize(w, h);
+  wrap.insertBefore(renderer.domElement, overlay);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  var d1 = new THREE.DirectionalLight(0xffffff, 0.85); d1.position.set(3,4,5); scene.add(d1);
+  var d2 = new THREE.DirectionalLight(0x88aaff, 0.32); d2.position.set(-4,-2,-3); scene.add(d2);
+
+  group = new THREE.Group(); scene.add(group);
+
+  A_DIR = new THREE.Vector3(0.62, 0.58, 0.53).normalize();
+
+  bindControls(wrap);
+  buildScene(mode);
+  updateCamera();
+  animate();
+}
+
+function updateCamera(){
+  if(!HAS3D) return;
+  camera.position.set(
+    dist*Math.cos(rotX)*Math.sin(rotY),
+    dist*Math.sin(rotX),
+    dist*Math.cos(rotX)*Math.cos(rotY)
+  );
+  camera.lookAt(0,0,0);
+}
+
+function bindControls(wrap){
+  var el = renderer.domElement;
+  el.style.touchAction = 'none';
+  el.addEventListener('pointerdown', function(e){
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    document.getElementById('autorot').checked = false; autoRot = false;
+  });
+  window.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    rotY += (e.clientX - lastX)*0.008;
+    rotX = clamp(rotX + (e.clientY - lastY)*0.008, -1.35, 1.35);
+    lastX = e.clientX; lastY = e.clientY; updateCamera();
+  });
+  window.addEventListener('pointerup', function(){ dragging = false; });
+  el.addEventListener('wheel', function(e){
+    e.preventDefault();
+    dist = clamp(dist + e.deltaY*0.0022, 2.3, 9);
+    updateCamera();
+  }, {passive:false});
+  window.addEventListener('resize', function(){
+    if(!HAS3D) return;
+    var w = wrap.clientWidth, h = wrap.clientHeight;
+    camera.aspect = w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
+  });
+}
+
+/* --- 标签 --- */
+function clearLabels(){
+  overlay.innerHTML = ''; labels = [];
+}
+function addLabel(text, pos, cls){
+  if(!HAS3D) return;
+  var d = document.createElement('div');
+  d.className = 'lab ' + (cls||'');
+  d.innerHTML = text;
+  overlay.appendChild(d);
+  labels.push({el:d, pos:pos.clone()});
+}
+function updateLabels(){
+  if(!HAS3D) return;
+  var wrap = document.getElementById('canvas-wrap');
+  var w = wrap.clientWidth, h = wrap.clientHeight;
+  for(var i=0;i<labels.length;i++){
+    var v = labels[i].pos.clone().project(camera);
+    if(v.z > 1){ labels[i].el.style.display = 'none'; continue; }
+    labels[i].el.style.display = 'block';
+    labels[i].el.style.transform = 'translate(-50%,-50%) translate(' +
+      ((v.x*0.5+0.5)*w).toFixed(1) + 'px,' + ((-v.y*0.5+0.5)*h).toFixed(1) + 'px)';
+  }
+}
+
+/* --- 球体着色 --- */
+function coloredSphere(valFn, colFn, opts){
+  opts = opts || {};
+  var geo = new THREE.SphereGeometry(opts.radius || R, 72, 48);
+  var pos = geo.attributes.position;
+  var col = new Float32Array(pos.count*3);
+  var c = new THREE.Color();
+  for(var i=0;i<pos.count;i++){
+    var x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    var t = clamp(valFn(x,y,z), 0, 1);
+    colFn(c, t);
+    col[3*i] = c.r; col[3*i+1] = c.g; col[3*i+2] = c.b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  var mat = new THREE.MeshStandardMaterial({
+    vertexColors:true, roughness:0.62, metalness:0.06,
+    transparent: !!opts.transparent, opacity: opts.opacity===undefined?1:opts.opacity,
+    depthWrite: opts.depthWrite===undefined?true:opts.depthWrite,
+    side: THREE.DoubleSide
+  });
+  return new THREE.Mesh(geo, mat);
+}
+
+var tempColor = function(c, t){ c.setHSL((0.62 - 0.62*t), 0.72, 0.24 + 0.32*t); };
+var auxColor  = function(c, t){ c.setHSL(0.42, 0.68, 0.08 + 0.55*t); };
+
+function tempVal(x,y,z){
+  var u = x*x+y*y+z*z + A_MAG*(A_DIR.x*x + A_DIR.y*y + A_DIR.z*z);
+  var umax = R*R + A_MAG*R, umin = -A_MAG*A_MAG/4;
+  return (u - umin)/(umax - umin);
+}
+function auxVal(x,y,z){
+  var rr = x*x+y*y+z*z;
+  var vmax = 1 - Math.exp(-alpha*R*R);
+  return (Math.exp(-alpha*rr) - Math.exp(-alpha*R*R))/vmax;
+}
+
+/* --- 零件 --- */
+function wireSphere(r, color, op){
+  var g = new THREE.SphereGeometry(r, 26, 18);
+  var m = new THREE.LineBasicMaterial({color:color, transparent:true, opacity:op});
+  return new THREE.LineSegments(new THREE.WireframeGeometry(g), m);
+}
+function dot3(pos, color, r){
+  var m = new THREE.Mesh(new THREE.SphereGeometry(r||0.045, 20, 14),
+        new THREE.MeshBasicMaterial({color:color}));
+  m.position.copy(pos); return m;
+}
+function arrow(origin, dir, len, color){
+  var a = new THREE.ArrowHelper(dir.clone().normalize(), origin, len, color, len*0.3, len*0.16);
+  return a;
+}
+
+/* --- 场景构建 --- */
+function buildScene(m){
+  mode = m;
+  if(!HAS3D){ setLegend(m); return; }
+  while(group.children.length) group.remove(group.children[0]);
+  clearLabels();
+  if(m === 'geom') sceneGeom();
+  else if(m === 'temp') sceneTemp();
+  else if(m === 'aux') sceneAux();
+  else sceneAnnu();
+  setLegend(m);
+}
+
+function sceneGeom(){
+  var ball = new THREE.Mesh(new THREE.SphereGeometry(R, 48, 32),
+    new THREE.MeshStandardMaterial({
+      color:0x2a4a7a, transparent:true, opacity:0.17,
+      depthWrite:false, side:THREE.DoubleSide, roughness:0.9
+    }));
+  ball.renderOrder = 2; group.add(ball);
+  group.add(wireSphere(R*1.002, 0x8fc7ff, 0.16));
+
+  var x0 = A_DIR.clone().multiplyScalar(R);
+  var nu = x0.clone().normalize();
+
+  group.add(dot3(new THREE.Vector3(0,0,0), 0x4fc3f7, 0.035));
+  addLabel('球心 y', new THREE.Vector3(0.0,-0.12,0), 'b');
+
+  group.add(dot3(x0, 0xe2554a, 0.058));
+  group.add(arrow(x0.clone().add(nu.clone().multiplyScalar(0.05)), nu, 0.62, 0xe2554a));
+  addLabel('x₀（最大值点）', x0.clone().add(nu.clone().multiplyScalar(0.42)), 'r');
+  addLabel('外法向 ν', x0.clone().add(nu.clone().multiplyScalar(0.80)), 'r');
+
+  group.add(arrow(x0.clone().sub(nu.clone().multiplyScalar(0.05)), nu.clone().negate(), 0.5, 0x4fc3f7));
+  addLabel('向内：u 严格下降', x0.clone().sub(nu.clone().multiplyScalar(0.62)), 'b');
+
+  var inner = [
+    new THREE.Vector3(-0.42, 0.16, 0.22),
+    new THREE.Vector3(0.18,-0.36,-0.12),
+    new THREE.Vector3(-0.10,-0.12,-0.44)
+  ];
+  for(var i=0;i<inner.length;i++){
+    group.add(dot3(inner[i], 0x5ee08a, 0.038));
+  }
+  addLabel('内部点：u(x) &lt; u(x₀)', inner[0].clone().add(new THREE.Vector3(-0.05,0.14,0)), 'g');
+}
+
+function sceneTemp(){
+  group.add(coloredSphere(tempVal, tempColor, {}));
+  group.add(wireSphere(R*1.004, 0xffffff, 0.10));
+
+  var x0 = A_DIR.clone().multiplyScalar(R);
+  var nu = x0.clone().normalize();
+  group.add(dot3(x0, 0xffffff, 0.05));
+  group.add(arrow(x0.clone().add(nu.clone().multiplyScalar(0.05)), nu, 0.55, 0xf4c542));
+  addLabel('x₀：最热（u 最大）', x0.clone().add(nu.clone().multiplyScalar(0.40)), 'a');
+  addLabel('∇u 指向外部', x0.clone().add(nu.clone().multiplyScalar(0.76)), 'a');
+  addLabel('球内较冷', new THREE.Vector3(-0.55,-0.30,0.10), 'b');
+}
+
+function sceneAux(){
+  group.add(coloredSphere(auxVal, auxColor, {}));
+  group.add(wireSphere(R*1.004, 0xffffff, 0.09));
+  addLabel('中心：v 最大', new THREE.Vector3(0,0.14,0), 'g');
+  addLabel('球面：v = 0', new THREE.Vector3(0.72,-0.30,0.62), 'a');
+  addLabel('v &gt; 0（球内）', new THREE.Vector3(-0.62,0.34,0.30), 'g');
+}
+
+function sceneAnnu(){
+  var outer = new THREE.Mesh(new THREE.SphereGeometry(R, 48, 32),
+    new THREE.MeshStandardMaterial({
+      color:0x3a6bb0, transparent:true, opacity:0.13,
+      depthWrite:false, side:THREE.DoubleSide, roughness:0.9
+    }));
+  outer.renderOrder = 2; group.add(outer);
+  group.add(wireSphere(R*1.002, 0x8fc7ff, 0.18));
+
+  var inner = new THREE.Mesh(new THREE.SphereGeometry(RHO, 36, 24),
+    new THREE.MeshStandardMaterial({color:0x1a2332, roughness:0.95, side:THREE.DoubleSide}));
+  group.add(inner);
+  group.add(wireSphere(RHO*1.01, 0xf4c542, 0.28));
+
+  var x0 = A_DIR.clone().multiplyScalar(R);
+  var nu = x0.clone().normalize();
+  group.add(dot3(x0, 0xe2554a, 0.058));
+  group.add(arrow(x0.clone().add(nu.clone().multiplyScalar(0.05)), nu, 0.5, 0xe2554a));
+  addLabel('x₀：w = 0（上界）', x0.clone().add(nu.clone().multiplyScalar(0.44)), 'r');
+  addLabel('∂B_R：w ≤ 0', new THREE.Vector3(0.10,-0.92,0.30), 'b');
+  addLabel('∂B_ρ：w ≤ 0', new THREE.Vector3(-0.30,0.56,0.30), 'a');
+  addLabel('A = B_R \\ B̄_ρ', new THREE.Vector3(-0.80,-0.42,0.30), 'b');
+}
+
+function setLegend(m){
+  var el = document.getElementById('legend');
+  if(m === 'geom'){
+    el.innerHTML =
+      '<span><i style="background:#e2554a"></i>最大值点 x₀ 与外法向 ν</span>'+
+      '<span><i style="background:#4fc3f7"></i>向内：u 严格下降</span>'+
+      '<span><i style="background:#5ee08a"></i>内部点（值更小）</span>'+
+      '<span style="color:#6b7a90">半透明球 = B_R(y)</span>';
+  } else if(m === 'temp'){
+    el.innerHTML =
+      '<span style="width:100%">球面值 $u(x)=|x-y|^2+a\\cdot(x-y)$（$\\Delta u=2n&gt;0$）'+
+      '<div class="bar"></div>'+
+      '<div style="display:flex;justify-content:space-between;color:#6b7a90;font-size:11px">'+
+      '<span>冷 · 值小</span><span>热 · 值大（x₀）</span></div></span>';
+  } else if(m === 'aux'){
+    el.innerHTML =
+      '<span style="width:100%">$v(x)=e^{-\\alpha r^2}-e^{-\\alpha R^2}$，$\\alpha='+alpha.toFixed(1)+'$'+
+      '<div class="bar g"></div>'+
+      '<div style="display:flex;justify-content:space-between;color:#6b7a90;font-size:11px">'+
+      '<span>v = 0（球面）</span><span>v 最大（球心）</span></div></span>';
+  } else {
+    el.innerHTML =
+      '<span><i style="background:#8fc7ff"></i>外边界 ∂B_R</span>'+
+      '<span><i style="background:#f4c542"></i>内边界 ∂B_ρ（挖去）</span>'+
+      '<span><i style="background:#e2554a"></i>x₀：w 达到上界 0</span>'+
+      '<span style="color:#6b7a90">环域 A 上 Δw &gt; 0</span>';
+  }
+  if(typeof renderMathInElement === 'function'){
+    renderMathInElement(el, {delimiters:[{left:'$', right:'$', display:false}], throwOnError:false});
+  }
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(!HAS3D) return;
+  if(autoRot && !dragging){ rotY += 0.0028; updateCamera(); }
+  renderer.render(scene, camera);
+  updateLabels();
+}
+
+/* ================= 曲线图 ================= */
+function setupCanvas(cv, H){
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.clientWidth;
+  cv.width = W*dpr; cv.height = H*dpr;
+  cv.style.height = H + 'px';
+  var ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  return {ctx:ctx, W:W, H:H};
+}
+function frame(ctx, W, H, pad, ymin, ymax, xlab, ylab){
+  var pw = W-pad.l-pad.r, ph = H-pad.t-pad.b;
+  ctx.strokeStyle = 'rgba(255,255,255,.13)'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#6b7a90'; ctx.font = '11px system-ui,sans-serif';
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t+ph); ctx.lineTo(pad.l+pw, pad.t+ph);
+  ctx.stroke();
+  for(var i=0;i<=4;i++){
+    var x = pad.l + pw*i/4;
+    ctx.strokeStyle = 'rgba(255,255,255,.06)';
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t+ph); ctx.stroke();
+    ctx.fillStyle = '#6b7a90';
+    ctx.fillText((i/4).toFixed(2), x-9, pad.t+ph+15);
+  }
+  ctx.textAlign = 'right';
+  for(var j=0;j<=4;j++){
+    var value = ymax - (ymax-ymin)*j/4;
+    var label = Math.abs(value)>=1000 || (Math.abs(value)>0 && Math.abs(value)<0.01)
+      ? value.toExponential(1) : value.toFixed(1);
+    ctx.fillText(label, pad.l-5, pad.t+ph*j/4+3);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#9dabc0';
+  ctx.fillText(xlab, pad.l+pw-13, pad.t+12);
+  ctx.save(); ctx.translate(11, pad.t+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center'; ctx.fillText(ylab, 0, 0); ctx.restore();
+  return {pw:pw, ph:ph};
+}
+function shade(ctx, pad, pw, ph, x0, x1){
+  var a = pad.l + pw*x0, b = pad.l + pw*x1;
+  ctx.fillStyle = 'rgba(79,195,247,.07)';
+  ctx.fillRect(a, pad.t, b-a, ph);
+  ctx.strokeStyle = 'rgba(79,195,247,.35)'; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(a,pad.t); ctx.lineTo(a,pad.t+ph);
+  ctx.moveTo(b,pad.t); ctx.lineTo(b,pad.t+ph); ctx.stroke(); ctx.setLineDash([]);
+}
+function plot(ctx, pad, pw, ph, fn, ymin, ymax, color, width){
+  var sc = function(x){ return pad.l + pw*clamp(x,0,R); };
+  var sy = function(y){ return pad.t + ph*(1 - (y-ymin)/(ymax-ymin)); };
+  ctx.strokeStyle = color; ctx.lineWidth = width||2; ctx.beginPath();
+  for(var i=0;i<=400;i++){
+    var x = R*i/400, y = fn(x);
+    if(i===0) ctx.moveTo(sc(x), sy(y)); else ctx.lineTo(sc(x), sy(y));
+  }
+  ctx.stroke();
+  return {sc:sc, sy:sy};
+}
+
+function drawV(){
+  var cv = document.getElementById('chartV');
+  var s = setupCanvas(cv, 210); var ctx = s.ctx;
+  var pad = {l:46,r:14,t:14,b:28};
+  var f = function(r){ return Math.exp(-alpha*r*r) - Math.exp(-alpha*R*R); };
+  var ymax = f(0)*1.12;
+  var fr = frame(ctx, s.W, s.H, pad, 0, ymax, 'r', 'v(r)');
+  shade(ctx, pad, fr.pw, fr.ph, RHO, R);
+  var p = plot(ctx, pad, fr.pw, fr.ph, f, 0, ymax, '#5ee08a', 2.2);
+  ctx.fillStyle = '#5ee08a'; ctx.beginPath();
+  ctx.arc(p.sc(0), p.sy(f(0)), 3.2, 0, 6.284); ctx.fill();
+  ctx.fillStyle = '#9dabc0'; ctx.font = '11px system-ui,sans-serif';
+  ctx.fillText('v(0)=' + f(0).toFixed(3), p.sc(0)+7, p.sy(f(0))+4);
+  ctx.fillStyle = '#f4c542';
+  ctx.fillText('环域 A', pad.l + fr.pw*(RHO+R)/2 - 18, pad.t+12);
+  ctx.fillStyle = '#6b7a90'; ctx.font = '10.5px system-ui,sans-serif';
+  ctx.fillText('r=ρ', pad.l + fr.pw*RHO - 11, pad.t + fr.ph + 27);
+}
+function drawL(){
+  var cv = document.getElementById('chartL');
+  var s = setupCanvas(cv, 210); var ctx = s.ctx;
+  var pad = {l:46,r:14,t:14,b:28};
+  var f = function(r){ return 2*alpha*Math.exp(-alpha*r*r)*(2*alpha*r*r - N); };
+  var vals = []; for(var i=0;i<=200;i++) vals.push(f(R*i/200));
+  var rawMax = Math.max.apply(null, vals), rawMin = Math.min.apply(null, vals);
+  var margin = Math.max((rawMax-rawMin)*0.1, 0.01);
+  var ymax = rawMax + margin, ymin = rawMin - margin;
+  var fr = frame(ctx, s.W, s.H, pad, ymin, ymax, 'r', 'Δv(r)');
+  shade(ctx, pad, fr.pw, fr.ph, RHO, R);
+  var p = plot(ctx, pad, fr.pw, fr.ph, f, ymin, ymax, '#4fc3f7', 2.2);
+  if(ymin <= 0 && 0 <= ymax){
+    ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.setLineDash([4,4]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, p.sy(0)); ctx.lineTo(pad.l+fr.pw, p.sy(0)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  var rs = Math.sqrt(N/(2*alpha));
+  if(rs < R){
+    ctx.strokeStyle = 'rgba(226,85,74,.7)'; ctx.setLineDash([2,3]);
+    ctx.beginPath(); ctx.moveTo(p.sc(rs), pad.t); ctx.lineTo(p.sc(rs), pad.t+fr.ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffb4ad'; ctx.font = '10.5px system-ui,sans-serif';
+    ctx.fillText('r*=' + rs.toFixed(2), p.sc(rs)+3, pad.t+fr.ph-6);
+  }
+  ctx.fillStyle = '#f4c542'; ctx.font = '11px system-ui,sans-serif';
+  ctx.fillText('环域 A', pad.l + fr.pw*(RHO+R)/2 - 18, pad.t+12);
+}
+function updateStatus(){
+  var rs = Math.sqrt(N/(2*alpha));
+  var ok = rs < RHO;
+  var need = N/(2*RHO*RHO);
+  var el = document.getElementById('status');
+  if(ok){
+    el.className = 'status';
+    el.innerHTML = '✓ 条件满足：r* = ' + rs.toFixed(3) + ' &lt; ρ = ' + RHO +
+      '，故 Δv &gt; 0 在整个环域 A 上成立（临界值 α &gt; ' + need.toFixed(1) + '）。';
+  }else{
+    el.className = 'status bad';
+    el.innerHTML = '✗ 条件不满足：r* = ' + rs.toFixed(3) + ' ≥ ρ = ' + RHO +
+      '，环域靠近内边界的部分 Δv ≤ 0，需增大 α 至超过 ' + need.toFixed(1) + '。';
+  }
+}
+function redrawAux(){
+  drawV(); drawL(); updateStatus();
+  if(HAS3D && mode === 'aux') buildScene('aux');
+}
+
+/* ================= 绑定 ================= */
+document.addEventListener('DOMContentLoaded', function(){
+  init3D();
+
+  var tabs = document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++){
+    tabs[i].addEventListener('click', function(){
+      for(var j=0;j<tabs.length;j++) tabs[j].classList.remove('on');
+      this.classList.add('on');
+      buildScene(this.getAttribute('data-mode'));
+    });
+  }
+  var ar = document.getElementById('autorot');
+  ar.addEventListener('change', function(){ autoRot = this.checked; });
+
+  var sl = document.getElementById('alpha');
+  sl.addEventListener('input', function(){
+    alpha = parseFloat(this.value);
+    document.getElementById('alphaVal').textContent = alpha.toFixed(1);
+    redrawAux();
+  });
+
+  redrawAux();
+  window.addEventListener('resize', function(){
+    drawV(); drawL();
+  });
+
+  if(typeof renderMathInElement === 'function'){
+    renderMathInElement(document.body, {
+      delimiters:[
+        {left:'$$', right:'$$', display:true},
+        {left:'$', right:'$', display:false},
+        {left:'\\(', right:'\\)', display:false}
+      ],
+      throwOnError:false
+    });
+  }
+});
+</script>
+</body>
+</html>
