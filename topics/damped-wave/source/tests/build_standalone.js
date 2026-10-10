@@ -1,4 +1,4 @@
-/* build_standalone.js — 把 index.html + engine.js + mathjax/tex-svg.js + 两张图打包成单文件 standalone.html
+/* build_standalone.js — 把本专题源码打包成 topics/damped-wave/index.html
  * 注意：String.replace 的字符串替换会把 $&、$' 等当成特殊模式，必须用函数形式返回。
  */
 const fs = require("fs"), path = require("path");
@@ -41,5 +41,18 @@ let bad = 0;
 for (const [k, v] of checks) { if (!v) { bad++; console.log("  [FAIL] " + k); } else console.log("  [ok] " + k); }
 if (bad) throw new Error(bad + " 项断言失败");
 
-fs.writeFileSync(path.join(dir, "standalone.html"), html);
-console.log("standalone.html: " + (html.length / 1048576).toFixed(2) + " MB");
+// 单文件专题页提供返回仓库总目录的入口；源码页本身仍可独立打开。
+const catalogNav = '<nav class="catalog-nav"><a href="../../index.html">← PDE 专题目录</a></nav>';
+if (!html.includes('<div class="wrap">') || !html.includes('</style>')) {
+  throw new Error("找不到专题页容器或样式结束标记");
+}
+html = html.replace('</style>', `
+  .catalog-nav{margin:0 0 16px;font-size:13px}
+  .catalog-nav a{display:inline-block;padding:5px 10px;border:1px solid var(--line);border-radius:7px;text-decoration:none}
+  .catalog-nav a:hover{border-color:var(--acc)}
+</style>`);
+html = html.replace('<div class="wrap">', '<div class="wrap">\n' + catalogNav);
+
+const out = path.join(dir, "..", "index.html");
+fs.writeFileSync(out, html);
+console.log("topics/damped-wave/index.html: " + (html.length / 1048576).toFixed(2) + " MB");

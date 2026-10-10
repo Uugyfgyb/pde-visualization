@@ -1,1024 +1,206 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>阻尼波动方程：能量递减、唯一性与稳定性（可视化 + 数学证明）</title>
-<style>
-  :root{
-    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --line:#2b333d;
-    --tx:#e6edf3; --tx2:#9aa7b4; --acc:#4da3ff; --acc2:#7ee787; --warn:#ff7b72; --gold:#e3b341;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--tx);
-       font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
-       line-height:1.65;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1400px;margin:0 auto;padding:22px 20px 80px}
-  header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
-  h1{font-size:24px;margin:0 0 8px;letter-spacing:.3px}
-  h2{font-size:19px;margin:34px 0 12px;padding-left:10px;border-left:4px solid var(--acc)}
-  h3{font-size:16px;margin:22px 0 8px;color:var(--gold)}
-  p,li{color:#d6dde5}
-  .sub{color:var(--tx2);font-size:14px;margin:0}
-  .grid{display:grid;gap:14px}
-  .lab{grid-template-columns:minmax(0,1.62fr) minmax(320px,1fr)}
-  .three{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px}
-  @media (max-width:1080px){.lab,.three{grid-template-columns:1fr}}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .panel h4{margin:0 0 8px;font-size:14px;color:var(--tx2);font-weight:600;letter-spacing:.4px}
-  canvas{display:block;width:100%;border-radius:8px;background:#0b0f14}
-  #cv-string{height:400px}
-  #cv-energy,#cv-identity,#cv-stability{height:250px}
-  .ctrls{display:grid;grid-template-columns:110px 1fr 62px;gap:8px 10px;align-items:center;font-size:13px}
-  .ctrls label{color:var(--tx2)}
-  .ctrls output{text-align:right;font-variant-numeric:tabular-nums;color:var(--acc)}
-  input[type=range]{width:100%;accent-color:#4da3ff}
-  select,button{background:var(--panel2);color:var(--tx);border:1px solid var(--line);
-                border-radius:7px;padding:6px 10px;font-size:13px;font-family:inherit}
-  button{cursor:pointer}
-  button:hover{border-color:var(--acc)}
-  button.primary{background:#1f6feb;border-color:#1f6feb;color:#fff}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
-  .readout{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;margin-top:10px;
-           border-top:1px solid var(--line);padding-top:9px}
-  .readout div:nth-child(odd){color:var(--tx2)}
-  .readout div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
-  .ok{color:var(--acc2)} .bad{color:var(--warn)} .hi{color:var(--gold)}
-  .thm{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);
-       border-radius:10px;padding:12px 18px;margin:16px 0}
-  .thm .tag{display:inline-block;font-size:12px;color:#0d1117;background:var(--acc);
-            border-radius:5px;padding:1px 8px;margin-right:8px;font-weight:700;vertical-align:2px}
-  .pf{border-left:4px solid var(--acc2);background:#12181f;border-radius:10px;padding:10px 18px;margin:12px 0}
-  .pf .tag{display:inline-block;font-size:12px;color:#0d1117;background:var(--acc2);
-           border-radius:5px;padding:1px 8px;margin-right:8px;font-weight:700;vertical-align:2px}
-  .note{border-left:4px solid var(--gold);background:#1a1710;border-radius:10px;padding:10px 18px;margin:14px 0}
-  .note .tag{display:inline-block;font-size:12px;color:#0d1117;background:var(--gold);
-             border-radius:5px;padding:1px 8px;margin-right:8px;font-weight:700;vertical-align:2px}
-  .key{background:#1b2430;border:1px dashed #35507a;border-radius:8px;padding:6px 12px;margin:10px 0}
-  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
-  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left}
-  th{background:var(--panel2);color:var(--tx2);font-weight:600}
-  td.n{text-align:right;font-variant-numeric:tabular-nums}
-  figure{margin:16px 0}
-  figure img{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}
-  figcaption{color:var(--tx2);font-size:13px;margin-top:6px}
-  code{background:#1c2129;border-radius:4px;padding:1px 5px;font-size:13px}
-  #err{display:none;background:#3d1418;border:1px solid var(--warn);color:#ffd7d5;
-       padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;white-space:pre-wrap}
-  footer{color:var(--tx2);font-size:13px;border-top:1px solid var(--line);margin-top:40px;padding-top:14px}
-  a{color:var(--acc)}
-</style>
-<script>
-  window.MathJax = {
-    tex: {inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']]},
-    svg: {fontCache: 'global'},
-    options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}
-  };
-</script>
-<script src="mathjax/tex-svg.js"
-        onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';document.head.appendChild(s);"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="交互式偏微分方程可视化专题库：按方程类型分类，收录可离线打开的网页、数学说明与数值验证。">
+  <title>PDE Visualization · 偏微分方程可视化专题库</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #121d2e;
+      --panel-2: #162338;
+      --border: #2a3b52;
+      --text: #eaf2fb;
+      --muted: #a1b2c5;
+      --blue: #67b7ff;
+      --mint: #73e0c4;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(circle at 85% 2%, #16304b 0, transparent 34rem), var(--bg);
+      font: 16px/1.6 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    }
+    a { color: var(--blue); }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: auto; }
+    .topbar { border-bottom: 1px solid var(--border); background: #0b1220e8; }
+    .topbar .shell { min-height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { color: var(--text); font-weight: 800; letter-spacing: .04em; text-decoration: none; }
+    .brand span { color: var(--mint); }
+    .topbar nav { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; }
+    .topbar nav a:hover, .topbar nav a:focus-visible { color: var(--text); }
+    .hero { padding: 70px 0 50px; }
+    .eyebrow { margin: 0 0 14px; color: var(--mint); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { max-width: 850px; margin: 0; font-size: clamp(36px, 5vw, 66px); line-height: 1.16; letter-spacing: -.04em; }
+    h1 em { color: var(--blue); font-style: normal; }
+    .lead { max-width: 720px; margin: 23px 0 0; color: var(--muted); font-size: 18px; }
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 31px 0 0; }
+    .stat { padding: 9px 14px; border: 1px solid var(--border); border-radius: 99px; color: var(--muted); font-size: 13px; background: #ffffff08; }
+    .stat strong { color: var(--text); }
+    .controls { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 25px 0; border-top: 1px solid var(--border); }
+    .controls h2 { margin: 0; font-size: 22px; }
+    .search {
+      width: min(370px, 100%); padding: 11px 14px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--panel); color: var(--text); font: inherit;
+    }
+    .search::placeholder { color: var(--muted); }
+    .search:focus-visible, a:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+    .category-nav { display: flex; gap: 9px; flex-wrap: wrap; margin: 0 0 31px; }
+    .category-nav a {
+      padding: 7px 12px; border: 1px solid var(--border); border-radius: 99px;
+      color: var(--muted); background: #ffffff08; text-decoration: none; font-size: 13px;
+    }
+    .category-nav a:hover { color: var(--text); border-color: var(--blue); }
+    .group { margin: 0 0 50px; scroll-margin-top: 20px; }
+    .group-head { display: flex; gap: 12px; align-items: baseline; padding: 0 0 14px; border-bottom: 1px solid var(--border); }
+    .group-head h3 { margin: 0; font-size: 23px; }
+    .group-head span { color: var(--muted); font-size: 13px; }
+    .group-description { color: var(--muted); margin: 12px 0 21px; font-size: 14px; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card {
+      overflow: hidden; border: 1px solid var(--border); border-radius: 18px;
+      background: var(--panel); transition: transform .16s, border-color .16s;
+    }
+    .card:hover { transform: translateY(-3px); border-color: var(--blue); }
+    .card img { display: block; width: 100%; height: 220px; object-fit: cover; object-position: top center; border-bottom: 1px solid var(--border); background: #080e17; }
+    .card-body { padding: 20px 22px 22px; }
+    .tag { display: inline-block; padding: 3px 9px; border: 1px solid #317e76; border-radius: 99px; color: var(--mint); font-size: 12px; }
+    .card h4 { margin: 13px 0 8px; font-size: 22px; line-height: 1.35; }
+    .equation { margin: 0; color: #c3d8ec; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 13px; }
+    .card p:not(.equation) { color: var(--muted); font-size: 14px; }
+    .links { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 17px; font-size: 14px; font-weight: 700; }
+    .links a:first-child { display: inline-block; padding: 9px 14px; border-radius: 9px; color: #07121e; background: var(--blue); text-decoration: none; }
+    .links a:first-child:hover { background: #9ed2ff; }
+    .empty-category { border: 1px dashed var(--border); border-radius: 12px; padding: 21px; color: var(--muted); background: #ffffff04; font-size: 14px; }
+    #no-results { display: none; margin: 0 0 45px; padding: 24px; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); }
+    .about { margin: 65px 0 45px; padding: 26px; border: 1px solid var(--border); border-radius: 16px; background: var(--panel-2); }
+    .about h2 { margin: 0 0 8px; font-size: 21px; }
+    .about p { margin: 0; color: var(--muted); }
+    footer { border-top: 1px solid var(--border); padding: 22px 0 40px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      .hero { padding: 48px 0 37px; }
+      .cards { grid-template-columns: 1fr; }
+      .card img { height: 190px; }
+      .topbar .shell { padding: 13px 0; }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-
-<div id="err"></div>
-
-<header>
-  <h1>受摩擦阻尼的弦：能量递减 ⇒ 唯一性 + 稳定性</h1>
-  <p class="sub">$u_{tt}=a^{2}u_{xx}-cu_{t}+f(x,t)$（$0&lt;x&lt;l,\ t&gt;0$），端点固定 $u(0,t)=u(l,t)=0$，
-     初值 $u(x,0)=\varphi(x),\ u_t(x,0)=\psi(x)$，摩擦系数 $c&gt;0$。
-     下面是可交互的实验台 + 完整数学证明 + 数值验证。</p>
-</header>
-
-<h2>一、交互实验台</h2>
-<div class="grid lab">
-  <div class="panel">
-    <h4>弦的振动（实线=当前，淡线=过去时刻；下方为时空图 <span class="hi">u(x,t)</span>，横轴时间向右滚动）</h4>
-    <canvas id="cv-string"></canvas>
-  </div>
-  <div class="panel">
-    <h4>参数</h4>
-    <div class="ctrls">
-      <label>摩擦 c</label><input id="s-c" type="range" min="0" max="2" step="0.02" value="0.4"><output id="o-c">0.40</output>
-      <label>波速 a</label><input id="s-a" type="range" min="0.4" max="2" step="0.02" value="1"><output id="o-a">1.00</output>
-      <label>长度 l</label><input id="s-l" type="range" min="0.5" max="2" step="0.05" value="1"><output id="o-l">1.00</output>
-      <label>播放速度</label><input id="s-sp" type="range" min="0" max="3" step="0.05" value="1"><output id="o-sp">1.00</output>
-      <label>模态数 N</label><input id="s-N" type="range" min="20" max="300" step="10" value="160"><output id="o-N">160</output>
-      <label>外源幅度</label><input id="s-fa" type="range" min="0" max="0.12" step="0.005" value="0"><output id="o-fa">0.000</output>
-      <label>外源频率 ω</label><input id="s-fw" type="range" min="0" max="4" step="0.1" value="1.7"><output id="o-fw">1.70</output>
+  <div class="topbar">
+    <div class="shell">
+      <a class="brand" href="index.html">PDE<span>/</span>Visualization</a>
+      <nav aria-label="主导航">
+        <a href="#topics">专题</a>
+        <a href="#about">如何添加</a>
+        <a href="https://github.com/Uugyfgyb/pde-visualization">GitHub 仓库 ↗</a>
+      </nav>
     </div>
-    <div class="row">
-      <select id="sel-phi">
-        <option value="pluck">初位移：拨弦（三角）</option>
-        <option value="gauss">初位移：高斯波包</option>
-        <option value="m1">初位移：单模态 sin(πx/l)</option>
-        <option value="m12">初位移：前两模态叠加</option>
-      </select>
-      <select id="sel-psi">
-        <option value="zero">初速度 ψ = 0</option>
-        <option value="m2">初速度 ψ = 0.5·sin(2πx/l)</option>
-      </select>
-      <select id="sel-fm">
-        <option value="1">外源空间形状 sin(πx/l)</option>
-        <option value="3" selected>外源空间形状 sin(3πx/l)</option>
-        <option value="5">外源空间形状 sin(5πx/l)</option>
-      </select>
+  </div>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">Interactive PDE atlas</p>
+      <h1 id="page-title">让偏微分方程<br><em>动起来。</em></h1>
+      <p class="lead">按方程类型整理交互实验、数学说明和数值验证。每个专题都是独立网页，可以单独下载并离线打开。</p>
+      <div class="stats" aria-label="专题概况">
+        <span class="stat"><strong id="topic-count">1</strong> 个已收录专题</span>
+        <span class="stat">4 个分类方向</span>
+        <span class="stat">单文件 · 离线可用</span>
+      </div>
+    </section>
+
+    <div class="controls" id="topics">
+      <h2>专题目录</h2>
+      <input class="search" id="topic-search" type="search" placeholder="搜索方程、现象或方法…" aria-label="搜索专题">
     </div>
-    <div class="row">
-      <button id="btn-play" class="primary">暂停</button>
-      <button id="btn-reset">重置</button>
-      <button id="btn-log">能量图：对数坐标</button>
-      <button id="btn-stab">稳定性面板：f 扰动</button>
-    </div>
-    <div class="readout" id="ro1"></div>
-    <div class="readout" id="ro2"></div>
-  </div>
-</div>
+    <nav class="category-nav" aria-label="方程分类">
+      <a href="#hyperbolic">双曲型 · 波动与振动</a>
+      <a href="#parabolic">抛物型 · 热与扩散</a>
+      <a href="#elliptic">椭圆型 · 势场与平衡</a>
+      <a href="#nonlinear">非线性与耦合</a>
+    </nav>
 
-<div class="grid three">
-  <div class="panel">
-    <h4>(c) 能量 $E(t)=\frac12\int_0^l(u_t^2+a^2u_x^2)\,dx$ 与指数衰减参考</h4>
-    <canvas id="cv-energy"></canvas>
-    <div class="readout" id="roE"></div>
-  </div>
-  <div class="panel">
-    <h4>(d) 恒等式 $\dot E=-c\int_0^l u_t^2\,dx+\int_0^l f u_t\,dx$ 的数值核对
-      <span style="font-weight:400">（曲线为 ±20 ms 平滑后的中心差分与平滑后的耗散功率，二者在同一时刻对齐；逐点高频细节由积分形式核对，其残差已达 $10^{-7}$）</span></h4>
-    <canvas id="cv-identity"></canvas>
-    <div class="readout" id="roI"></div>
-  </div>
-  <div class="panel">
-    <h4>(e) 稳定性：两个解之差 $w$ 的能量（<span id="stab-mode-name">初值扰动</span>）</h4>
-    <canvas id="cv-stability"></canvas>
-    <div class="readout" id="roS"></div>
-  </div>
-</div>
+    <section class="group" id="hyperbolic" aria-labelledby="hyperbolic-title">
+      <div class="group-head"><h3 id="hyperbolic-title">双曲型 · 波动与振动</h3><span class="group-count">1 个专题</span></div>
+      <p class="group-description">传播、振荡与能量：观察扰动如何在时间和空间中演化。</p>
+      <div class="cards">
+        <article class="card" data-search="阻尼波动方程 受摩擦阻尼的弦 双曲型 波动 振动 能量 稳定性 唯一性 有限差分 damped wave">
+          <img src="topics/damped-wave/preview.png" alt="阻尼弦振动、参数滑块与时空图的页面预览" loading="lazy">
+          <div class="card-body">
+            <span class="tag">交互实验 · 完整证明</span>
+            <h4>受摩擦阻尼的弦</h4>
+            <p class="equation">uₜₜ = a²uₓₓ − cuₜ + f(x,t)</p>
+            <p>调节摩擦、波速和外源，观察弦的振动、能量耗散与稳定性；模态解和有限差分相互验证。</p>
+            <div class="links">
+              <a href="topics/damped-wave/index.html">打开专题 →</a>
+              <a href="topics/damped-wave/README.md">说明与源码</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
 
-<div class="panel" style="margin-top:14px">
-  <h4>唯一性的数值旁证：同一问题用两种完全不同的方法求解（模态解析解 vs. 有限差分格式）</h4>
-  <div class="readout" id="roU"></div>
-  <p class="sub" style="margin:8px 0 0">红色虚线是有限差分解（$J=200$，二阶格式）。随着网格加密，两者之差按 $O(\Delta x^{2})$ 趋于零，
-  即不同算法收敛到同一个解 —— 与定理 2 的“解唯一”一致。</p>
-</div>
+    <section class="group" id="parabolic" aria-labelledby="parabolic-title">
+      <div class="group-head"><h3 id="parabolic-title">抛物型 · 热与扩散</h3><span class="group-count">0 个专题</span></div>
+      <p class="group-description">热流、扩散与平滑过程。</p>
+      <div class="cards"></div>
+      <div class="empty-category">专题待加入</div>
+    </section>
 
-<h2>二、数学证明</h2>
+    <section class="group" id="elliptic" aria-labelledby="elliptic-title">
+      <div class="group-head"><h3 id="elliptic-title">椭圆型 · 势场与平衡</h3><span class="group-count">0 个专题</span></div>
+      <p class="group-description">边界条件如何决定稳态场的形状。</p>
+      <div class="cards"></div>
+      <div class="empty-category">专题待加入</div>
+    </section>
 
-<div class="thm">
-  <span class="tag">问题</span>
-  设 $a&gt;0,\ c&gt;0$，$f$ 连续。求古典解 $u\in C^{2}\big([0,l]\times[0,T]\big)$：
-  $$u_{tt}=a^{2}u_{xx}-c\,u_{t}+f(x,t)\quad (0&lt;x&lt;l,\ 0&lt;t\le T),$$
-  $$u(0,t)=u(l,t)=0,\qquad u(x,0)=\varphi(x),\quad u_t(x,0)=\psi(x).$$
-  证明：(1) 能量递减；(2) 解唯一；(3) 解对初值 $(\varphi,\psi)$ 与对 $f$ 连续依赖（稳定）。
-</div>
+    <section class="group" id="nonlinear" aria-labelledby="nonlinear-title">
+      <div class="group-head"><h3 id="nonlinear-title">非线性与耦合</h3><span class="group-count">0 个专题</span></div>
+      <p class="group-description">多个机制相互作用时的涌现结构。</p>
+      <div class="cards"></div>
+      <div class="empty-category">专题待加入</div>
+    </section>
 
-<h3>1. 能量恒等式：证明的发动机</h3>
-<p>定义<b>能量</b>（动能 + 弹性势能）</p>
-$$E(t)=\frac12\int_0^l\Big(u_t^{2}+a^{2}u_x^{2}\Big)\,dx .$$
-<div class="pf">
-  <span class="tag">证明</span>
-  以 $u_t$ 乘方程两端，在 $(0,l)$ 上积分：
-  $$\int_0^l u_{tt}u_t\,dx=a^{2}\int_0^l u_{xx}u_t\,dx-c\int_0^l u_t^{2}\,dx+\int_0^l f u_t\,dx .$$
-  左端 $=\dfrac12\dfrac{d}{dt}\displaystyle\int_0^l u_t^{2}\,dx$。对中间一项分部积分：
-  $$a^{2}\int_0^l u_{xx}u_t\,dx=a^{2}\Big[u_xu_t\Big]_0^l-a^{2}\int_0^l u_xu_{xt}\,dx
-    =-\frac{a^{2}}{2}\frac{d}{dt}\int_0^l u_x^{2}\,dx,$$
-  因为 $u(0,t)\equiv u(l,t)\equiv 0$ 对 $t$ 求导给出 $u_t(0,t)=u_t(l,t)=0$，边界项消失。于是
-  $$\boxed{\ \frac{dE}{dt}=-c\int_0^l u_t^{2}\,dx+\int_0^l f u_t\,dx\ }\tag{$\star$}$$
-  写成积分形式（对 $t$ 积分）：
-  $$E(t)+c\int_0^t\!\!\int_0^l u_t^{2}\,dx\,ds=E(0)+\int_0^t\!\!\int_0^l f u_t\,dx\,ds .$$
-</div>
-<div class="key">
-  <b>物理意义：</b> $c\int_0^l u_t^{2}\,dx$ 就是摩擦耗散功率；$(\star)$ 说明能量的减少量恰好等于耗散掉的能量，
-  没有别的来源。当 $f\equiv 0$ 时 $\dfrac{dE}{dt}=-c\displaystyle\int_0^l u_t^{2}\,dx\le 0$。
-</div>
+    <div id="no-results" role="status">没有找到匹配的专题。试试“波动”“能量”或“稳定性”。</div>
 
-<h3>2. 定理 1（能量单调递减，且非平凡时严格递减）</h3>
-<div class="thm">
-  <span class="tag">定理 1</span>
-  设 $f\equiv 0$。则 $E(t)\le E(0)$ 对一切 $t\ge 0$ 成立；且若 $(\varphi,\psi)\not\equiv(0,0)$，则对一切 $t&gt;0$ 有 $E(t)&lt;E(0)$。
-</div>
-<div class="pf">
-  <span class="tag">证明</span>
-  由 $(\star)$，$\dfrac{dE}{dt}=-c\displaystyle\int_0^l u_t^{2}\,dx\le 0$，故 $E$ 单调不增，$E(t)\le E(0)$。<br>
-  严格性：反设存在 $t_0&gt;0$ 使 $E(t_0)=E(0)$。由单调性，$E\equiv E(0)$ 于 $[0,t_0]$，于是
-  $c\displaystyle\int_0^{t_0}\!\!\int_0^l u_t^{2}\,dx\,ds=E(0)-E(t_0)=0$；被积函数 $u_t^{2}\ge 0$ 连续，故 $u_t\equiv 0$ 于
-  $[0,l]\times[0,t_0]$，即 $u(x,t)=\varphi(x)$ 与 $t$ 无关。代入方程得 $a^{2}\varphi''(x)=0$；
-  结合 $\varphi(0)=\varphi(l)=0$ 得 $\varphi\equiv 0$。又 $\psi=u_t(\cdot,0)=0$，故 $u\equiv 0$，从而 $E(0)=0$，
-  说明初值平凡，与假设矛盾。<span style="float:right">$\square$</span>
-</div>
+    <section class="about" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">继续扩展这个专题库</h2>
+      <p>新专题放入 <code>topics/简短英文名称/</code>，独立网页命名为 <code>index.html</code>。可编辑源码、图片与验证脚本留在各自的 <code>source/</code> 内；随后在本目录和 <a href="README.md">README</a> 中补上分类与链接。</p>
+    </section>
+  </main>
 
-<h3>3. 定理 2（唯一性）</h3>
-<div class="thm">
-  <span class="tag">定理 2</span>
-  给定 $f,\varphi,\psi$，问题在古典解类中至多有一个解。
-</div>
-<div class="pf">
-  <span class="tag">证明</span>
-  设 $u_1,u_2$ 都是解，令 $w=u_1-u_2$。由方程的线性性与齐次边界、齐次初值：
-  $$w_{tt}=a^{2}w_{xx}-cw_t,\qquad w(0,t)=w(l,t)=0,\qquad w(x,0)=w_t(x,0)=0 .$$
-  对 $w$ 用 $(\star)$（此时 $f\equiv 0$）：
-  $$\frac{dE_w}{dt}=-c\int_0^l w_t^{2}\,dx\le 0,\qquad E_w(t)=\frac12\int_0^l\big(w_t^{2}+a^{2}w_x^{2}\big)dx .$$
-  于是 $0\le E_w(t)\le E_w(0)=\frac12\big(\|w_t(\cdot,0)\|^{2}+a^{2}\|w_x(\cdot,0)\|^{2}\big)=0$，
-  故 $E_w\equiv 0$，即 $w_t\equiv 0$ 且 $w_x\equiv 0$。由 $w_x\equiv 0$ 得 $w$ 只依赖于 $t$；由 $w(0,t)=0$ 得 $w\equiv 0$。
-  所以 $u_1\equiv u_2$。<span style="float:right">$\square$</span>
-</div>
-<div class="note">
-  <span class="tag">要点</span>
-  证明只用到两件事：<b>能量不增</b>（$E_w(t)\le E_w(0)$）和<b>零初值给出零能量</b>。
-  摩擦项 $-cu_t$ 只帮助消耗能量，没有制造能量的机制 —— 这正是“唯一性”的物理含义。
-</div>
-
-<h3>4. 定理 3（对初值的稳定性 / 连续依赖）</h3>
-<p>先回忆 Dirichlet 情形下的 <b>Poincaré 不等式</b>：若 $v(0)=v(l)=0$ 且 $v\in H^{1}$，则</p>
-$$\int_0^l v^{2}\,dx\le\frac{l^{2}}{\pi^{2}}\int_0^l v_x^{2}\,dx .$$
-<div class="thm">
-  <span class="tag">定理 3</span>
-  设 $u,v$ 是同一 $f$ 下分别以 $(\varphi_1,\psi_1)$、$(\varphi_2,\psi_2)$ 为初值的解，记
-  $\delta\varphi=\varphi_1-\varphi_2,\ \delta\psi=\psi_1-\psi_2$。则对一切 $t\ge 0$：
-  $$\big\|(u-v)(\cdot,t)\big\|^{2}\le\frac{l^{2}}{\pi^{2}a^{2}}\Big(\|\delta\psi\|^{2}+a^{2}\|\delta\varphi'\|^{2}\Big),\qquad
-    \big\|(u_t-v_t)(\cdot,t)\big\|^{2}\le\|\delta\psi\|^{2}+a^{2}\|\delta\varphi'\|^{2}.$$
-  特别地，$(u(\cdot,t),u_t(\cdot,t))$ 连续依赖于 $(\varphi,\psi)$，且界与 $t$ 无关。
-</div>
-<div class="pf">
-  <span class="tag">证明</span>
-  $w=u-v$ 满足齐次方程、零边界，初值为 $(\delta\varphi,\delta\psi)$。由定理 1（对 $w$ 用 $(\star)$）：
-  $E_w(t)\le E_w(0)=\frac12\big(\|\delta\psi\|^{2}+a^{2}\|\delta\varphi'\|^{2}\big)$。再由 Poincaré：
-  $$\|w(\cdot,t)\|^{2}\le\frac{l^{2}}{\pi^{2}}\|w_x(\cdot,t)\|^{2}\le\frac{l^{2}}{\pi^{2}}\cdot\frac{2E_w(t)}{a^{2}}
-  \le\frac{l^{2}}{\pi^{2}a^{2}}\Big(\|\delta\psi\|^{2}+a^{2}\|\delta\varphi'\|^{2}\Big),$$
-  同样 $\|w_t(\cdot,t)\|^{2}\le 2E_w(t)\le\|\delta\psi\|^{2}+a^{2}\|\delta\varphi'\|^{2}$。<span style="float:right">$\square$</span>
-</div>
-
-<h3>5. 定理 4（对非齐次项 $f$ 的稳定性）</h3>
-<div class="thm">
-  <span class="tag">定理 4</span>
-  设 $u_1,u_2$ 有相同初值，分别对应源项 $f_1,f_2$，记 $F=f_1-f_2$。则对一切 $t\ge 0$：
-  $$E_{w}(t)\le\frac{1}{2c}\int_0^t\|F(s)\|^{2}\,ds,\qquad
-    \|w(\cdot,t)\|^{2}\le\frac{l^{2}}{\pi^{2}a^{2}c}\int_0^t\|F(s)\|^{2}\,ds,\qquad
-    \|w_t(\cdot,t)\|^{2}\le\frac{1}{c}\int_0^t\|F(s)\|^{2}\,ds .$$
-</div>
-<div class="pf">
-  <span class="tag">证明</span>
-  $w=u_1-u_2$ 满足 $w_{tt}=a^{2}w_{xx}-cw_t+F$，零初值与零边界。由 $(\star)$：
-  $$\frac{dE_w}{dt}=-c\|w_t\|^{2}+\int_0^l Fw_t\,dx\le-c\|w_t\|^{2}+\|F\|\,\|w_t\|
-  \le-\frac{c}{2}\|w_t\|^{2}+\frac{1}{2c}\|F\|^{2}\le\frac{1}{2c}\|F(t)\|^{2},$$
-  其中第二步用了 $ab\le\frac{c}{2}a^{2}+\frac{1}{2c}b^{2}$，最后一步丢掉非正的 $-\frac c2\|w_t\|^{2}$。
-  在 $[0,t]$ 上积分得第一式；再由 $E_w$ 的定义 $\|w_t\|^{2}\le 2E_w(t)$，以及 Poincaré 不等式
-  $\|w(\cdot,t)\|^{2}\le\frac{l^{2}}{\pi^{2}}\|w_x\|^{2}\le\frac{l^{2}}{\pi^{2}a^{2}}\cdot 2E_w(t)$，即得后两式。
-  <span style="float:right">$\square$</span>
-</div>
-<div class="note">
-  <span class="tag">结论</span>
-  定理 2 给出<b>唯一性</b>，定理 3、4 给出<b>连续依赖（稳定性）</b>——即：只要解存在，它就是唯一的、并且稳定地依赖于初值与源项
-  （存在性可由特征函数展开或能量法另行给出，本题只要求唯一性与稳定性）。
-  注意稳定性常数带着 $1/c$ 与 $1/\sqrt{c}$：$c$ 越小（阻尼越弱）估计越松，这与物理直觉一致。
-</div>
-
-<h3>6. 注记：摩擦还会带来指数衰减（Lyapunov 方法）</h3>
-<div class="note">
-  <span class="tag">补充</span>
-  令 $G(t)=\displaystyle\int_0^l uu_t\,dx$。由 $u_{tt}=a^{2}u_{xx}-cu_t$ 得
-  $G'+cG=\|u_t\|^{2}-a^{2}\|u_x\|^{2}$。取 $H=E+\frac c2G$，用 $(\star)$ 与上式得
-  $$H'=-cE-\frac{c^{2}}{2}G .$$
-  由 Poincaré 不等式 $\|u\|\le\frac{l}{\pi}\|u_x\|$ 与 $2\,\|u_t\|\cdot a\|u_x\|\le\|u_t\|^{2}+a^{2}\|u_x\|^{2}=2E$（均值不等式）得
-  $$|G|\le\|u\|\,\|u_t\|\le\frac{l}{\pi}\|u_x\|\,\|u_t\|\le\frac{l}{\pi a}E .$$
-  记 $\gamma=\dfrac{cl}{2\pi a}$，则 $(1-\gamma)E\le H\le(1+\gamma)E$；由 $H\le(1+\gamma)E$ 得 $E\ge\dfrac{H}{1+\gamma}$，于是
-  $H'\le-cE+\frac{c^{2}}{2}\cdot\frac{l}{\pi a}E=-c(1-\gamma)E\le-\frac{c(1-\gamma)}{1+\gamma}H=-\kappa H$，
-  其中 $\kappa=\dfrac{c(1-\gamma)}{1+\gamma}$。于是当 $\gamma&lt;1$（即 $cl&lt;2\pi a$，阻尼不太强）时
-  $$E(t)\le\frac{1+\gamma}{1-\gamma}E(0)\,e^{-\kappa t}\qquad(\gamma=\tfrac{cl}{2\pi a}&lt;1).$$
-  这与模态图像一致：每个模态满足 $T_n''+cT_n'+a^{2}k_n^{2}T_n=0$，其解为 $e^{-ct/2}\times$ 振荡，
-  模态能量 $\sim e^{-ct}$；实验台 (c) 中对数能量曲线的渐近斜率确实约为 $-c$。
-</div>
-
-<h3>7. 数值验证（两个互相独立的求解器）</h3>
-<p>为了确认以上推导（以及页面上的动画确实在解这个方程），我们用两种完全不同的方法求解：
-<b>模态解析解</b>（正弦特征函数展开 + 每模态解析传播子，本质是精确解）与
-<b>显式有限差分</b>（leapfrog + 中心阻尼，二阶格式，$r=a\Delta t/\Delta x=0.9$）。检查结果：</p>
-<table>
-  <tr><th>检查项</th><th>结果</th><th>说明</th></tr>
-  <tr><td>$c=0$：能量守恒</td><td class="n ok">相对漂移 7.3e−14（模态）/ 1.7e−14（差分离散能量）</td><td>无摩擦时格式本身不耗散</td></tr>
-  <tr><td>恒等式 $\dot E=-c\int u_t^{2}$</td><td class="n ok">最大相对偏差 4.1e−7</td><td>由能量历史做中心差分核对</td></tr>
-  <tr><td>$E(0)-c\int_0^t\!\!\int u_t^{2}=E(t)$</td><td class="n ok">相对残差 5.3e−9</td><td>累积耗散与能量亏损完全一致</td></tr>
-  <tr><td>$E(t)$ 单调不增且严格下降</td><td class="n ok">满足</td><td>非平凡初值下 $t&gt;0$ 时 $E(t)&lt;E(0)$</td></tr>
-  <tr><td>Poincaré 不等式</td><td class="n ok">最大比值 0.852 &lt; 1</td><td>稳定性常数的来源</td></tr>
-  <tr><td>两种算法一致性（光滑初值）</td><td class="n ok">观测阶 2.05, 2.01, 2.00</td><td>$J=50,100,200,400$</td></tr>
-  <tr><td>两种算法一致性（含阻尼+源项）</td><td class="n ok">观测阶 1.99, 2.00, 2.00</td><td>说明二者解的是同一个问题</td></tr>
-  <tr><td>初值扰动：$E_w(t)\le E_w(0)$</td><td class="n ok">max 比值 0.99998 ≤ 1</td><td>误差能量不增长</td></tr>
-  <tr><td>初值扰动：$\|w\|^{2}\le\frac{2l^{2}}{\pi^{2}a^{2}}E_w(0)$</td><td class="n ok">max 比值 0.049</td><td>定理 3 的界（不最优但正确）</td></tr>
-  <tr><td>$f$ 扰动：$E_w\le\frac{1}{2c}\int\|F\|^{2}ds$</td><td class="n ok">max 比值 0.058</td><td>定理 4 的界</td></tr>
-  <tr><td>Lyapunov 界 $E(t)\le\frac{1+\gamma}{1-\gamma}E(0)e^{-\kappa t}$</td><td class="n ok">max 比值 0.917（$\gamma=0.0637,\ \kappa=0.3521$）</td><td>注记 6 的指数衰减（用 $|G|\le\frac{l}{\pi a}E$ 的更锐常数）</td></tr>
-  <tr><td>观测衰减率</td><td class="n ok">$\ln(E_0/E(t))/t\approx0.4005\approx c$</td><td>与模态图像一致</td></tr>
-</table>
-<figure>
-  <img src="figures/fig1_decay.png" alt="能量递减与耗散恒等式">
-  <figcaption>图 1：(a) 弦的形状随时间的衰减；(b) 时空图，能量沿特征线往返并被摩擦耗散；
-    (c) 能量单调递减（对数坐标），虚线为 $e^{-ct}$ 与 Lyapunov 上界；(d) $\dot E$ 与 $-c\int u_t^{2}dx$ 完全重合。</figcaption>
-</figure>
-<figure>
-  <img src="figures/fig2_stability.png" alt="稳定性与收敛性">
-  <figcaption>图 2：(a) 初值扰动下误差能量不增长且远低于理论界；(b) $f$ 扰动下 $E_w$ 始终低于 $\frac{1}{2c}\int\|F\|^{2}ds$；
-    (c) 有限差分与精确解之差按 $\Delta x^{2}$ 收敛；(d) 损失的能量恰等于摩擦耗散。</figcaption>
-</figure>
-
-<footer>
-  页面由三个文件组成：<code>index.html</code>（界面与证明）、<code>engine.js</code>（两个求解器）、
-  <code>mathjax/tex-svg.js</code>（离线数学排版，缺失时自动回落到 CDN）。
-  数值检查脚本：<code>tests/check.js</code>（18 项，全部通过），作图脚本：<code>make_figures.py</code>。
-</footer>
-</div>
-
-<script src="engine.js"></script>
-<script>
-"use strict";
-(function () {
-  var DW = window.DW;
-  function fail(msg) {
-    var e = document.getElementById("err");
-    e.style.display = "block";
-    e.textContent = msg;
-  }
-  window.onerror = function (m, s, l, c, e) {
-    fail("页面脚本出错：" + m + " @ " + s + ":" + l + ":" + c + (e && e.stack ? "\n" + e.stack : ""));
-  };
-  if (!DW) { fail("engine.js 未加载成功（请确认它与 index.html 在同一目录）。"); return; }
-
-  /* ============================ 状态 ============================ */
-  var S = {
-    l: 1, a: 1, c: 0.4, N: 160, speed: 1, phi: "pluck", psi: "zero",
-    fAmp: 0, fMode: 3, fOmega: 1.7,
-    tMax: 24, logE: false, stabMode: "ic",      // 'ic' 初值扰动 | 'f' 源项扰动
-    running: true, t: 0
-  };
-  var NG = 420;                                  // 显示网格点数
-  var FDJ = 200;                                 // 有限差分网格
-  var epsPhi = 0.02, epsPsi = 0.02, epsF = 0.04; // 扰动幅度（固定，用于稳定性面板）
-  var MAXHIST = 9000;
-
-  var sim, fdSim, wIC, wF, probe;                 // 求解器
-  var grid, sinTab, hist, histW;                  // 显示网格 / 正弦表 / 历史
-  var E0 = 1;
-  var heat, heatCtx, heatW = 1100, heatH = 96, Tview = 10;  // 时空图
-  var cvS, cvE, cvI, cvT;
-  var maxFDdiff = 0, maxEwRatio = 0, maxEwBound = 0, maxL2Bound = 0, maxIdentDev = 0;
-  var iStat = 1, iStatW = 0, heatAccum = 0, ampScale = 0, CUR = null, maxDiss = 0;
-
-  function phiSpec() {
-    if (S.phi === "pluck") return { type: "pluck", xp: S.l / 3 };
-    if (S.phi === "gauss") return { type: "gauss", x0: 0.3 * S.l, width: 0.06 * S.l };
-    if (S.phi === "m1") return { type: "modes", amps: [1] };
-    return { type: "modes", amps: [1, 0.5] };
-  }
-  function psiSpec() { return S.psi === "zero" ? { type: "zero" } : { type: "modes", amps: [0, 0.5] }; }
-  function srcSpec(amp, mode, omega) {
-    if (!amp) return { type: "none" };
-    return { type: "modes", amps: (function () { var v = []; for (var i = 1; i <= mode; i++) v.push(i === mode ? 1 : 0); return v; })(), amp: amp, omega: omega };
-  }
-
-  /* ============================ 建表与重建 ============================ */
-  function buildGrid() {
-    grid = new Float64Array(NG);
-    for (var j = 0; j < NG; j++) grid[j] = (S.l * j) / (NG - 1);
-    sinTab = new Float64Array(NG * (S.N + 1));
-    for (var n = 1; n <= S.N; n++) {
-      var k = (n * Math.PI) / S.l;
-      for (var i = 0; i < NG; i++) sinTab[i * (S.N + 1) + n] = Math.sin(k * grid[i]);
+  <footer><div class="shell">PDE Visualization · 可独立打开的偏微分方程交互专题</div></footer>
+  <script>
+    const search = document.getElementById("topic-search");
+    const groups = [...document.querySelectorAll(".group")];
+    const allCards = [...document.querySelectorAll(".card")];
+    document.getElementById("topic-count").textContent = allCards.length;
+    for (const group of groups) {
+      const count = group.querySelectorAll(".card").length;
+      group.querySelector(".group-count").textContent = count + " 个专题";
+      const empty = group.querySelector(".empty-category");
+      if (empty) empty.hidden = count !== 0;
     }
-  }
-  /* 用正弦表快速采样；返回 {u, ut} */
-  function sampleFast(solver) {
-    var N = S.N, stride = N + 1, u = new Float64Array(NG), ut = new Float64Array(NG);
-    var T = solver.T, V = solver.V;
-    for (var i = 0; i < NG; i++) {
-      var su = 0, sv = 0, base = i * stride;
-      for (var n = 1; n <= N; n++) {
-        var s = sinTab[base + n];
-        su += T[n] * s; sv += V[n] * s;
+    search.addEventListener("input", () => {
+      const query = search.value.trim().toLocaleLowerCase();
+      let matches = 0;
+      for (const group of groups) {
+        let inGroup = 0;
+        for (const card of group.querySelectorAll(".card")) {
+          const found = card.dataset.search.toLocaleLowerCase().includes(query);
+          card.hidden = !found;
+          if (found) { inGroup++; matches++; }
+        }
+        group.hidden = !!query && inGroup === 0;
       }
-      u[i] = su; ut[i] = sv;
-    }
-    return { u: u, ut: ut };
-  }
-
-  function rebuild(keepTime) {
-    buildGrid();
-    var phi = phiSpec(), psi = psiSpec(), src = srcSpec(S.fAmp, S.fMode, S.fOmega);
-    sim = new DW.ModalSolver({ l: S.l, a: S.a, c: S.c, N: S.N, phi: phi, psi: psi, source: src });
-    fdSim = new DW.FDSolver({ l: S.l, a: S.a, c: S.c, J: FDJ, phi: phi, psi: psi, source: src });
-    // 差 w：初值扰动（同源，扰动抵消）与源项扰动（同初值）
-    wIC = new DW.ModalSolver({
-      l: S.l, a: S.a, c: S.c, N: S.N,
-      phi: { type: "gauss", x0: 0.35 * S.l, width: 0.05 * S.l }, amp: 1,
-      psi: { type: "modes", amps: [0, 1] }, source: { type: "none" }
+      document.getElementById("no-results").style.display = matches ? "none" : "block";
     });
-    wF = new DW.ModalSolver({
-      l: S.l, a: S.a, c: S.c, N: S.N, phi: { type: "zero" }, psi: { type: "zero" },
-      source: srcSpec(epsF, S.fMode, Math.max(S.fOmega, 0.1) + 0.6)
-    });
-    // 给差解施加真实扰动幅度：δφ = epsPhi·gauss，δψ = epsPsi·sin(2πx/l)
-    for (var n = 1; n <= S.N; n++) { wIC.T[n] *= epsPhi; wIC.V[n] *= epsPsi; }
-    wIC.energy0 = wIC.energy();
-    E0 = sim.energy() || 1;
-    hist = []; histW = [];
-    maxFDdiff = 0; maxEwRatio = 0; maxEwBound = 0; maxL2Bound = 0; maxIdentDev = 0;
-    S.t = 0; maxFDdiff = 0;
-    iStat = 1; iStatW = 0; heatAccum = 0; ampScale = 0; maxDiss = 0;
-    resetHeat();
-  }
-
-  function resetHeat() {
-    heatCtx.setTransform(1, 0, 0, 1, 0, 0);
-    heatCtx.fillStyle = "#0b0f14";
-    heatCtx.fillRect(0, 0, heatW, heatH);
-  }
-
-  /* ============================ 记录历史 ============================ */
-  function pushHistory() {
-    var E = sim.energy(), D = sim.dissipation(), F = sim.forceInnerUt();
-    hist.push({ t: S.t, E: E, D: D, F: F, Adiss: sim.Adiss, Aforce: sim.Aforce });
-    if (hist.length > MAXHIST) hist.shift();
-    var Ew1 = wIC.energy(), Ew2 = wF.energy();
-    var lastW = histW.length ? histW[histW.length - 1] : null;
-    if (!lastW || S.t - lastW.t > 0.02) {
-      histW.push({
-        t: S.t, E1: Ew1, E2: Ew2, E10: wIC.energy0 || 1e-30,
-        l2: wIC.l2norm(), Asrc: wF.Asrc, l2w2: wF.l2norm()
-      });
-      if (histW.length > MAXHIST) histW.shift();
-    }
-  }
-
-  /* ============================ 推进 ============================ */
-  var CHUNK = 0.0025;  // 帧内以小步推进：历史足够密，dE/dt 的中心差分才够准
-  function advance(dtSim) {
-    var rem = dtSim;
-    while (rem > 1e-12) {
-      var d = Math.min(CHUNK, rem);
-      sim.step(d);
-      wIC.step(d);
-      wF.step(d);
-      S.t = sim.t;
-      fdSim.advanceTo(S.t);
-      CUR = sampleFast(sim).u;
-      pushHistory();
-      pushHeatColumn(d, CUR);
-      rem -= d;
-    }
-  }
-
-  /* 把当前形状作为一列写进时空图；列宽与推进的时间成正比（累积到整数像素） */
-  function pushHeatColumn(dtSim, prof) {
-    heatAccum += (dtSim / Tview) * heatW;
-    var px = Math.floor(heatAccum);
-    if (px < 1) return;
-    heatAccum -= px;
-    var m = 0;
-    for (var i = 0; i < prof.length; i++) m = Math.max(m, Math.abs(prof[i]));
-    ampScale = Math.max(ampScale, m);
-    heatCtx.drawImage(heat, -px, 0);
-    var img = heatCtx.createImageData(px, heatH);
-    var d = img.data;
-    var scale = Math.max(ampScale, 1e-6) * 1.05;
-    for (var y = 0; y < heatH; y++) {
-      var x = (y / (heatH - 1)) * S.l;
-      var gi = Math.min(NG - 1, Math.max(0, Math.round((x / S.l) * (NG - 1))));
-      var v = Math.max(-1, Math.min(1, prof[gi] / scale));
-      var col = colormap(v);
-      for (var xx = 0; xx < px; xx++) {
-        var o = (y * px + xx) * 4;
-        d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
-      }
-    }
-    heatCtx.putImageData(img, heatW - px, 0);
-  }
-  function colormap(v) { // 蓝 - 白 - 红
-    v = Math.max(-1, Math.min(1, v));
-    var r, g, b;
-    if (v >= 0) { r = 255; g = Math.round(255 * (1 - v)); b = Math.round(255 * (1 - v)); }
-    else { r = Math.round(255 * (1 + v)); g = Math.round(255 * (1 + v)); b = 255; }
-    return [r, g, b];
-  }
-
-  /* ============================ 画图工具 ============================ */
-  function fit(cv) {
-    var dpr = Math.min(2, window.devicePixelRatio || 1);
-    var r = cv.getBoundingClientRect();
-    var w = Math.max(200, Math.round(r.width)), h = Math.max(120, Math.round(r.height));
-    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    }
-    var ctx = cv.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
-    return { ctx: ctx, w: w, h: h };
-  }
-  function niceTicks(lo, hi, n) {
-    var span = hi - lo; if (!(span > 0)) span = 1;
-    var raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), norm = raw / mag;
-    var stepv = (norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10) * mag;
-    var out = [], v = Math.ceil(lo / stepv) * stepv;
-    for (; v <= hi + 1e-12; v += stepv) out.push(v);
-    return out;
-  }
-  function axes(ctx, box, xr, yr, logY, xlab, ylab) {
-    var X = function (v) { return box.x + ((v - xr[0]) / (xr[1] - xr[0])) * box.w; };
-    var Y = logY
-      ? function (v) { var a = Math.log10(Math.max(v, yr[0])), b0 = Math.log10(yr[0]), b1 = Math.log10(yr[1]); return box.y + box.h - ((a - b0) / (b1 - b0)) * box.h; }
-      : function (v) { return box.y + box.h - ((v - yr[0]) / (yr[1] - yr[0])) * box.h; };
-    ctx.save();
-    ctx.strokeStyle = "#2b333d"; ctx.lineWidth = 1; ctx.strokeRect(box.x, box.y, box.w, box.h);
-    ctx.font = "11px system-ui,Segoe UI"; ctx.fillStyle = "#8b949e";
-    var xt = niceTicks(xr[0], xr[1], 6);
-    ctx.textAlign = "center"; ctx.textBaseline = "top";
-    for (var i = 0; i < xt.length; i++) {
-      var px = X(xt[i]);
-      if (px < box.x - 1 || px > box.x + box.w + 1) continue;
-      ctx.strokeStyle = "rgba(139,148,158,.13)";
-      ctx.beginPath(); ctx.moveTo(px, box.y); ctx.lineTo(px, box.y + box.h); ctx.stroke();
-      ctx.fillText(fmtTick(xt[i]), px, box.y + box.h + 4);
-    }
-    var yt;
-    if (logY && !(yr[0] > 0 && isFinite(yr[0]) && isFinite(yr[1]) && yr[1] > yr[0])) {
-      yt = [];                                   // 非法范围时不给刻度，避免死循环
-    } else if (logY) {
-      yt = [];
-      var e0 = Math.ceil(Math.log10(yr[0])), e1 = Math.floor(Math.log10(yr[1]));
-      for (var k = e0; k <= e1 && k < e0 + 40; k++) yt.push(Math.pow(10, k));
-    } else {
-      yt = niceTicks(yr[0], yr[1], 5);
-    }
-    ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for (var j = 0; j < yt.length; j++) {
-      var py = Y(yt[j]);
-      if (py < box.y - 1 || py > box.y + box.h + 1) continue;
-      ctx.strokeStyle = "rgba(139,148,158,.13)";
-      ctx.beginPath(); ctx.moveTo(box.x, py); ctx.lineTo(box.x + box.w, py); ctx.stroke();
-      ctx.fillStyle = "#8b949e";
-      ctx.fillText(logY ? "1e" + Math.round(Math.log10(yt[j])) : fmtTick(yt[j]), box.x - 6, py);
-    }
-    ctx.fillStyle = "#9aa7b4"; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-    if (xlab) ctx.fillText(xlab, box.x + box.w / 2, box.y + box.h + 30);
-    if (ylab) { ctx.save(); ctx.translate(box.x - 40, box.y + box.h / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(ylab, 0, 0); ctx.restore(); }
-    ctx.restore();
-    return { X: X, Y: Y };
-  }
-  function fmtTick(v) {
-    if (v === 0) return "0";
-    var av = Math.abs(v);
-    if (av >= 1000 || av < 0.01) return v.toExponential(1);
-    return (Math.round(v * 1000) / 1000).toString();
-  }
-  function polyline(ctx, P, pts, color, lw, dash) {
-    ctx.save();
-    ctx.strokeStyle = color; ctx.lineWidth = lw || 1.6; ctx.setLineDash(dash || []);
-    ctx.beginPath();
-    var started = false;
-    for (var i = 0; i < pts.length; i++) {
-      var x = P.X(pts[i][0]), y = P.Y(pts[i][1]);
-      if (!isFinite(x) || !isFinite(y)) { started = false; continue; }
-      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
-    }
-    ctx.stroke(); ctx.restore();
-  }
-
-  /* ============================ 画：弦 + 时空图 ============================ */
-  function drawString() {
-    var f = fit(cvS), ctx = f.ctx, W = f.w, H = f.h;
-    var stripH = Math.round(H * 0.24), gap = 34;
-    var box = { x: 52, y: 18, w: W - 70, h: H - stripH - gap - 46 };
-    var ymax = 0;
-    for (var n = 1; n <= S.N; n++) ymax = Math.max(ymax, Math.abs(sim.T[n]));
-    ymax = Math.max(0.25, 1.12 * ymax);
-    var P = axes(ctx, box, [0, S.l], [-ymax, ymax], false, "x", "u(x,t)");
-    // 零线与坐标轴
-    ctx.save();
-    ctx.strokeStyle = "#3a4653"; ctx.beginPath();
-    ctx.moveTo(P.X(0), P.Y(0)); ctx.lineTo(P.X(S.l), P.Y(0)); ctx.stroke();
-    ctx.restore();
-    // 端点
-    ctx.fillStyle = "#8b949e";
-    ctx.beginPath(); ctx.arc(P.X(0), P.Y(0), 3.5, 0, 7); ctx.fill();
-    ctx.beginPath(); ctx.arc(P.X(S.l), P.Y(0), 3.5, 0, 7); ctx.fill();
-    // 拖影：过去若干时刻的形状
-    var trail = sim.trail || [];
-    for (var i = 0; i < trail.length; i++) {
-      var a = 0.055 + 0.30 * (i / Math.max(1, trail.length - 1));
-      ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = "#4da3ff"; ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      for (var j = 0; j < NG; j++) {
-        var X = P.X(grid[j]), Y = P.Y(trail[i][j]);
-        if (j === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
-      }
-      ctx.stroke(); ctx.restore();
-    }
-    // 当前形状
-    var cur = sampleFast(sim);
-    ctx.save();
-    ctx.strokeStyle = "#7ee787"; ctx.lineWidth = 2.6; ctx.shadowColor = "#7ee787"; ctx.shadowBlur = 10;
-    ctx.beginPath();
-    for (var j2 = 0; j2 < NG; j2++) {
-      var X2 = P.X(grid[j2]), Y2 = P.Y(cur.u[j2]);
-      if (j2 === 0) ctx.moveTo(X2, Y2); else ctx.lineTo(X2, Y2);
-    }
-    ctx.stroke(); ctx.restore();
-    // 有限差分解（虚线）
-    ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = "#ff7b72"; ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    for (var j3 = 0; j3 < NG; j3++) {
-      var X3 = P.X(grid[j3]), Y3 = P.Y(fdSim.u(grid[j3]));
-      if (j3 === 0) ctx.moveTo(X3, Y3); else ctx.lineTo(X3, Y3);
-    }
-    ctx.stroke(); ctx.restore();
-    // 图例与读数
-    ctx.font = "12px system-ui,Segoe UI"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-    ctx.fillStyle = "#7ee787"; ctx.fillText("— 模态解析解", box.x + 6, box.y + 4);
-    ctx.fillStyle = "#ff7b72"; ctx.fillText("-- 有限差分解 (J=" + FDJ + ")", box.x + 6, box.y + 20);
-    ctx.fillStyle = "#9aa7b4"; ctx.textAlign = "right";
-    ctx.fillText("t = " + S.t.toFixed(2) + (S.running ? "" : "（已暂停）"), box.x + box.w - 4, box.y + 4);
-
-    // 时空图
-    var sy = box.y + box.h + 40;
-    ctx.save();
-    ctx.strokeStyle = "#2b333d"; ctx.strokeRect(box.x, sy, box.w, stripH);
-    ctx.drawImage(heat, 0, 0, heatW, heatH, box.x, sy, box.w, stripH);
-    ctx.restore();
-    ctx.font = "11px system-ui,Segoe UI"; ctx.fillStyle = "#8b949e";
-    ctx.textAlign = "left"; ctx.textBaseline = "top";
-    ctx.fillText("时空图：横轴 t（右端为当前时刻，窗口 " + Tview + " 秒）→，纵轴 x ↑", box.x + 4, sy + stripH + 4);
-    ctx.textAlign = "right";
-    ctx.fillText("x=0", box.x + 22, sy + 2);
-    ctx.fillText("x=l", box.x + 22, sy + stripH - 14);
-  }
-
-  /* ============================ 画：能量 ============================ */
-  function drawEnergy() {
-    var f = fit(cvE), ctx = f.ctx;
-    var box = { x: 58, y: 16, w: f.w - 76, h: f.h - 62 };
-    var tmax = Math.max(4, Math.ceil(S.t / 2) * 2);
-    var ymin = S.logE ? 1e-5 : 0, ymax = S.logE ? 2 : 1.06;
-    var P = axes(ctx, box, [0, tmax], [ymin, ymax], S.logE, "t", "E(t)/E(0)");
-    // 水平线 E/E0 = 1
-    polyline(ctx, P, [[0, 1], [tmax, 1]], "#6e7681", 1.4, [6, 4]);
-    // 参考：欠阻尼时能量按 e^{-ct} 衰减；过阻尼时基频被压制，参考改为过阻尼率
-    var lam1 = (Math.PI * S.a) / S.l;
-    var under = S.c < 2 * lam1;
-    var refRate = under ? S.c : (S.c > 0 ? S.c - Math.sqrt(Math.max(0, S.c * S.c - 4 * lam1 * lam1)) : 0);
-    if (S.c > 0) {
-      var ref = [], tt;
-      for (tt = 0; tt <= tmax; tt += tmax / 400) ref.push([tt, Math.exp(-refRate * tt)]);
-      polyline(ctx, P, ref, "#e3b341", 1.4, [5, 4]);
-    }
-    // Lyapunov 上界
-    var gamma = (S.c * S.l) / (2 * Math.PI * S.a);
-    if (gamma < 1) {
-      var kap = (S.c * (1 - gamma)) / (1 + gamma), coef = (1 + gamma) / (1 - gamma), ub = [];
-      for (tt = 0; tt <= tmax; tt += tmax / 400) ub.push([tt, coef * Math.exp(-kap * tt)]);
-      polyline(ctx, P, ub, "#ff7b72", 1.3, [2, 3]);
-    }
-    // 能量曲线
-    var pts = [];
-    for (var i = 0; i < hist.length; i++) pts.push([hist[i].t, Math.max(1e-30, hist[i].E / (E0 || 1))]);
-    polyline(ctx, P, pts, "#4da3ff", 2.2);
-    // 图例
-    ctx.font = "11px system-ui,Segoe UI"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-    ctx.fillStyle = "#4da3ff"; ctx.fillText("E(t)/E(0)", box.x + 8, box.y + 4);
-    ctx.fillStyle = "#6e7681"; ctx.fillText("E(0)（不增的水平线）", box.x + 8, box.y + 20);
-    if (S.c > 0) { ctx.fillStyle = "#e3b341"; ctx.fillText(under ? "e^(-ct)（欠阻尼参考）" : "e^(-过阻尼率 t)", box.x + 8, box.y + 36); }
-    if (gamma < 1) { ctx.fillStyle = "#ff7b72"; ctx.fillText("Lyapunov 上界", box.x + 8, box.y + 52); }
-  }
-
-  /* ============================ 画：恒等式 ============================ */
-  function drawIdentity() {
-    var f = fit(cvI), ctx = f.ctx;
-    var box = { x: 62, y: 16, w: f.w - 80, h: f.h - 62 };
-    var lo = 0, hi = 0, i;
-    for (i = 1; i < hist.length; i++) {
-      var d = (hist[i].E - hist[i - 1].E) / (hist[i].t - hist[i - 1].t);
-      var r = hist[i].F - S.c * hist[i].D;
-      lo = Math.min(lo, d, r); hi = Math.max(hi, d, r);
-    }
-    if (!(hi > lo)) { hi = 0.01; lo = -0.01; }
-    var pad = 0.12 * (hi - lo);
-    var tmax = Math.max(4, Math.ceil(S.t / 2) * 2);
-    var P = axes(ctx, box, [0, tmax], [lo - pad, hi + pad], false, "t", "dE/dt");
-    var A = [], B = [];
-    var stride = Math.max(1, Math.floor(hist.length / 1400));
-    for (i = 0; i < hist.length; i += stride) {
-      var sm = smoothedAt(i);
-      if (sm === null) continue;
-      A.push([sm.t, sm.dE]);
-      B.push([sm.t, sm.rhs]);
-    }
-    polyline(ctx, P, B, "#ff7b72", 3.4);
-    polyline(ctx, P, A, "#4da3ff", 1.6);
-    ctx.font = "11px system-ui,Segoe UI"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-    ctx.fillStyle = "#4da3ff"; ctx.fillText("数值 dE/dt（能量曲线的中心差分）", box.x + 8, box.y + 4);
-    ctx.fillStyle = "#ff7b72"; ctx.fillText("-c∫u_t²dx + ∫f·u_t dx（由证明给出）", box.x + 8, box.y + 20);
-  }
-
-  /* ============================ 画：稳定性 ============================ */
-  function drawStability() {
-    var f = fit(cvT), ctx = f.ctx;
-    var box = { x: 66, y: 16, w: f.w - 84, h: f.h - 62 };
-    var tmax = Math.max(4, Math.ceil(S.t / 2) * 2);
-    if (S.stabMode === "ic") {
-      var P = axes(ctx, box, [0, tmax], [0, 1.08], false, "t", "归一化");
-      polyline(ctx, P, [[0, 1], [tmax, 1]], "#6e7681", 1.5, [6, 4]);
-      var A = [], B = [];
-      for (var i = 0; i < histW.length; i++) {
-        var h = histW[i];
-        A.push([h.t, Math.min(1.2, h.E1 / (h.E10 || 1e-30))]);
-        var boundL2 = (2 * S.l * S.l) / (Math.PI * Math.PI * S.a * S.a) * (h.E10 || 1e-30);
-        B.push([h.t, Math.min(1.2, h.l2 / (boundL2 || 1e-30))]);
-      }
-      polyline(ctx, P, B, "#e3b341", 1.6);
-      polyline(ctx, P, A, "#7ee787", 2.2);
-      ctx.font = "11px system-ui,Segoe UI"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-      ctx.fillStyle = "#7ee787"; ctx.fillText("E_w(t)/E_w(0)（差解的能量，≤1）", box.x + 8, box.y + 4);
-      ctx.fillStyle = "#e3b341"; ctx.fillText("||w||² ÷ [2l²E_w(0)/(π²a²)]", box.x + 8, box.y + 20);
-      ctx.fillStyle = "#6e7681"; ctx.fillText("上界 1", box.x + 8, box.y + 36);
-    } else if (S.c <= 1e-9) {
-      // 无摩擦：误差不衰减，定理 4 的界退化为 +∞
-      axes(ctx, box, [0, tmax], [0, 1], false, "t", "");
-      ctx.font = "12px system-ui,Segoe UI"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillStyle = "#e3b341";
-      ctx.fillText("c = 0（无摩擦）：扰动不衰减，定理 4 的界退化为 +∞", box.x + box.w / 2, box.y + box.h / 2 - 10);
-      ctx.fillStyle = "#9aa7b4";
-      ctx.fillText("把 摩擦 c 拖到大于 0 即可看到有限上界把 E_w(t) 压住", box.x + box.w / 2, box.y + box.h / 2 + 12);
-    } else {
-      var lo = 1e-12, hi = 1;
-      for (var k = 0; k < histW.length; k++) {
-        hi = Math.max(hi, histW[k].E2, histW[k].Asrc / (2 * S.c));
-        lo = Math.min(lo, Math.max(1e-12, histW[k].E2));
-      }
-      var P2 = axes(ctx, box, [0, tmax], [lo / 3, hi * 3], true, "t", "能量");
-      var C = [], D = [];
-      for (var k2 = 0; k2 < histW.length; k2++) {
-        var h2 = histW[k2];
-        C.push([h2.t, Math.max(1e-30, h2.E2)]);
-        D.push([h2.t, Math.max(1e-30, h2.Asrc / (2 * S.c))]);
-      }
-      polyline(ctx, P2, D, "#ff7b72", 2.0, [5, 4]);
-      polyline(ctx, P2, C, "#7ee787", 2.2);
-      ctx.font = "11px system-ui,Segoe UI"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-      ctx.fillStyle = "#7ee787"; ctx.fillText("E_w(t)（f 扰动引起的差）", box.x + 8, box.y + 4);
-      ctx.fillStyle = "#ff7b72"; ctx.fillText("上界 (1/2c)∫||F||²ds", box.x + 8, box.y + 20);
-    }
-  }
-
-  /* ============================ 读数 ============================ */
-  function fmt(v, d) { return (Math.abs(v) < 1e-3 && v !== 0) ? v.toExponential(2) : v.toFixed(d === undefined ? 4 : d); }
-  function updateReadouts() {
-    var E = sim.energy(), D = sim.dissipation(), F = sim.forceInnerUt();
-    var resid = Math.abs(E - (sim.energy0 - S.c * sim.Adiss + sim.Aforce)) / Math.max(E, 1e-30);
-    // 两种方法之差（在与模态解相同的采样点上比较）
-    var cur = CUR || sampleFast(sim).u, dm = 0;
-    for (var j2 = 0; j2 < NG; j2++) dm = Math.max(dm, Math.abs(cur[j2] - fdSim.u(grid[j2])));
-    maxFDdiff = Math.max(maxFDdiff, dm);
-
-    var ro1 = [
-      ["时刻 t", fmt(S.t, 2)],
-      ["E(t)", fmt(E, 5)],
-      ["E(0)", fmt(sim.energy0, 5)],
-      ["E(t)/E(0)", fmt(E / Math.max(sim.energy0, 1e-30), 5)],
-      ["-c∫u_t²dx + ∫f u_t dx（当前瞬时值）", fmt(F - S.c * D, 5)],
-      ["dE/dt（±20ms 平滑中心差分）", (function () { var v = smoothedAt(lastFullIdx()); return v === null ? "—" : fmt(v.dE, 5); })()],
-      ["同窗口平均的 -c∫u_t²dx + ∫f u_t dx", (function () { var v = smoothedAt(lastFullIdx()); return v === null ? "—" : fmt(v.rhs, 5); })()]
-    ];
-    var ro2 = [
-      ["恒等式残差 |E(0)-c∫∫u_t²-E(t)|/E(t)", resid.toExponential(2)],
-      ["∫∫u_t² dx ds（累积耗散）", fmt(sim.Adiss, 5)],
-      ["γ = cl/(2πa)", fmt((S.c * S.l) / (2 * Math.PI * S.a), 4) + ((S.c * S.l) / (2 * Math.PI * S.a) < 1 ? "（<1：指数衰减界成立）" : "")],
-      ["κ = c(1-γ)/(1+γ)", ((S.c * S.l) / (2 * Math.PI * S.a) < 1) ? fmt((S.c * (1 - (S.c * S.l) / (2 * Math.PI * S.a))) / (1 + (S.c * S.l) / (2 * Math.PI * S.a)), 4) : "—"],
-      ["两种方法之差 max|u_FD-u_模态|（当前 / 历史最大）", dm.toExponential(2) + " / " + maxFDdiff.toExponential(2)]
-    ];
-    fill("ro1", ro1); fill("ro2", ro2);
-
-    var lam1r = (Math.PI * S.a) / S.l, underR = S.c < 2 * lam1r;
-    var roE = [["E(t)/E(0)", fmt(E / Math.max(sim.energy0, 1e-30), 5)],
-               ["ln(E(0)/E(t))/t（观测衰减率）", S.t > 0.5 ? fmt(Math.log(Math.max(sim.energy0, 1e-30) / Math.max(E, 1e-30)) / S.t, 4) : "—"],
-               underR ? ["参考：c（欠阻尼，模态能量 ~ e^(-ct)）", fmt(S.c, 4)]
-                      : ["参考：过阻尼率 c-√(c²-4λ₁²)", fmt(S.c - Math.sqrt(Math.max(0, S.c * S.c - 4 * lam1r * lam1r)), 4) + "（此时衰减率不再 ≈ c）"]];
-    fill("roE", roE);
-
-    var vNow = smoothedAt(lastFullIdx());
-    var scale0 = Math.max(S.c * maxDiss, 1e-30);   // 参考尺度：最大耗散功率
-    var resid0 = Math.abs(E - (sim.energy0 - S.c * sim.Adiss + sim.Aforce)) / Math.max(E, 1e-30);
-    var roI = [
-      ["微分形式最大偏差 |dE/dt-(-c∫u_t²+∫f u_t)|（±20ms 平滑后）", maxIdentDev.toExponential(2)],
-      ["同上，÷ 参考尺度 c·max∫u_t²（最大耗散功率）", (maxIdentDev / scale0).toExponential(2)],
-      ["当前：dE/dt 与右端项之差", vNow === null ? "—" : Math.abs(vNow.dE - vNow.rhs).toExponential(2)],
-      ["积分形式残差 |E(0)-c∫∫u_t²+∫∫f u_t-E(t)|/E(t)", resid0.toExponential(2)]
-    ];
-    fill("roI", roI);
-
-    var hw = histW.length ? histW[histW.length - 1] : null;
-    var roS;
-    if (S.stabMode === "ic") {
-      roS = [["扰动幅度 (δφ, δψ)", "(" + epsPhi + ", " + epsPsi + ")"],
-             ["E_w(t)/E_w(0) 当前", hw ? fmt(Math.min(1.2, hw.E1 / (hw.E10 || 1e-30)), 6) : "—"],
-             ["E_w/E_w(0) 历史最大（应 ≤ 1）", maxEwRatio.toFixed(6)],
-             ["||w||²/上界 历史最大（应 ≤ 1）", maxL2Bound.toFixed(4)]];
-    } else {
-      var bnd = hw ? hw.Asrc / (2 * S.c) : 0;
-      roS = [["源扰动幅度 δf", epsF.toFixed(3)],
-             ["E_w(t) 当前", hw ? fmt(hw.E2, 3) : "—"],
-             ["上界 (1/2c)∫||F||²ds", !isFinite(bnd) ? "∞（c = 0）" : (hw ? fmt(bnd, 3) : "—")],
-             ["比值 历史最大（应 ≤ 1）", isFinite(maxEwBound) ? maxEwBound.toFixed(4) : "—"]];
-    }
-    fill("roS", roS);
-
-    fill("roU", [
-      ["网格 J", String(FDJ)],
-      ["max|u_FD - u_模态|（当前）", dm.toExponential(2)],
-      ["历史最大", maxFDdiff.toExponential(2)],
-      ["结论", "随 J 加倍按 ~1/4 缩小（见 tests/check.js：观测阶 2.0）"]
-    ]);
-  }
-  /* 在 ±SMOOTH 秒的窗口上比较两种算法给出的 dE/dt：
-     · dE/dt 用窗口两端的中心差分（窗口越长，被平滑掉的高频振荡越多，截断误差越小）
-     · 右端项取窗口内 (-c∫u_t² + ∫f u_t) 的平均
-     这样两条曲线在同一时刻、同一尺度上对齐；逐点的高频细节由“积分形式残差”负责核对。 */
-  var SMOOTH = 0.02;
-  function idxAt(t) {
-    var lo = 0, hi = hist.length - 1;
-    if (hi < 1) return 0;
-    while (lo < hi) { var mid = (lo + hi) >> 1; if (hist[mid].t < t) lo = mid + 1; else hi = mid; }
-    return lo;
-  }
-  function smoothedAt(i) {
-    if (i < 0 || i >= hist.length) return null;
-    var t = hist[i].t;
-    var a = idxAt(t - SMOOTH), b = idxAt(t + SMOOTH);
-    if (b <= a) return null;
-    var dE = (hist[b].E - hist[a].E) / (hist[b].t - hist[a].t);
-    var s = 0, n = 0;
-    for (var j = a; j <= b; j++) { s += hist[j].F - S.c * hist[j].D; n++; }
-    return { t: t, dE: dE, rhs: n ? s / n : 0 };
-  }
-  function lastFullIdx() {
-    if (hist.length < 3) return -1;
-    var i = idxAt(hist[hist.length - 1].t - SMOOTH);
-    return i >= 1 ? i : -1;
-  }
-  function fill(id, rows) {
-    var el = document.getElementById(id), s = "";
-    for (var i = 0; i < rows.length; i++) {
-      s += "<div>" + rows[i][0] + "</div><div>" + rows[i][1] + "</div>";
-    }
-    el.innerHTML = s;
-  }
-
-  /* 历史误差统计 + 时空图列 */
-  function updateStats() {
-    var i;
-    var iLim = lastFullIdx();
-    for (i = Math.max(1, iStat); i <= iLim; i++) {
-      var sm = smoothedAt(i);
-      if (sm === null) continue;
-      maxIdentDev = Math.max(maxIdentDev, Math.abs(sm.dE - sm.rhs));
-      maxDiss = Math.max(maxDiss, hist[i].D);
-    }
-    iStat = Math.max(1, iLim + 1);
-    for (i = iStatW; i < histW.length; i++) {
-      var h = histW[i];
-      maxEwRatio = Math.max(maxEwRatio, h.E1 / (h.E10 || 1e-30));
-      var boundL2 = (2 * S.l * S.l) / (Math.PI * Math.PI * S.a * S.a) * (h.E10 || 1e-30);
-      maxL2Bound = Math.max(maxL2Bound, h.l2 / Math.max(boundL2, 1e-30));
-      maxEwBound = Math.max(maxEwBound, h.E2 / Math.max(h.Asrc / (2 * S.c), 1e-30));
-    }
-    iStatW = histW.length;
-  }
-
-  /* 拖影缓冲：每 0.25 秒存一条形状 */
-  function pushTrail() {
-    if (!sim.trail) sim.trail = [];
-    var last = sim.trailT === undefined ? -1 : sim.trailT;
-    if (S.t - last >= 0.22) {
-      sim.trailT = S.t;
-      sim.trail.push(CUR || sampleFast(sim).u);
-      if (sim.trail.length > 14) sim.trail.shift();
-    }
-  }
-
-  /* ============================ 主循环 ============================ */
-  var lastWall = 0;
-  function frame(now) {
-    var dtWall = lastWall ? Math.min(0.05, (now - lastWall) / 1000) : 0;
-    lastWall = now;
-    if (S.running && S.speed > 0) {
-      var dtSim = dtWall * S.speed * 2.0;                // 2 倍"物理秒/秒"
-      if (S.t + dtSim > S.tMax) dtSim = Math.max(0, S.tMax - S.t);
-      advance(dtSim);
-      pushTrail();
-      if (S.t >= S.tMax - 1e-9) { S.running = false; document.getElementById("btn-play").textContent = "播放"; }
-    }
-    updateStats();
-    drawString(); drawEnergy(); drawIdentity(); drawStability(); updateReadouts();
-    requestAnimationFrame(frame);
-  }
-
-  /* ============================ 控件 ============================ */
-  function bindRange(id, out, key, fmtf, rebuildNeeded) {
-    var el = document.getElementById(id), o = document.getElementById(out);
-    el.addEventListener("input", function () {
-      S[key] = parseFloat(el.value);
-      o.textContent = fmtf(S[key]);
-      if (rebuildNeeded) rebuild();
-    });
-    o.textContent = fmtf(S[key]);
-  }
-  bindRange("s-c", "o-c", "c", function (v) { return v.toFixed(2); }, true);
-  bindRange("s-a", "o-a", "a", function (v) { return v.toFixed(2); }, true);
-  bindRange("s-l", "o-l", "l", function (v) { return v.toFixed(2); }, true);
-  bindRange("s-sp", "o-sp", "speed", function (v) { return v.toFixed(2); }, false);
-  bindRange("s-N", "o-N", "N", function (v) { return v.toFixed(0); }, true);
-  bindRange("s-fa", "o-fa", "fAmp", function (v) { return v.toFixed(3); }, true);
-  bindRange("s-fw", "o-fw", "fOmega", function (v) { return v.toFixed(2); }, true);
-  document.getElementById("sel-phi").addEventListener("change", function (e) { S.phi = e.target.value; rebuild(); });
-  document.getElementById("sel-psi").addEventListener("change", function (e) { S.psi = e.target.value; rebuild(); });
-  document.getElementById("sel-fm").addEventListener("change", function (e) { S.fMode = parseInt(e.target.value, 10); rebuild(); });
-  document.getElementById("btn-play").addEventListener("click", function () {
-    if (S.t >= S.tMax - 1e-9) { rebuild(); S.running = true; }
-    else S.running = !S.running;
-    this.textContent = S.running ? "暂停" : "播放";
-  });
-  document.getElementById("btn-reset").addEventListener("click", function () {
-    rebuild(); S.running = true; document.getElementById("btn-play").textContent = "暂停";
-  });
-  document.getElementById("btn-log").addEventListener("click", function () {
-    S.logE = !S.logE;
-    this.textContent = S.logE ? "能量图：线性坐标" : "能量图：对数坐标";
-  });
-  document.getElementById("btn-stab").addEventListener("click", function () {
-    S.stabMode = S.stabMode === "ic" ? "f" : "ic";
-    this.textContent = S.stabMode === "ic" ? "稳定性面板：f 扰动" : "稳定性面板：初值扰动";
-    document.getElementById("stab-mode-name").textContent = S.stabMode === "ic" ? "初值扰动" : "f 扰动";
-  });
-
-  /* ============================ 启动 ============================ */
-  cvS = document.getElementById("cv-string");
-  cvE = document.getElementById("cv-energy");
-  cvI = document.getElementById("cv-identity");
-  cvT = document.getElementById("cv-stability");
-  heat = document.createElement("canvas");
-  heat.width = heatW; heat.height = heatH;
-  heatCtx = heat.getContext("2d");
-  rebuild();
-  window.addEventListener("resize", function () { /* 每帧 fit() 会自适应 */ });
-
-  /* 深链接：?c=0.4&a=1&l=1&N=160&f=0.05（参数）
-   *         &fast=秒数（快进）&stab=f（源项扰动）&log=1（对数能量图）&run=0（暂停） */
-  (function initFromQuery() {
-    var q = {};
-    (location.search || "").replace(/^\?/, "").split("&").forEach(function (kv) {
-      if (!kv) return;
-      var p = kv.split("=");
-      q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || "");
-    });
-    var touched = false;
-    function num(key, prop, id, outId, lo, hi, dp, isInt) {
-      if (!(key in q)) return;
-      var v = parseFloat(q[key]);
-      if (!isFinite(v)) return;
-      v = Math.min(hi, Math.max(lo, v));
-      if (isInt) v = Math.round(v);
-      S[prop] = v;
-      var el = document.getElementById(id);
-      if (el) el.value = String(v);
-      var o = document.getElementById(outId);
-      if (o) o.textContent = v.toFixed(dp);
-      touched = true;
-    }
-    num("c", "c", "s-c", "o-c", 0, 2, 2);
-    num("a", "a", "s-a", "o-a", 0.4, 2, 2);
-    num("l", "l", "s-l", "o-l", 0.5, 2, 2);
-    num("N", "N", "s-N", "o-N", 20, 300, 0, true);
-    num("f", "fAmp", "s-fa", "o-fa", 0, 0.12, 3);
-    if (touched) rebuild();
-    if (q.stab === "f") {
-      S.stabMode = "f";
-      document.getElementById("btn-stab").textContent = "稳定性面板：初值扰动";
-      document.getElementById("stab-mode-name").textContent = "f 扰动";
-    }
-    if (q.log === "1") {
-      S.logE = true;
-      document.getElementById("btn-log").textContent = "能量图：线性坐标";
-    }
-    var fast = parseFloat(q.fast || "0");
-    if (fast > 0) {
-      var tgt = Math.min(fast, S.tMax);
-      while (S.t < tgt - 1e-9) advance(Math.min(0.02, tgt - S.t));
-      pushTrail();
-    }
-    if (q.run === "0") {
-      S.running = false;
-      document.getElementById("btn-play").textContent = "播放";
-    }
-  })();
-
-  requestAnimationFrame(frame);
-
-  // 供人工在控制台检查
-  window.__lab = { S: S, get sim() { return sim; }, get fd() { return fdSim; }, get hist() { return hist; } };
-})();
-</script>
+  </script>
 </body>
 </html>
