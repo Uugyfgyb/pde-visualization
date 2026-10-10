@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="交互式偏微分方程可视化专题库：按方程类型分类，收录可离线打开的网页、数学说明与数值验证。">
+  <meta name="description" content="交互式偏微分方程可视化专题库：按方程类型分类，收录独立网页、数学说明与数值验证。">
   <title>PDE Visualization · 偏微分方程可视化专题库</title>
   <style>
     :root {
@@ -107,11 +107,11 @@
     <section class="hero" aria-labelledby="page-title">
       <p class="eyebrow">Interactive PDE atlas</p>
       <h1 id="page-title">让偏微分方程<br><em>动起来。</em></h1>
-      <p class="lead">按方程类型整理交互实验、数学说明和数值验证。每个专题都是独立网页，可以单独下载并离线打开。</p>
+      <p class="lead">按方程类型整理交互实验、数学说明和数值验证。每个专题都可独立打开；需要在线依赖的专题会明确标注。</p>
       <div class="stats" aria-label="专题概况">
-        <span class="stat"><strong id="topic-count">4</strong> 个已收录专题</span>
+        <span class="stat"><strong id="topic-count">5</strong> 个已收录专题</span>
         <span class="stat">4 个分类方向</span>
-        <span class="stat">单文件 · 离线可用</span>
+        <span class="stat">单文件 · 可独立打开</span>
       </div>
     </section>
 
@@ -167,9 +167,22 @@
     </section>
 
     <section class="group" id="elliptic" aria-labelledby="elliptic-title">
-      <div class="group-head"><h3 id="elliptic-title">椭圆型 · 势场与平衡</h3><span class="group-count">2 个专题</span></div>
+      <div class="group-head"><h3 id="elliptic-title">椭圆型 · 势场与平衡</h3><span class="group-count">3 个专题</span></div>
       <p class="group-description">边界条件如何决定稳态场的形状。</p>
       <div class="cards">
+        <article class="card" data-search="调和函数 Laplace 拉普拉斯 矩形 长方体 立方体 分离变量 傅里叶 正弦 双曲正弦 最大值原理 Strauss 6.1 6.2 椭圆型 harmonic rectangles cubes">
+          <img src="topics/laplace-rectangles-cuboids/preview.png" alt="矩形调和解的二维热图与三维曲面示意，金色线表示施加边界值的顶边" loading="lazy">
+          <div class="card-body">
+            <span class="tag">Strauss 6.1–6.2 · 需联网</span>
+            <h4>调和函数：矩形与长方体</h4>
+            <p class="equation">Δu = 0 · 分离变量 · 最大值原理</p>
+            <p>调节边长与边界正弦模态，比较二维热图和三维曲面；切换到长方体，观察不同高度的水平切片与高频衰减。</p>
+            <div class="links">
+              <a href="topics/laplace-rectangles-cuboids/index.html">打开专题 →</a>
+              <a href="topics/laplace-rectangles-cuboids/README.md">说明与源码</a>
+            </div>
+          </div>
+        </article>
         <article class="card" data-search="调和函数 Poisson 泊松 Laplace 平均值性质 强最大值原理 Green 格林 Dirichlet 能量 Strauss 椭圆型 harmonic mean maximum">
           <img src="topics/harmonic-functions/preview.png" alt="内部点、边界数据与 Poisson 核的加权平均图，带中文坐标注解" loading="lazy">
           <div class="card-body">

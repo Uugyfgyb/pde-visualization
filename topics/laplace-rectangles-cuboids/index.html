@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>调和函数｜Strauss 6.1–6.2 交互可视化</title>
+  <style>
+    :root{--bg:#0b1020;--canvas:#0a0e27;--panel:rgba(22,31,57,.79);--line:#344462;--text:#edf4ff;--muted:#aebbd4;--soft:#cbd5e1;--cyan:#2dd4bf;--pink:#ec4899;--gold:#fbbf24;--violet:#a78bfa;--blue:#77a6ff}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 15% -12%,#25365b 0,transparent 34%),radial-gradient(circle at 90% 4%,#1b1741 0,transparent 28%),var(--bg);color:var(--text);font:16px/1.62 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+    a{color:#9cc7ff}a:hover{color:#c8ddff}.wrap{width:min(1220px,calc(100% - 36px));margin:auto}.hero{padding:55px 0 32px}.eyebrow{color:var(--gold);font-weight:750;letter-spacing:.16em;font-size:.76rem;text-transform:uppercase}.hero h1{font-size:clamp(2rem,4.8vw,3.9rem);line-height:1.12;letter-spacing:-.035em;margin:12px 0}.hero p{max-width:790px;color:var(--soft);font-size:1.07rem;margin:0}.hero .sub{margin-top:12px;color:var(--muted);font-size:.92rem}.nav{display:flex;flex-wrap:wrap;gap:8px;margin:25px 0 0}.nav a{text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#121c34;color:var(--soft);font-size:.86rem}.nav a:hover{border-color:var(--cyan)}
+    main{padding-bottom:60px}section{margin:24px 0 44px}h2{font-size:1.55rem;margin:0 0 16px;letter-spacing:-.015em}.section-kicker{font-size:.77rem;letter-spacing:.11em;color:var(--violet);font-weight:800;text-transform:uppercase;margin-bottom:3px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--panel);border:1px solid rgba(131,155,197,.23);border-radius:18px;padding:22px;box-shadow:0 12px 35px rgba(1,6,20,.17);backdrop-filter:blur(10px)}.card h3{margin:0 0 10px;font-size:1.1rem}.card p{margin:8px 0;color:var(--soft)}.tag{display:inline-block;border:1px solid var(--line);background:#111a31;border-radius:999px;padding:2px 10px;color:var(--muted);font-size:.78rem}.conclusion{border-left:4px solid var(--gold);padding:18px 22px;background:linear-gradient(90deg,rgba(251,191,36,.12),rgba(251,191,36,.035));border-radius:0 15px 15px 0;margin-top:16px}.conclusion strong{color:#ffe49b}.eq{overflow-x:auto;padding:13px 16px;background:#0a1429;border:1px solid rgba(110,135,187,.22);border-radius:10px;color:#f4f8ff;margin:11px 0 0;text-align:center}.symbol-note{font-size:.84rem;line-height:1.55;color:var(--muted);padding:7px 3px 0;margin:0 0 13px}.symbol-note b{color:var(--soft);font-weight:650}
+    .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}.control{min-width:120px;flex:1 1 130px}.control label{display:block;font-size:.8rem;color:var(--muted);font-weight:650;margin-bottom:5px}.control input,.control select{width:100%;background:#111b34;color:var(--text);border:1px solid #52647f;border-radius:9px;padding:9px 10px;font:inherit;min-height:42px}.control input:focus,.control select:focus,button:focus{outline:2px solid var(--gold);outline-offset:2px}.control.small{flex:0 1 118px}.control.range{flex:2 1 180px}.control.range input{padding:0;border:0;background:transparent;height:42px;accent-color:var(--violet)}button{font:inherit;min-height:42px;border:1px solid #cc9b27;background:#dcae3d;color:#101526;border-radius:9px;padding:7px 15px;font-weight:800;cursor:pointer}button:hover{background:#f2c757}.controls .hint{font-size:.8rem;color:var(--muted);width:100%;margin:-2px 0 0}.viz-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:16px}.viz-card{padding:15px 15px 12px;min-width:0}.viz-title{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 4px 10px}.viz-title h3{margin:0;font-size:1rem}.viz-title span{font-size:.8rem;color:var(--muted)}canvas.plot{display:block;width:100%;height:400px;background:var(--canvas);border-radius:12px;border:1px solid #263958}#threeWrap{width:100%;height:400px;background:var(--canvas);border-radius:12px;border:1px solid #263958;position:relative;overflow:hidden}#threeWrap canvas{display:block}.fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted)}.fallback.show{display:flex}.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:12px 3px 2px;color:var(--soft);font-size:.82rem}.swatch{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}.metric{background:#101a31;border:1px solid #263955;padding:11px 14px;border-radius:12px;min-width:0}.metric label{display:block;color:var(--muted);font-size:.77rem}.metric strong{display:block;font-size:1.05rem;overflow-wrap:anywhere}.caption{font-size:.86rem;color:var(--muted);margin:13px 3px 0}
+    .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.step{padding:19px}.step-num{display:inline-flex;justify-content:center;align-items:center;width:28px;height:28px;border-radius:50%;background:#2b2350;color:#d2c2ff;font-size:.83rem;font-weight:800;margin-right:8px}.step h3{display:inline;font-size:1.03rem}.step p{color:var(--soft);margin:8px 0 0}.wide-step{grid-column:1/-1}.tables{display:grid;grid-template-columns:1fr;gap:13px}.table-wrap{overflow-x:auto;border:1px solid rgba(131,155,197,.25);border-radius:13px;background:#121c34}table{border-collapse:collapse;width:100%;min-width:560px}th,td{text-align:left;padding:10px 13px;border-bottom:1px solid #2b3b58;vertical-align:top}th{font-size:.83rem;color:#b9ceef;background:#17253e}td{font-size:.88rem;color:var(--soft)}tr:last-child td{border-bottom:0}.group-row td{background:#1b2944;color:var(--gold);font-weight:800}.limit-list{padding-left:20px;color:var(--soft)}.limit-list li{margin:7px 0}.footer{color:var(--muted);font-size:.82rem;border-top:1px solid #2a3852;padding:24px 0 40px}.footer p{margin:5px 0}.hidden{display:none!important}
+    @media(max-width:880px){.grid2,.viz-grid,.steps{grid-template-columns:1fr}.wide-step{grid-column:auto}.hero{padding-top:35px}}@media(max-width:520px){.wrap{width:min(100% - 22px,1220px)}.card{padding:15px}.viz-card{padding:10px}.readout{grid-template-columns:1fr}canvas.plot,#threeWrap{height:340px}.hero h1{font-size:2rem}}
+  </style>
+  <script>
+    window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]},svg:{fontCache:'global'}};
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <header class="wrap hero">
+    <div class="eyebrow">Strauss · Partial Differential Equations · 6.1–6.2</div>
+    <h1>调和函数，<br>从边界长进内部</h1>
+    <p>把拉普拉斯方程、最大值原理与分离变量放在同一幅可操作的图里：调节边界形状，观察矩形和长方体中的平衡态。</p>
+    <p class="sub">本页采用 Strauss《Partial Differential Equations: An Introduction》第 2 版第 6.1、6.2 节的主题，自选一组可精确求解的边界条件进行演示。</p>
+    <nav class="nav" aria-label="页面目录"><a href="../../index.html">← PDE 专题目录</a><a href="#problem">问题</a><a href="#visual">可视化</a><a href="#derivation">推导</a><a href="#symbols">符号速查</a><a href="#limits">限制与小结</a></nav>
+  </header>
+  <main class="wrap">
+    <section id="problem">
+      <div class="section-kicker">01 · Problem</div><h2>问题陈述与结论</h2>
+      <div class="grid2">
+        <article class="card"><h3><span class="tag">6.1</span> 拉普拉斯方程</h3><p>在区域内部寻找稳态函数 $u$，使每个点的局部曲率相互抵消。给定整个边界上的函数值，求内部的 $u$；本页展示的是 <b>Dirichlet 边值问题</b>。</p><div class="eq">\[\Delta u=0\quad\text{于 }\Omega,\qquad u=g\quad\text{于 }\partial\Omega.\]</div><div class="symbol-note"><b>读法：</b>“区域内部的 $u$ 的拉普拉斯算子等于零；边界上的 $u$ 等于给定函数 $g$”。条件：$u$ 在区域内部至少有连续二阶偏导，在边界连续。<b>$u$</b>：标量场/温度，取实数；<b>$\Delta$</b>：拉普拉斯算子；<b>$\Omega$</b>：内部区域；<b>$g$</b>：指定的边界值，与 $u$ 同单位；<b>$\partial\Omega$</b>：区域边界。</div></article>
+        <article class="card"><h3><span class="tag">6.2</span> 矩形与立方体</h3><p>在矩形中，上边界给定两种正弦起伏，另外三边为零。在可调边长的长方体中（$a=b=c$ 时为立方体），把同样的 $x$ 向起伏乘上一个 $y$ 向正弦起伏，放在顶面；其他五个面为零。</p><div class="eq">\[f(x)=\sin\frac{\pi x}{a}+q\sin\frac{3\pi x}{a},\qquad G(x,y)=f(x)\sin\frac{\pi y}{b}.\]</div><div class="symbol-note"><b>读法：</b>“顶边值是第一与第三正弦模态之和；顶面值再乘以 $y$ 向第一模态”。条件：$a,b,c&gt;0$，页面可调 $0.6\le a,b,c\le3$、$-0.8\le q\le0.8$。<b>$f$</b>：矩形上边界函数；<b>$G$</b>：长方体顶面函数，两者与 $u$ 同单位；<b>$x\in[0,a],y\in[0,b]$</b>：水平坐标；<b>$a,b$</b>：边长；<b>$q$</b>：无量纲第三模态强度；<b>$\pi$</b>：圆周率。</div></article>
+      </div>
+      <div class="conclusion"><strong>核心结论</strong>：每个正弦边界模态进入内部后，按双曲正弦比例衰减；空间频率越高，衰减越快。边界连续且相容时，解满足最大值原理，因而由边界值唯一确定。</div>
+    </section>
+
+    <section id="visual">
+      <div class="section-kicker">02 · Explore</div><h2>核心可视化</h2>
+      <div class="card">
+        <div class="controls">
+          <div class="control"><label for="mode">区域</label><select id="mode"><option value="rect">矩形 · 2D 区域</option><option value="cube">长方体 · 3D 区域</option></select></div>
+          <div class="control small"><label for="a">$a$ · x 向长度</label><input id="a" type="number" min="0.6" max="3" step="0.1" value="2"></div>
+          <div class="control small"><label for="b">$b$ · y 向长度</label><input id="b" type="number" min="0.6" max="3" step="0.1" value="1.4"></div>
+          <div class="control small cube-only hidden"><label for="c">$c$ · z 向高度</label><input id="c" type="number" min="0.6" max="3" step="0.1" value="1.5"></div>
+          <div class="control small"><label for="q">$q$ · 第三模态</label><input id="q" type="number" min="-0.8" max="0.8" step="0.05" value="0.35"></div>
+          <div class="control range cube-only hidden"><label for="slice">切片高度 $z/c$：<span id="sliceValue">0.55</span></label><input id="slice" type="range" min="0.05" max="0.95" step="0.01" value="0.55"></div>
+          <button id="update" type="button">更新图形</button>
+          <p class="hint">修改参数后约 250 毫秒自动重绘；3D 图可拖动旋转、滚轮缩放、右键平移。</p>
+        </div>
+        <div class="viz-grid">
+          <article class="card viz-card"><div class="viz-title"><h3 id="heatTitle">矩形内的解 $u(x,y)$</h3><span>二维热图 + 等值线</span></div><canvas id="heatmap" class="plot" role="img" aria-label="矩形中调和函数的二维热图，颜色表示函数值，上边界以金色标出"></canvas><div class="legend"><span><i class="swatch" style="background:var(--cyan)"></i>正值</span><span><i class="swatch" style="background:var(--pink)"></i>负值</span><span><i class="swatch" style="background:var(--gold)"></i>非零边界</span><span><i class="swatch" style="background:var(--violet)"></i>等值线</span></div></article>
+          <article class="card viz-card"><div class="viz-title"><h3 id="threeTitle">解的三维曲面</h3><span>拖动以旋转</span></div><div id="threeWrap" role="img" aria-label="可旋转的三维图：矩形解的曲面或长方体中的水平切片"><div id="threeFallback" class="fallback">3D 库未加载。请联网打开本文件；二维图、公式和文字仍可使用。</div></div><div class="legend"><span><i class="swatch" style="background:var(--cyan)"></i>调和解</span><span><i class="swatch" style="background:var(--gold)"></i>施加边界值的边/面</span><span><i class="swatch" style="background:var(--blue)"></i>坐标参考网格</span></div></article>
+        </div>
+        <div class="readout" aria-live="polite"><div class="metric"><label>边界最小值（数值采样）</label><strong id="minValue">—</strong></div><div class="metric"><label>边界最大值（数值采样）</label><strong id="maxValue">—</strong></div><div class="metric"><label id="centerLabel">中心值 $u(a/2,b/2)$</label><strong id="centerValue">—</strong></div></div>
+        <p class="caption" id="interpretation" aria-live="polite"></p>
+        <p class="caption" id="vizCaption">矩形模式：二维图的上边是施加 $f(x)$ 的边；三维高度是函数值，不是物理空间里的第三维。</p>
+      </div>
+    </section>
+
+    <section id="derivation">
+      <div class="section-kicker">03 · Derivation</div><h2>从方程到可计算的解</h2>
+      <div class="steps">
+        <article class="card step"><span class="step-num">1</span><h3>分离变量</h3><p>先取一个乘积模态。代入拉普拉斯方程后，两个变量必须等于同一个分离常数的相反数。</p><div class="eq">\[u=X(x)Y(y),\quad \frac{X''}{X}=-\frac{Y''}{Y}=-k^2.\]</div><div class="symbol-note"><b>读法：</b>“$u$ 等于 $X$ 乘 $Y$；$X$ 的二阶导与 $X$ 之比、$Y$ 的二阶导与 $Y$ 之比的相反数，都等于负 $k$ 平方”。条件：在 $X,Y$ 非零的点写成商，随后以微分方程形式延拓。<b>$u$</b>：待求标量场；<b>$X,Y$</b>：分别只依赖 $x,y$ 的因子；<b>$x,y$</b>：无量纲坐标；<b>$'$</b>：对相应自变量求导；<b>$k$</b>：非负空间波数，单位为坐标单位的倒数。</div></article>
+        <article class="card step"><span class="step-num">2</span><h3>满足三条零边界</h3><p>左右边要求 $X(0)=X(a)=0$，底边要求 $Y(0)=0$。因此出现离散正弦模态和向上增长的双曲正弦。</p><div class="eq">\[k_n=\frac{n\pi}{a},\quad X_n(x)=\sin(k_nx),\quad Y_n(y)=\frac{\sinh(k_n y)}{\sinh(k_n b)}.\]</div><div class="symbol-note"><b>读法：</b>“第 $n$ 个波数为 $n\pi/a$；横向因子是正弦，纵向因子是归一化的双曲正弦”。条件：$a,b&gt;0$、$n=1,2,\ldots$；$Y_n(b)=1$。<b>$n$</b>：正整数模态编号；<b>$k_n$</b>：第 $n$ 模态波数；<b>$a,b$</b>：矩形宽、高；<b>$X_n,Y_n$</b>：归一化因子；<b>$x,y$</b>：坐标；<b>$\pi$</b>：圆周率；<b>$\sin,\sinh$</b>：正弦、双曲正弦。</div></article>
+        <article class="card step"><span class="step-num">3</span><h3>矩形的闭式答案</h3><p>顶边只含第 1 与第 3 模态，由线性叠加即可得到精确解。高频分量 $n=3$ 在远离顶边时衰减更快。</p><div class="eq">\[u_R(x,y)=\sum_{n\in\{1,3\}} A_n\sin\frac{n\pi x}{a}\,\frac{\sinh(n\pi y/a)}{\sinh(n\pi b/a)},\qquad A_1=1,\ A_3=q.\]</div><div class="symbol-note"><b>读法：</b>“矩形解是第一与第三正弦模态各乘一个向下衰减的双曲正弦因子，再相加”。条件：$0\le x\le a,0\le y\le b$，顶边取本页指定的 $f$。<b>$u_R$</b>：矩形解；<b>$x,y$</b>：坐标；<b>$a,b$</b>：宽、高；<b>$n$</b>：模态编号（这里只取 1、3）；<b>$\sum$</b>：对两个模态求和；<b>$A_n$</b>：模态系数；<b>$q$</b>：第三模态系数；<b>$\pi$</b>：圆周率；<b>$\sin,\sinh$</b>：正弦、双曲正弦。</div></article>
+        <article class="card step"><span class="step-num">4</span><h3>为什么它确实调和</h3><p>对每个模态，$x$ 方向的二阶导数正好抵消 $y$ 方向的二阶导数；顶边的双曲正弦比值等于 1。</p><div class="eq">\[\partial_{xx}u_n=-k_n^2u_n,\quad \partial_{yy}u_n=k_n^2u_n,\quad \Delta u_R=0,\quad u_R(x,b)=f(x).\]</div><div class="symbol-note"><b>读法：</b>“每个模态的两方向二阶偏导相互抵消，因此矩形解的拉普拉斯算子为零，顶边值恰为 $f$”。条件：在矩形内部逐项求导，这里只含有限两个光滑模态。<b>$u_n$</b>：第 $n$ 个矩形模态；<b>$k_n$</b>：其波数；<b>$\partial_{xx},\partial_{yy}$</b>：二阶偏导；<b>$\Delta$</b>：两者之和；<b>$u_R$</b>：矩形解；<b>$f$</b>：顶边函数；<b>$x,b$</b>：水平坐标与矩形高度。</div></article>
+        <article class="card step wide-step"><span class="step-num">5</span><h3>长方体：多一个分离方向</h3><p>在 $y$ 方向再取第一正弦模态；竖直方向的指数尺度由两个水平波数的平方和决定。这个公式在顶面还原 $G$，在其余五面为零。</p><div class="eq">\[u_C(x,y,z)=\sin\frac{\pi y}{b}\sum_{n\in\{1,3\}}A_n\sin\frac{n\pi x}{a}\,\frac{\sinh(\kappa_n z)}{\sinh(\kappa_n c)},\qquad \kappa_n=\pi\sqrt{\frac{n^2}{a^2}+\frac{1}{b^2}}.\]</div><div class="symbol-note"><b>读法：</b>“长方体解是 $y$ 向第一正弦模态，乘以 $x$ 向两个模态及其 $z$ 向衰减因子的和”；$\kappa_n$ 是两个水平波数的合成。条件：$0\le x\le a,0\le y\le b,0\le z\le c$，顶面给定 $G$、其余五面为零。<b>$u_C$</b>：长方体解；<b>$x,y,z$</b>：三个空间坐标；<b>$a,b,c$</b>：三边长度；<b>$n$</b>：模态编号（1、3）；<b>$\sum$</b>：求和；<b>$A_n$</b>：模态系数；<b>$\kappa_n$</b>：竖直衰减波数；<b>$\pi$</b>：圆周率；<b>$\sin,\sinh$</b>：正弦、双曲正弦。</div></article>
+        <article class="card step wide-step"><span class="step-num">6</span><h3>最大值原理给出唯一性</h3><p>调和函数若在有界连通区域内部取得全局最大值，便只能是常数。因此任何两个具有相同边界值的解之差只能为零。图中的最值被边界最值夹住。</p><div class="eq">\[\min_{\partial\Omega}g\le u(P)\le\max_{\partial\Omega}g\quad(P\in\Omega);\qquad u_1|_{\partial\Omega}=u_2|_{\partial\Omega}\Longrightarrow u_1=u_2.\]</div><div class="symbol-note"><b>读法：</b>“内部任一点的值位于边界最小值与最大值之间；两解边界相同，就处处相同”。条件：$\Omega$ 有界且连通，$u,u_1,u_2$ 在内部调和、连续延拓到闭包。<b>$g$</b>：边界数据；<b>$u,u_1,u_2$</b>：调和解；<b>$P$</b>：内部点；<b>$\Omega,\partial\Omega$</b>：区域及其边界；<b>$\min,\max$</b>：最小、最大；<b>$|$</b>：限制到边界；<b>$\Longrightarrow$</b>：由前式推出后式。</div></article>
+      </div>
+    </section>
+
+    <section id="symbols">
+      <div class="section-kicker">04 · Notation</div><h2>数学符号速查总表</h2>
+      <div class="tables"><div class="table-wrap"><table><thead><tr><th>符号</th><th>名称 / 读法</th><th>含义与作用</th></tr></thead><tbody>
+        <tr class="group-row"><td colspan="3">变量与函数</td></tr><tr><td>$u,u_R,u_C,u_n$</td><td>u；矩形解、长方体解、第 n 模态</td><td>稳态标量场及其具体形式；无指定物理单位，可理解为温度。</td></tr><tr><td>$f(x),G(x,y),g$</td><td>f、G、g</td><td>分别是矩形顶边、长方体顶面、一般边界数据。</td></tr><tr><td>$X_n,Y_n$</td><td>X 下标 n、Y 下标 n</td><td>分离变量得到的单变量因子。</td></tr>
+        <tr class="group-row"><td colspan="3">参数与边界</td></tr><tr><td>$a,b,c$</td><td>a、b、c</td><td>区域在 $x,y,z$ 方向的长度；均为正数。</td></tr><tr><td>$q,A_1,A_3$</td><td>q、A 一、A 三</td><td>第三模态权重；本页 $A_1=1,A_3=q$。</td></tr><tr><td>$\Omega,\partial\Omega$</td><td>欧米伽、欧米伽的边界</td><td>求解区域及其边界。</td></tr>
+        <tr class="group-row"><td colspan="3">坐标与切片</td></tr><tr><td>$x,y,z,P$</td><td>x、y、z、点 P</td><td>空间坐标与一个内部点；长方体切片固定 $z/c$。</td></tr><tr><td>$z/c$</td><td>z 除以 c</td><td>无量纲切片高度，介于 0 与 1。</td></tr>
+        <tr class="group-row"><td colspan="3">算子、函数与模态</td></tr><tr><td>$\Delta,\partial_{xx},\partial_{yy},\partial_{zz}$</td><td>拉普拉斯算子、二阶偏导</td><td>二维时 $\Delta=\partial_{xx}+\partial_{yy}$；三维再加 $\partial_{zz}$。</td></tr><tr><td>$\sin,\sinh$</td><td>正弦、双曲正弦</td><td>前者满足零侧边；后者决定向内部的衰减。</td></tr><tr><td>$n,k_n,\kappa_n$</td><td>n、k 下标 n、卡帕下标 n</td><td>模态编号、矩形波数、长方体竖直波数。</td></tr><tr><td>$\pi$</td><td>圆周率 pi</td><td>正弦模态中的常数，约 3.14159。</td></tr>
+        <tr class="group-row"><td colspan="3">关系符、人名与术语</td></tr><tr><td>$\min,\max,\Longrightarrow$</td><td>最小、最大、推出</td><td>表述最大值原理与唯一性。</td></tr><tr><td>Laplace；Strauss；Dirichlet</td><td>拉普拉斯；施特劳斯；狄利克雷</td><td>分别对应方程、教材作者、指定边界函数值的条件。</td></tr>
+      </tbody></table></div></div>
+      <p class="caption"><b>易混符号辨析：</b>$b$ 是矩形的 $y$ 向长度，也是长方体 $y$ 向长度；$c$ 只在长方体中表示 $z$ 向高度。$k_n$ 用于矩形，$\kappa_n$ 用于长方体。这里 $z$ 是实空间坐标，不是复变量；本问题不需要复变函数或 domain coloring。</p>
+    </section>
+
+    <section id="limits">
+      <div class="section-kicker">05 · Scope</div><h2>限制与小结</h2>
+      <div class="grid2"><div class="card"><h3>哪些结论具有一般性？</h3><ul class="limit-list"><li>最大值原理与 Dirichlet 解的唯一性适用于有界连通区域中连续到边界的调和函数，不限于矩形。</li><li>本页的公式针对零侧边和由第 1、第 3 正弦模态组成的顶边数据；一般连续边界数据需要完整的傅里叶级数或其他方法。</li><li>顶边数据在角点为零，因此与其余零边界相容。若边界数据在角点跳跃，角点连续性和收敛的解释需要另外处理。</li></ul></div><div class="card"><h3>看图时要记住</h3><ul class="limit-list"><li>矩形的 3D 曲面高度表示 $u$ 的数值，并非额外的物理坐标。</li><li>长方体的 3D 图显示一个可移动的水平切片和边界线框，并非整个体内每一点同时可见。</li><li>颜色范围使用边界最大绝对值归一化；图上的最小值、最大值是边界数值采样，公式才是精确结果。</li></ul></div></div>
+    </section>
+  </main>
+  <footer class="wrap footer"><p>参考：Walter A. Strauss, <i>Partial Differential Equations: An Introduction</i>, 2nd ed., Chapter 6, Sections 6.1–6.2；<a href="https://faculty.etsu.edu/gardnerr/5610/PDE-Strauss-notes-G.htm" target="_blank" rel="noopener">ETSU Strauss 章节笔记目录</a>。页面推导和例子为独立撰写。</p><p>Three.js 与 MathJax 从 CDN 加载；首次打开或离线浏览时需要网络连接才能显示三维图和排版公式。</p></footer>
+  <script type="module">
+    let THREE, OrbitControls;
+
+    const $=id=>document.getElementById(id);
+    const els={mode:$('mode'),a:$('a'),b:$('b'),c:$('c'),q:$('q'),slice:$('slice'),heat:$('heatmap'),wrap:$('threeWrap')};
+    const COLOR={positive:[45,212,191],negative:[236,72,153],zero:[18,32,63]};
+    let scene,camera,renderer,controls,contents,resizeObserver,redrawTimer;
+
+    function readParams(){
+      const clamp=(v,lo,hi,fallback)=>Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):fallback;
+      const p={mode:els.mode.value,a:clamp(parseFloat(els.a.value),.6,3,2),b:clamp(parseFloat(els.b.value),.6,3,1.4),c:clamp(parseFloat(els.c.value),.6,3,1.5),q:clamp(parseFloat(els.q.value),-.8,.8,.35),slice:clamp(parseFloat(els.slice.value),.05,.95,.55)};
+      els.a.value=p.a;els.b.value=p.b;els.c.value=p.c;els.q.value=p.q;els.slice.value=p.slice;
+      return p;
+    }
+    function sinhRatio(k,t,H){
+      if(t<=0)return 0;if(t>=H)return 1;
+      return Math.exp(k*(t-H))*(1-Math.exp(-2*k*t))/(1-Math.exp(-2*k*H));
+    }
+    function boundaryX(x,p){return Math.sin(Math.PI*x/p.a)+p.q*Math.sin(3*Math.PI*x/p.a)}
+    function rectU(x,y,p){return Math.sin(Math.PI*x/p.a)*sinhRatio(Math.PI/p.a,y,p.b)+p.q*Math.sin(3*Math.PI*x/p.a)*sinhRatio(3*Math.PI/p.a,y,p.b)}
+    function cubeU(x,y,z,p){const sy=Math.sin(Math.PI*y/p.b);let sum=0;for(const n of [1,3]){const k=Math.PI*Math.hypot(n/p.a,1/p.b);sum+=(n===1?1:p.q)*Math.sin(n*Math.PI*x/p.a)*sinhRatio(k,z,p.c)}return sy*sum}
+    function boundaryRange(p){let lo=Infinity,hi=-Infinity;for(let i=0;i<=800;i++){const x=p.a*i/800;const fx=boundaryX(x,p);if(p.mode==='rect'){lo=Math.min(lo,fx);hi=Math.max(hi,fx)}else{for(let j=0;j<=100;j++){const val=fx*Math.sin(Math.PI*j/100);lo=Math.min(lo,val);hi=Math.max(hi,val)}}}return {lo:Math.min(lo,0),hi:Math.max(hi,0),scale:Math.max(Math.abs(lo),Math.abs(hi),.001)}}
+    function rgb(v,scale){const t=Math.min(1,Math.abs(v)/scale),a=Math.pow(t,.78),target=v>=0?COLOR.positive:COLOR.negative;return COLOR.zero.map((c,i)=>Math.round(c*(1-a)+target[i]*a))}
+    function cssColor(v,scale){const c=rgb(v,scale);return `rgb(${c[0]},${c[1]},${c[2]})`}
+    function sizeCanvas(cv){const dpr=Math.min(window.devicePixelRatio||1,2.5),r=cv.getBoundingClientRect();if(!r.width)return null;cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w:r.width,h:r.height}}
+    function drawHeat(p,range){const sized=sizeCanvas(els.heat);if(!sized)return;const {ctx,w,h}=sized,pad={l:48,r:23,t:24,b:42},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;if(pw<40||ph<40)return;ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0e27';ctx.fillRect(0,0,w,h);
+      const nX=Math.min(170,Math.max(50,Math.round(pw/3))),nY=Math.min(150,Math.max(50,Math.round(ph/3)));const vals=new Float64Array((nX+1)*(nY+1));const at=(i,j)=>vals[j*(nX+1)+i];const evalAt=(x,y)=>p.mode==='rect'?rectU(x,y,p):cubeU(x,y,p.slice*p.c,p);
+      for(let j=0;j<=nY;j++)for(let i=0;i<=nX;i++)vals[j*(nX+1)+i]=evalAt(p.a*i/nX,p.b*(1-j/nY));
+      const cellW=pw/nX,cellH=ph/nY;for(let j=0;j<nY;j++)for(let i=0;i<nX;i++){const v=(at(i,j)+at(i+1,j)+at(i,j+1)+at(i+1,j+1))/4;ctx.fillStyle=cssColor(v,range.scale);ctx.fillRect(pad.l+i*cellW,pad.t+j*cellH,cellW+1,cellH+1)}
+      const levels=[-.75,-.5,-.25,0,.25,.5,.75].map(x=>x*range.scale);ctx.lineWidth=1;for(const level of levels){ctx.strokeStyle=level===0?'rgba(246,250,255,.75)':'rgba(194,169,255,.54)';ctx.beginPath();for(let j=0;j<nY;j++)for(let i=0;i<nX;i++){const v=[at(i,j),at(i+1,j),at(i+1,j+1),at(i,j+1)],points=[];const edge=(a,b,xa,ya,xb,yb)=>{if((v[a]<level)!==(v[b]<level)){const t=(level-v[a])/(v[b]-v[a]);points.push([pad.l+(i+xa+(xb-xa)*t)*cellW,pad.t+(j+ya+(yb-ya)*t)*cellH])}};edge(0,1,0,0,1,0);edge(1,2,1,0,1,1);edge(2,3,1,1,0,1);edge(3,0,0,1,0,0);if(points.length>=2){ctx.moveTo(...points[0]);ctx.lineTo(...points[1]);if(points.length===4){ctx.moveTo(...points[2]);ctx.lineTo(...points[3])}}}ctx.stroke()}
+      ctx.strokeStyle='#7a8fad';ctx.lineWidth=1.4;ctx.strokeRect(pad.l,pad.t,pw,ph);if(p.mode==='rect'){ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l+pw,pad.t);ctx.stroke()}
+      ctx.font='12px system-ui,sans-serif';ctx.fillStyle='#c3d1e8';ctx.textAlign='center';ctx.fillText('0',pad.l,h-15);ctx.fillText(p.a.toFixed(1),pad.l+pw,h-15);ctx.fillText('x',pad.l+pw/2,h-13);ctx.textAlign='right';ctx.fillText('0',pad.l-8,pad.t+ph+4);ctx.fillText(p.b.toFixed(1),pad.l-8,pad.t+4);ctx.save();ctx.translate(16,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('y',0,0);ctx.restore();ctx.textAlign='left';ctx.fillStyle='#e7eeff';ctx.fillText(p.mode==='rect'?'u(x,y)':`u(x,y,z=${(p.slice*p.c).toFixed(2)})`,pad.l+7,pad.t+19);
+    }
+    function sprite(label,color='#dce8ff'){const cv=document.createElement('canvas');cv.width=256;cv.height=128;const g=cv.getContext('2d');g.font='bold 54px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle=color;g.shadowColor='rgba(0,0,0,.9)';g.shadowBlur=12;g.fillText(label,128,64);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false}));s.scale.set(.55,.27,1);return s}
+    function initThree(){const w=els.wrap.clientWidth,h=els.wrap.clientHeight;scene=new THREE.Scene();scene.background=new THREE.Color('#0a0e27');camera=new THREE.PerspectiveCamera(40,w/h,.01,100);camera.position.set(3.8,3.1,4.5);renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(w,h);renderer.outputColorSpace=THREE.SRGBColorSpace;els.wrap.insertBefore(renderer.domElement,$('threeFallback'));controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=2;controls.maxDistance=12;scene.add(new THREE.AmbientLight(0xffffff,1.35));const light=new THREE.DirectionalLight(0xffffff,1.5);light.position.set(2,5,4);scene.add(light);contents=new THREE.Group();scene.add(contents);resizeObserver=new ResizeObserver(()=>{const ww=els.wrap.clientWidth,hh=els.wrap.clientHeight;if(!ww||!hh)return;camera.aspect=ww/hh;camera.updateProjectionMatrix();renderer.setSize(ww,hh);drawAll()});resizeObserver.observe(els.wrap);function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate()}
+    function disposeGroup(group){for(const child of [...group.children]){group.remove(child);child.traverse(obj=>{if(obj.geometry)obj.geometry.dispose();if(obj.material){const mats=Array.isArray(obj.material)?obj.material:[obj.material];for(const m of mats){if(m.map)m.map.dispose();m.dispose()}}})}}
+    function line(points,color,width=2){const g=new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(...p)));const m=new THREE.LineBasicMaterial({color,linewidth:width});return new THREE.Line(g,m)}
+    function dot(x,y,z,color='#fbbf24',r=.045){const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),new THREE.MeshBasicMaterial({color}));m.position.set(x,y,z);return m}
+    function color3(v,scale){const c=rgb(v,scale);return [c[0]/255,c[1]/255,c[2]/255]}
+    function rectScene(p,range){const W=2.6,H=2.2,vertical=1.35/range.scale,geo=new THREE.BufferGeometry(),verts=[],cols=[],indices=[],NX=72,NY=54;for(let j=0;j<=NY;j++)for(let i=0;i<=NX;i++){const x=p.a*i/NX,y=p.b*j/NY,u=rectU(x,y,p);verts.push(W*(i/NX-.5),u*vertical,H*(j/NY-.5));cols.push(...color3(u,range.scale))}for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){const k=j*(NX+1)+i;indices.push(k,k+1,k+NX+1,k+1,k+NX+2,k+NX+1)}geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));geo.setIndex(indices);geo.computeVertexNormals();contents.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,side:THREE.DoubleSide,roughness:.55,metalness:.06})));const grid=new THREE.GridHelper(3.5,10,'#56779e','#2d4363');grid.position.y=-1.45;contents.add(grid);
+      const top=[];for(let i=0;i<=150;i++){const x=p.a*i/150;top.push([W*(i/150-.5),rectU(x,p.b,p)*vertical,H/2])}contents.add(line(top,'#fbbf24',3));for(const [x,z] of [[-W/2,-H/2],[W/2,-H/2],[-W/2,H/2],[W/2,H/2]])contents.add(dot(x,0,z));const axes=[{name:'x',pos:[W/2+.23,-1.42,-H/2]},{name:'y',pos:[-W/2,-1.42,H/2+.28]},{name:'u',pos:[-W/2-.18,1.4,-H/2]}];for(const v of axes){const s=sprite(v.name);s.position.set(...v.pos);contents.add(s)}contents.add(line([[-W/2,-1.45,-H/2],[W/2+.1,-1.45,-H/2]],'#77a6ff'));contents.add(line([[-W/2,-1.45,-H/2],[-W/2,-1.45,H/2+.1]],'#77a6ff'));contents.add(line([[-W/2,-1.45,-H/2],[-W/2,1.52,-H/2]],'#a78bfa'));camera.position.set(3.7,2.65,4.2);controls.target.set(0,0,0);controls.update()}
+    function cubeScene(p,range){const W=2.65,D=2.15,H=2.25,xpos=x=>W*(x/p.a-.5),zpos=y=>D*(y/p.b-.5),ypos=z=>H*(z/p.c-.5);const corners=[];for(const xx of [-W/2,W/2])for(const yy of [-H/2,H/2])for(const zz of [-D/2,D/2])corners.push([xx,yy,zz]);for(const a of corners)for(const b of corners){const changes=[0,1,2].filter(i=>a[i]!==b[i]);if(changes.length===1&&a.join(',')<b.join(','))contents.add(line([a,b],a[1]===H/2&&b[1]===H/2?'#fbbf24':'#6f89b2'))}for(const p0 of corners)contents.add(dot(...p0,p0[1]===H/2?'#fbbf24':'#7b9ac2',.035));
+      const makePlane=(z,opacity,top=false)=>{const NX=55,NY=45,positions=[],colors=[],indices=[],valueZ=z;for(let j=0;j<=NY;j++)for(let i=0;i<=NX;i++){const x=p.a*i/NX,y=p.b*j/NY,u=cubeU(x,y,valueZ,p);positions.push(xpos(x),ypos(z),zpos(y));const color=top?[1,.75,.24]:color3(u,range.scale);colors.push(...color)}for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){const k=j*(NX+1)+i;indices.push(k,k+1,k+NX+1,k+1,k+NX+2,k+NX+1)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.setIndex(indices);g.computeVertexNormals();contents.add(new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false}))) };makePlane(p.c,.13,true);makePlane(p.slice*p.c,.93,false);
+      const grid=new THREE.GridHelper(3.5,10,'#54749b','#29405d');grid.position.y=-H/2-.04;contents.add(grid);const labels=[['x',[W/2+.23,-H/2-.15,-D/2]],['y',[-W/2,-H/2-.15,D/2+.23]],['z',[-W/2-.21,H/2+.2,-D/2]]];for(const [name,pos] of labels){const s=sprite(name);s.position.set(...pos);contents.add(s)}const marker=dot(xpos(p.a/2),ypos(p.slice*p.c),zpos(p.b/2),'#ffffff',.047);contents.add(marker);camera.position.set(3.9,3.4,4.3);controls.target.set(0,0,0);controls.update()}
+    function drawAll(){
+      const p=readParams(),range=boundaryRange(p);
+      document.querySelectorAll('.cube-only').forEach(e=>e.classList.toggle('hidden',p.mode!=='cube'));
+      $('sliceValue').textContent=p.slice.toFixed(2);
+      $('heatTitle').textContent=p.mode==='rect'?'矩形内的解 u(x,y)':`长方体水平切片 u(x,y,z=${(p.slice*p.c).toFixed(2)})`;
+      $('threeTitle').textContent=p.mode==='rect'?'解的三维曲面':'长方体与水平切片';
+      $('centerLabel').textContent=p.mode==='rect'?'中心值 u(a/2,b/2)':`切片中心值 u(a/2,b/2,${(p.slice*p.c).toFixed(2)})`;
+      $('minValue').textContent=range.lo.toFixed(4);$('maxValue').textContent=range.hi.toFixed(4);
+      $('centerValue').textContent=(p.mode==='rect'?rectU(p.a/2,p.b/2,p):cubeU(p.a/2,p.b/2,p.slice*p.c,p)).toFixed(4);
+      $('vizCaption').textContent=p.mode==='rect'?'矩形模式：二维图的上边是施加 f(x) 的金色边；三维高度是函数值，不是物理空间里的第三维。':'长方体模式：二维图显示指定高度处的水平切片；三维图中金色顶面承载边界数据，彩色平面是可移动切片。线框标记真实三维区域。';
+      els.heat.setAttribute('aria-label',p.mode==='rect'?'矩形解的二维热图；横轴 x，纵轴 y，金色顶边为指定边界，紫色线为等值线':'长方体水平切片的二维热图；横轴 x，纵轴 y，颜色表示固定 z 高度的函数值');
+      const z=p.slice*p.c;
+      const r1=p.mode==='rect'?sinhRatio(Math.PI/p.a,p.b/2,p.b):sinhRatio(Math.PI*Math.hypot(1/p.a,1/p.b),z,p.c);
+      const r3=p.mode==='rect'?sinhRatio(3*Math.PI/p.a,p.b/2,p.b):sinhRatio(Math.PI*Math.hypot(3/p.a,1/p.b),z,p.c);
+      $('interpretation').textContent=`当前 a=${p.a.toFixed(2)}、b=${p.b.toFixed(2)}${p.mode==='cube'?`、c=${p.c.toFixed(2)}、z/c=${p.slice.toFixed(2)}`:''}、q=${p.q.toFixed(2)}。${p.mode==='rect'?'在矩形中线':'在当前水平切片'}，第 1 与第 3 模态的竖向因子分别为 ${(100*r1).toFixed(1)}% 和 ${(100*r3).toFixed(1)}%；离开金色非零边界时，高频的第 3 模态衰减更快。颜色按当前边界最大绝对值重新缩放；长度和函数值均为无量纲教学量。`;
+      drawHeat(p,range);
+      if(contents){disposeGroup(contents);p.mode==='rect'?rectScene(p,range):cubeScene(p,range)}
+    }
+    function schedule(){clearTimeout(redrawTimer);redrawTimer=setTimeout(drawAll,250)}
+    for(const el of [els.mode,els.a,els.b,els.c,els.q,els.slice]){el.addEventListener('input',schedule);el.addEventListener('change',schedule)}
+    $('update').addEventListener('click',drawAll);window.addEventListener('resize',schedule);
+    drawAll();
+    Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]).then(([lib,addons])=>{
+      THREE=lib;OrbitControls=addons.OrbitControls;initThree();drawAll();
+    }).catch(err=>{console.error(err);$('threeFallback').classList.add('show')});
+  </script>
+</body>
+</html>
